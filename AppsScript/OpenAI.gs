@@ -70,7 +70,9 @@ function solicitarActaEstructurada(mensajes, contexto) {
   }
 
   const carga = {
-    model: configuracion.openAI.modelo,
+    model: 'gpt-5-mini-2025-08-07',
+    reasoning_effort: 'minimal',
+    max_completion_tokens: 2500,
     messages: mensajes,
     response_format: {
       type: 'json_schema',
