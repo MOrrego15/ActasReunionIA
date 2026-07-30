@@ -109,7 +109,12 @@ No almacenes entregables generados dentro del árbol versionado. Consulta `Docum
 ## Criterios de implementación
 
 - Mantén separadas las responsabilidades de configuración, Drive, documentos pendientes, control de procesados, correlativo, construcción del prompt, OpenAI, validación, generación documental, exportación Word, auditoría y utilidades.
-- Procesa como máximo un documento pendiente por ejecución.
+- `Main.gs` procesa todos los documentos candidatos elegibles obtenidos en la ejecución.
+- El procesamiento de candidatos es secuencial y respeta un orden determinista.
+- Un error individual no detiene el procesamiento de los candidatos siguientes.
+- Los documentos cuyo estado persistido sea `PROCESADO` se omiten.
+- No se realizan reintentos automáticos de documentos en estado `ERROR` ni `EN_PROCESO`.
+- La primera ejecución real controlada debe utilizar una carpeta fuente que contenga exactamente un documento elegible.
 - Usa el identificador de Drive como identidad estable del documento fuente.
 - No marques un documento como completado hasta verificar la generación del archivo `.docx`.
 - Protege la selección del documento y la asignación del correlativo frente a ejecuciones concurrentes.

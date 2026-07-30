@@ -62,6 +62,12 @@ function _configConstruir(propiedadesScript) {
     propiedadesInvalidas,
     false
   );
+  const identificadorRepositorioProcesados = _configLeerObligatoria(
+    propiedadesScript,
+    'REPOSITORIO_PROCESADOS_ID',
+    propiedadesInvalidas,
+    false
+  );
   const claveApiOpenAI = _configLeerObligatoria(
     propiedadesScript,
     'OPENAI_API_KEY',
@@ -91,6 +97,9 @@ function _configConstruir(propiedadesScript) {
     }),
     actas: Object.freeze({
       carpetaRaizId: identificadorCarpetaRaizActas
+    }),
+    procesados: Object.freeze({
+      repositorioId: identificadorRepositorioProcesados
     }),
     openAI: Object.freeze({
       apiKey: claveApiOpenAI,
