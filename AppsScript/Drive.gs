@@ -379,9 +379,14 @@ function _driveListarDocumentosFuente(carpeta, operacion, contexto) {
   const documentos = Object.keys(documentosPorId).map(function (id) {
     return documentosPorId[id];
   });
-  documentos.sort(_driveCompararDocumentosFuente);
+  documentos.sort(function (a, b) {
+    return new Date(b.fechaModificacion) - new Date(a.fechaModificacion);
+  });
+  const documentoMasReciente =
+    documentos.length > 0 ? [documentos[0]] : [];
 
-  const resultado = _driveConstruirResultadoDocumentosExitoso(documentos);
+  const resultado =
+    _driveConstruirResultadoDocumentosExitoso(documentoMasReciente);
   _driveRegistrarResultadoDocumentos(
     operacion,
     resultado,

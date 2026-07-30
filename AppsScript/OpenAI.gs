@@ -102,6 +102,12 @@ function solicitarActaEstructurada(mensajes, contexto) {
     );
   }
 
+  const codigoHttpDiagnostico = respuestaHttp.getResponseCode();
+  const cuerpoHttpDiagnostico = respuestaHttp.getContentText();
+
+  console.log('OPENAI_HTTP_STATUS=' + codigoHttpDiagnostico);
+  console.log('OPENAI_HTTP_BODY=' + cuerpoHttpDiagnostico);
+
   try {
     const estadoHttp = respuestaHttp.getResponseCode();
     if (estadoHttp < 200 || estadoHttp >= 300) {
