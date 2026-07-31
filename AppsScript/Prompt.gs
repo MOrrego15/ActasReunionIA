@@ -67,16 +67,22 @@ function construirPromptActa(contenidoFuente, contexto) {
       'Usa cadena vacía para textos opcionales ausentes.',
       'Usa arreglos vacíos para listas ausentes.',
       'No incluyas elementos vacíos o incompletos en las listas.',
-      'Incluye en participantes únicamente asistentes con evidencia explícita ' +
-        'de asistencia en el contenido fuente.',
-      'Prioriza listas o secciones identificadas como asistentes, ' +
-        'participantes o presentes.',
+      'Incluye en participantes únicamente personas cuyo nombre esté asociado ' +
+        'a un correo electrónico visible en el contenido fuente.',
+      'El correo asociado es el requisito obligatorio para confirmar que la ' +
+        'persona ingresó a la reunión.',
+      'Si una persona no tiene correo asociado, no la incluyas en ' +
+        'participantes, aunque su nombre aparezca en las notas.',
+      'Usa como fuente de asistencia las listas o secciones de participantes ' +
+        'donde figuren juntos el nombre y el correo.',
       'No clasifiques como participante a una persona mencionada únicamente ' +
         'en temas, narraciones, acuerdos, tareas o referencias a terceros.',
       'No conviertas automáticamente responsables, destinatarios o personas ' +
         'citadas en asistentes.',
       'Si existe duda sobre la asistencia de una persona, omítela de ' +
         'participantes.',
+      'Usa el correo solo como evidencia; no lo copies en nombre ni cargo y ' +
+        'no agregues propiedades al esquema.',
       'Cada participante confirmado requiere nombre no vacío.',
       'Cada elemento de agenda requiere texto no vacío.',
       'Cada acuerdo y tarea requiere descripcion no vacía.',

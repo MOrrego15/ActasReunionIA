@@ -362,10 +362,12 @@ un valor `null` siempre es inválido. Los acuerdos y tareas se numeran de forma
 entera, positiva y secuencial desde uno. No se admiten propiedades adicionales,
 HTML, Markdown, cercos de código ni JSON incrustado en valores textuales.
 
-La lista `participantes` contendrá únicamente personas con evidencia explícita
-de asistencia en las notas. Una mención dentro de temas, acuerdos, tareas,
-responsabilidades o referencias a terceros no constituye evidencia de
-asistencia y no habilita su registro posterior en el catálogo de personas.
+La lista `participantes` contendrá únicamente personas cuyo nombre esté
+asociado a un correo electrónico visible en las notas. El correo se utilizará
+solo como evidencia de ingreso a la reunión y no formará parte del contrato ni
+se almacenará en el catálogo. Una persona sin correo asociado se omitirá aunque
+su nombre aparezca en temas, acuerdos, tareas, responsabilidades o referencias
+a terceros.
 
 ### 11.2 DatosEmisionActa y documento generado
 
