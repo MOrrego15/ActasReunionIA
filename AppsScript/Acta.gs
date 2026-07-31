@@ -468,9 +468,15 @@ function _actaAgregarDatosReunion(cuerpo, correlativo, fechaReunion) {
     celdaEtiqueta.setWidth(ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA);
     celdaValor.setWidth(ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO);
     celdaEtiqueta.setBackgroundColor('#d9d9d9');
-    _actaAplicarEstiloTexto(celdaEtiqueta.editAsText(), 10, true);
-    _actaAplicarEstiloTexto(celdaValor.editAsText(), 10, false);
-    celdaValor.editAsText().setItalic(true);
+    celdaEtiqueta.editAsText()
+      .setFontFamily('Arial')
+      .setFontSize(10)
+      .setBold(true);
+    celdaValor.editAsText()
+      .setFontFamily('Arial')
+      .setFontSize(10)
+      .setBold(false)
+      .setItalic(true);
   }
 }
 
