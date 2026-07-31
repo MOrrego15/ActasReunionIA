@@ -3,6 +3,10 @@
 const ACTA_MIME_DOCUMENTO_GOOGLE = 'application/vnd.google-apps.document';
 const ACTA_LOGO_NOMBRE_ARCHIVO = 'LogoMEF.jpg';
 const ACTA_DIRECTOR_PROYECTO = 'Damaso Carlos Tay';
+const ACTA_REUNION = Object.freeze({
+  CODIGO: 'CEL002',
+  HORA: '09:00 am a 09:20 am'
+});
 const ACTA_CABECERA = Object.freeze({
   TITULO: 'Acta de Reunión',
   CODIGO: 'FR 37',
@@ -115,7 +119,8 @@ function generarDocumentoActa(respuestaActaValidada, datosEmisionActa, contexto)
     _actaEscribirDocumento(
       documento,
       respuestaActaValidada,
-      logoInstitucional
+      logoInstitucional,
+      datosEmisionActa.correlativo
     );
     documento.saveAndClose();
   } catch (errorEscritura) {
@@ -210,19 +215,17 @@ function _actaConstruirNombre(correlativo) {
   return 'ACTA-' + String(correlativo).padStart(6, '0');
 }
 
-function _actaEscribirDocumento(documento, acta, logoInstitucional) {
+function _actaEscribirDocumento(
+  documento,
+  acta,
+  logoInstitucional,
+  correlativo
+) {
   const cuerpo = documento.getBody();
   _actaConfigurarPagina(cuerpo);
   _actaAgregarCabecera(cuerpo, acta.fechaReunion, logoInstitucional);
 
-  _actaAgregarSeccion(cuerpo, 'Datos Generales');
-  cuerpo.appendTable([
-    ['Fecha', acta.fechaReunion],
-    ['Hora de inicio', acta.horaInicio],
-    ['Hora de fin', acta.horaFin],
-    ['Lugar', acta.lugar],
-    ['Organizador', acta.organizador]
-  ]);
+  _actaAgregarDatosReunion(cuerpo, correlativo, acta.fechaReunion);
 
   _actaAgregarSeccion(cuerpo, 'Participantes');
   const participantes = [['Nombre', 'Cargo']];
@@ -445,6 +448,41 @@ function _actaFormatearCelda(celda, negrita, tamano, alineacion) {
 
 function _actaFormatearFechaCabecera(fechaReunion) {
   return fechaReunion.replace(/\//g, '.');
+}
+
+function _actaAgregarDatosReunion(cuerpo, correlativo, fechaReunion) {
+  const fechaFormateada = _actaFormatearFechaCabecera(fechaReunion);
+  const tabla = cuerpo.appendTable([
+    [
+      'Reunión',
+      _actaConstruirNumeroReunion(correlativo, fechaFormateada)
+    ],
+    ['Fecha', fechaFormateada],
+    ['Hora', ACTA_REUNION.HORA]
+  ]);
+
+  for (let indice = 0; indice < tabla.getNumRows(); indice += 1) {
+    const fila = tabla.getRow(indice);
+    const celdaEtiqueta = fila.getCell(0);
+    const celdaValor = fila.getCell(1);
+    celdaEtiqueta.setWidth(ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA);
+    celdaValor.setWidth(ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO);
+    celdaEtiqueta.setBackgroundColor('#d9d9d9');
+    _actaAplicarEstiloTexto(celdaEtiqueta.editAsText(), 10, true);
+    _actaAplicarEstiloTexto(celdaValor.editAsText(), 10, false);
+    celdaValor.editAsText().setItalic(true);
+  }
+}
+
+function _actaConstruirNumeroReunion(correlativo, fechaFormateada) {
+  const coincidencia = fechaFormateada.match(
+    /^(?:\d{2}\.\d{2}\.(\d{4})|(\d{4})-\d{2}-\d{2})$/
+  );
+  if (!coincidencia) {
+    throw new Error('fecha_reunion');
+  }
+  const anio = coincidencia[1] || coincidencia[2];
+  return String(correlativo) + '-' + anio + '-' + ACTA_REUNION.CODIGO;
 }
 
 function _actaAgregarSeccion(cuerpo, titulo) {
