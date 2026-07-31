@@ -313,3 +313,126 @@ No rompe compatibilidad. Agrega reglas documentales y de trazabilidad.
 ## Pendientes
 
 - Aplicar estas reglas en todas las solicitudes posteriores.
+
+# Cambio 0006
+Fecha: 2026-07-31
+Autor: Codex
+
+## Solicitud del usuario
+
+> ¿Por qué se siguen borrando los mensajes de progreso y reemplazándolos por
+> el resumen, a pesar de la instrucción expresa de conservarlos?
+
+## Respuesta de Codex
+
+Codex no elimina los mensajes enviados. La interfaz puede colapsar
+automáticamente el canal de progreso cuando se entrega la respuesta final, y
+ese comportamiento no puede controlarse desde el agente. Para evitar la
+pérdida visible de información, cada respuesta final incluirá un `Registro de
+progreso` cronológico y conservará además el resumen. Los mismos hitos se
+mantendrán en esta bitácora.
+
+## Objetivo
+
+Conservar de forma visible y portátil el progreso completo de cada tarea aunque
+la interfaz colapse los mensajes intermedios al cerrar el turno.
+
+## Archivos modificados
+
+- AGENTS.md
+- docs/CODEX_BITACORA.md
+
+## Cambios realizados
+
+Se agregó a `AGENTS.md` la obligación de incluir en cada respuesta final una
+sección `Registro de progreso` con los avances, incidencias, reintentos y
+validaciones relevantes en orden cronológico. El resumen final deberá añadirse
+después y no podrá sustituir dicho registro.
+
+Se documentó la limitación de presentación de la interfaz y la estrategia de
+conservación mediante respuesta final y bitácora.
+
+## Motivo
+
+Los mensajes intermedios pueden quedar visualmente colapsados, lo que da la
+impresión de que fueron eliminados y dificulta auditar cómo se ejecutó la tarea.
+
+## Impacto
+
+Afecta la forma de comunicar y documentar todas las tareas futuras. No modifica
+la lógica de Apps Script ni sus contratos.
+
+## Compatibilidad
+
+No rompe compatibilidad.
+
+## Pruebas realizadas
+
+- Lectura completa de la bitácora antes de modificar archivos.
+- Verificación de numeración correlativa hasta `Cambio 0006`.
+- Verificación de la nueva regla de `Registro de progreso` en `AGENTS.md`.
+- Verificación de UTF-8 sin BOM.
+- Verificación de `git diff --check`.
+
+## Pendientes
+
+- Aplicar el `Registro de progreso` en todas las respuestas finales futuras.
+- Versionar esta entrada cuando el usuario autorice commit y push.
+
+# Cambio 0007
+Fecha: 2026-07-31
+Autor: Codex
+
+## Solicitud del usuario
+
+> Despliega.
+
+## Respuesta de Codex
+
+Se autoriza el versionado y publicación de la regla permanente de conservación
+del progreso registrada en `AGENTS.md` y `docs/CODEX_BITACORA.md`. No se
+ejecutará `clasp push`, porque no existen cambios en `AppsScript/`.
+
+## Objetivo
+
+Respaldar en Git la obligación de reproducir el progreso cronológico en las
+respuestas finales y conservarlo en la bitácora.
+
+## Archivos modificados
+
+- AGENTS.md
+- docs/CODEX_BITACORA.md
+
+## Cambios realizados
+
+Se prepararon para publicación la regla `Registro de progreso`, la explicación
+de la limitación visual de la interfaz y esta autorización explícita de
+despliegue.
+
+## Motivo
+
+Garantizar que la regla se conserve al cambiar de computadora, clonar el
+repositorio o iniciar una nueva sesión de Codex.
+
+## Impacto
+
+Afecta únicamente la documentación y el procedimiento de comunicación. No
+modifica la lógica de Apps Script.
+
+## Compatibilidad
+
+No rompe compatibilidad.
+
+## Pruebas realizadas
+
+- Lectura completa de la bitácora antes de modificarla.
+- Verificación de numeración correlativa hasta `Cambio 0007`.
+- Verificación de UTF-8 sin BOM.
+- Verificación de `git diff --cached --check`.
+- Confirmación de staging limitado a `AGENTS.md` y
+  `docs/CODEX_BITACORA.md`.
+- Verificación posterior de sincronización entre `main` y `origin/main`.
+
+## Pendientes
+
+- Aplicar la regla en todas las respuestas finales posteriores.

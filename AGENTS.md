@@ -147,6 +147,10 @@ No almacenes entregables generados dentro del árbol versionado. Consulta `Docum
 - Conserva en la bitácora la solicitud, la respuesta, los mensajes de progreso
   relevantes, los archivos, las pruebas y los pendientes, redactando cualquier
   secreto o dato sensible.
+- Debido a que la interfaz puede colapsar los mensajes de progreso al finalizar
+  un turno, incluye en la respuesta final una sección `Registro de progreso`
+  que reproduzca cronológicamente los avances, incidencias, reintentos y
+  validaciones relevantes; el resumen final será adicional y no sustitutivo.
 - Nunca elimines, reemplaces ni reorganices entradas anteriores de la bitácora.
 - Incluye la bitácora actualizada en cada commit autorizado para mantener su
   respaldo automático en Git.
