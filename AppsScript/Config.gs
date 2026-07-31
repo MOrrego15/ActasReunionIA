@@ -50,7 +50,7 @@ function _configConstruir(propiedadesScript) {
     propiedadesInvalidas,
     false
   );
-  const identificadorPlantilla = _configLeerObligatoria(
+  const identificadorCarpetaPlantilla = _configLeerObligatoria(
     propiedadesScript,
     'PLANTILLA_ACTA_ID',
     propiedadesInvalidas,
@@ -93,7 +93,7 @@ function _configConstruir(propiedadesScript) {
       carpetaNotasId: identificadorCarpetaNotas
     }),
     plantilla: Object.freeze({
-      documentoId: identificadorPlantilla
+      carpetaId: identificadorCarpetaPlantilla
     }),
     actas: Object.freeze({
       carpetaRaizId: identificadorCarpetaRaizActas

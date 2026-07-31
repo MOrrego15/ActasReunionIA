@@ -1,6 +1,34 @@
 /** Módulo generador del Google Docs de acta con formato funcional mínimo. */
 
 const ACTA_MIME_DOCUMENTO_GOOGLE = 'application/vnd.google-apps.document';
+const ACTA_LOGO_NOMBRE_ARCHIVO = 'LogoMEF.jpg';
+const ACTA_DIRECTOR_PROYECTO = 'Damaso Carlos Tay';
+const ACTA_CABECERA = Object.freeze({
+  TITULO: 'Acta de Reunión',
+  CODIGO: 'FR 37',
+  VERSION: '1',
+  METODOLOGIA:
+    'Metodología de Gestión de Proyectos Informáticos de la Oficina ' +
+    'General de Tecnologías de la Información – OGTI',
+  PROYECTO:
+    'Mejoramiento de la Administración Financiera del Sector Público ' +
+    'a través de la Transformación Digital'
+});
+const ACTA_FORMATO = Object.freeze({
+  ANCHO_PAGINA: 595.28,
+  ALTO_PAGINA: 841.89,
+  MARGEN_SUPERIOR: 42.5,
+  MARGEN_DERECHO: 85.05,
+  MARGEN_INFERIOR: 70.85,
+  MARGEN_IZQUIERDO: 85.05,
+  ANCHO_COLUMNA_ETIQUETA: 103,
+  ANCHO_COLUMNA_CONTENIDO: 322,
+  ANCHO_COLUMNA_TITULO: 190,
+  ANCHO_COLUMNA_CONTROL: 56,
+  ANCHO_COLUMNA_VALOR: 76,
+  ANCHO_LOGO: 100,
+  ALTO_LOGO: 32
+});
 const ACTA_CODIGOS_ERROR = Object.freeze({
   PARAMETRO_INVALIDO: 'ACTA_PARAMETRO_INVALIDO',
   CONTEXTO_INVALIDO: 'ACTA_CONTEXTO_INVALIDO',
@@ -33,7 +61,8 @@ const ACTA_CODIGOS_ERROR = Object.freeze({
 /**
  * Genera, ubica y verifica un Google Docs de acta.
  * @param {RespuestaActaValidada} respuestaActaValidada Datos ya validados.
- * @param {{correlativo: number, carpetaDestinoId: string}} datosEmisionActa
+ * @param {{correlativo: number, carpetaDestinoId: string,
+ *     carpetaPlantillaId: string}} datosEmisionActa
  *     Datos técnicos de emisión.
  * @param {{idEjecucion: string}} contexto Contexto técnico obligatorio.
  * @returns {{exito: boolean, datos: ({idDocumentoGoogle: string}|null), error: (Object|null)}}
@@ -64,6 +93,11 @@ function generarDocumentoActa(respuestaActaValidada, datosEmisionActa, contexto)
       'La carpeta de destino no está disponible.', contexto, 'carpeta');
   }
 
+  const logoInstitucional = _actaObtenerLogoInstitucional(
+    datosEmisionActa.carpetaPlantillaId,
+    contexto
+  );
+
   _actaRegistrar('Se inició la generación del acta.', contexto,
     { etapa: 'inicio', correlativo: datosEmisionActa.correlativo }, false);
   let documento;
@@ -78,7 +112,11 @@ function generarDocumentoActa(respuestaActaValidada, datosEmisionActa, contexto)
   }
 
   try {
-    _actaEscribirDocumento(documento, respuestaActaValidada);
+    _actaEscribirDocumento(
+      documento,
+      respuestaActaValidada,
+      logoInstitucional
+    );
     documento.saveAndClose();
   } catch (errorEscritura) {
     return _actaFinalizarError(ACTA_CODIGOS_ERROR.ESCRITURA_ERROR,
@@ -146,9 +184,11 @@ function _actaValidarRespuesta(acta) {
 }
 
 function _actaValidarEmision(datos) {
-  return _actaClavesExactas(datos, ['correlativo','carpetaDestinoId']) &&
+  return _actaClavesExactas(datos,
+    ['correlativo','carpetaDestinoId','carpetaPlantillaId']) &&
     Number.isSafeInteger(datos.correlativo) && datos.correlativo > 0 &&
-    datos.correlativo <= 999999 && esCadenaNoVacia(datos.carpetaDestinoId);
+    datos.correlativo <= 999999 && esCadenaNoVacia(datos.carpetaDestinoId) &&
+    esCadenaNoVacia(datos.carpetaPlantillaId);
 }
 
 function _actaValidarContexto(contexto) {
@@ -170,14 +210,10 @@ function _actaConstruirNombre(correlativo) {
   return 'ACTA-' + String(correlativo).padStart(6, '0');
 }
 
-function _actaEscribirDocumento(documento, acta) {
+function _actaEscribirDocumento(documento, acta, logoInstitucional) {
   const cuerpo = documento.getBody();
-  const tituloPrincipal = cuerpo.appendParagraph('ACTA DE REUNIÓN');
-  tituloPrincipal.editAsText().setBold(true);
-  tituloPrincipal.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
-  const tituloActa = cuerpo.appendParagraph(acta.titulo);
-  tituloActa.editAsText().setBold(true);
-  tituloActa.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+  _actaConfigurarPagina(cuerpo);
+  _actaAgregarCabecera(cuerpo, acta.fechaReunion, logoInstitucional);
 
   _actaAgregarSeccion(cuerpo, 'Datos Generales');
   cuerpo.appendTable([
@@ -220,6 +256,174 @@ function _actaEscribirDocumento(documento, acta) {
 
   _actaAgregarSeccion(cuerpo, 'Observaciones');
   cuerpo.appendParagraph(acta.observaciones);
+}
+
+function _actaObtenerLogoInstitucional(carpetaPlantillaId, contexto) {
+  try {
+    const carpetaPlantilla = DriveApp.getFolderById(carpetaPlantillaId);
+    const archivos = carpetaPlantilla.getFilesByName(ACTA_LOGO_NOMBRE_ARCHIVO);
+
+    if (!archivos.hasNext()) {
+      _actaRegistrarAdvertenciaLogo(contexto, 'no_encontrado');
+      return null;
+    }
+
+    const archivoLogo = archivos.next();
+    if (archivos.hasNext() || archivoLogo.isTrashed()) {
+      _actaRegistrarAdvertenciaLogo(contexto, 'ambiguo_o_eliminado');
+      return null;
+    }
+
+    const logo = archivoLogo.getBlob();
+    if (!logo || logo.getBytes().length === 0 ||
+      logo.getContentType().indexOf('image/') !== 0) {
+      _actaRegistrarAdvertenciaLogo(contexto, 'contenido_invalido');
+      return null;
+    }
+    return logo;
+  } catch (errorLogo) {
+    _actaRegistrarAdvertenciaLogo(contexto, 'carpeta_o_permisos');
+    return null;
+  }
+}
+
+function _actaRegistrarAdvertenciaLogo(contexto, causa) {
+  try {
+    registrarAdvertencia(
+      'Acta',
+      'generarDocumentoActa',
+      'No fue posible incorporar el logotipo institucional; ' +
+        'el acta continuará sin la imagen.',
+      {
+        idEjecucion: contexto.idEjecucion,
+        datos: { etapa: 'cabecera', resultado: 'logo_omitido', causa: causa }
+      }
+    );
+  } catch (errorRegistro) {
+    // La ausencia de auditoría no impide generar el acta.
+  }
+}
+
+function _actaConfigurarPagina(cuerpo) {
+  cuerpo.setPageWidth(ACTA_FORMATO.ANCHO_PAGINA);
+  cuerpo.setPageHeight(ACTA_FORMATO.ALTO_PAGINA);
+  cuerpo.setMarginTop(ACTA_FORMATO.MARGEN_SUPERIOR);
+  cuerpo.setMarginRight(ACTA_FORMATO.MARGEN_DERECHO);
+  cuerpo.setMarginBottom(ACTA_FORMATO.MARGEN_INFERIOR);
+  cuerpo.setMarginLeft(ACTA_FORMATO.MARGEN_IZQUIERDO);
+}
+
+function _actaAgregarCabecera(cuerpo, fechaReunion, logoInstitucional) {
+  const tabla = cuerpo.appendTable([
+    ['', ''],
+    ['Proyecto:', ACTA_CABECERA.PROYECTO],
+    ['Director de Proyecto:', ACTA_DIRECTOR_PROYECTO],
+    ['', '']
+  ]);
+  tabla.setBorderWidth(0.75);
+
+  const celdaLogo = tabla.getRow(0).getCell(0);
+  const celdaCabecera = tabla.getRow(0).getCell(1);
+  _actaConfigurarAnchosFila(
+    tabla.getRow(0),
+    ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA,
+    ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO
+  );
+  _actaAgregarLogo(celdaLogo, logoInstitucional);
+  _actaAgregarControlesCabecera(
+    celdaCabecera,
+    _actaFormatearFechaCabecera(fechaReunion)
+  );
+
+  _actaConfigurarFilaInstitucional(
+    tabla.getRow(1),
+    'Proyecto:',
+    ACTA_CABECERA.PROYECTO
+  );
+  _actaConfigurarFilaInstitucional(
+    tabla.getRow(2),
+    'Director de Proyecto:',
+    ACTA_DIRECTOR_PROYECTO
+  );
+  const filaSeparadora = tabla.getRow(3);
+  filaSeparadora.getCell(1).merge();
+  filaSeparadora.setMinimumHeight(15);
+}
+
+function _actaConfigurarAnchosFila(fila, anchoEtiqueta, anchoContenido) {
+  fila.getCell(0).setWidth(anchoEtiqueta);
+  fila.getCell(1).setWidth(anchoContenido);
+}
+
+function _actaAgregarLogo(celda, logoInstitucional) {
+  celda.setVerticalAlignment(DocumentApp.VerticalAlignment.CENTER);
+  const parrafo = celda.getChild(0).asParagraph();
+  parrafo.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+  parrafo.setSpacingBefore(0);
+  parrafo.setSpacingAfter(0);
+  if (logoInstitucional === null) return;
+  const imagen = parrafo.appendInlineImage(logoInstitucional);
+  imagen.setWidth(ACTA_FORMATO.ANCHO_LOGO);
+  imagen.setHeight(ACTA_FORMATO.ALTO_LOGO);
+}
+
+function _actaAgregarControlesCabecera(celda, fechaCabecera) {
+  celda.clear();
+  const tabla = celda.appendTable([
+    [ACTA_CABECERA.TITULO, 'Código:', ACTA_CABECERA.CODIGO],
+    ['', 'Versión:', ACTA_CABECERA.VERSION],
+    [ACTA_CABECERA.METODOLOGIA, 'Fecha:', fechaCabecera]
+  ]);
+  tabla.setBorderWidth(0.75);
+
+  for (let indice = 0; indice < tabla.getNumRows(); indice += 1) {
+    const fila = tabla.getRow(indice);
+    fila.getCell(0).setWidth(ACTA_FORMATO.ANCHO_COLUMNA_TITULO);
+    fila.getCell(1).setWidth(ACTA_FORMATO.ANCHO_COLUMNA_CONTROL);
+    fila.getCell(2).setWidth(ACTA_FORMATO.ANCHO_COLUMNA_VALOR);
+    _actaFormatearCelda(fila.getCell(1), true, 9,
+      DocumentApp.HorizontalAlignment.LEFT);
+    _actaFormatearCelda(fila.getCell(2), indice !== 2, 9,
+      DocumentApp.HorizontalAlignment.CENTER);
+  }
+
+  _actaFormatearCelda(tabla.getRow(0).getCell(0), true, 16,
+    DocumentApp.HorizontalAlignment.CENTER);
+  _actaFormatearCelda(tabla.getRow(1).getCell(0), false, 9,
+    DocumentApp.HorizontalAlignment.CENTER);
+  _actaFormatearCelda(tabla.getRow(2).getCell(0), true, 9,
+    DocumentApp.HorizontalAlignment.LEFT);
+}
+
+function _actaConfigurarFilaInstitucional(fila, etiqueta, valor) {
+  _actaConfigurarAnchosFila(
+    fila,
+    ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA,
+    ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO
+  );
+  fila.getCell(0).setText(etiqueta);
+  fila.getCell(1).setText(valor);
+  _actaFormatearCelda(fila.getCell(0), true, 9,
+    DocumentApp.HorizontalAlignment.LEFT);
+  _actaFormatearCelda(fila.getCell(1), true, 9,
+    DocumentApp.HorizontalAlignment.LEFT);
+}
+
+function _actaFormatearCelda(celda, negrita, tamano, alineacion) {
+  celda.setVerticalAlignment(DocumentApp.VerticalAlignment.CENTER);
+  const parrafo = celda.getChild(0).asParagraph();
+  parrafo.setAlignment(alineacion);
+  parrafo.setSpacingBefore(0);
+  parrafo.setSpacingAfter(0);
+  const texto = parrafo.editAsText();
+  if (texto.getText().length === 0) return;
+  texto.setFontFamily('Arial');
+  texto.setFontSize(tamano);
+  texto.setBold(negrita);
+}
+
+function _actaFormatearFechaCabecera(fechaReunion) {
+  return fechaReunion.replace(/\//g, '.');
 }
 
 function _actaAgregarSeccion(cuerpo, titulo) {
