@@ -141,6 +141,15 @@ No almacenes entregables generados dentro del árbol versionado. Consulta `Docum
 ## Documentación
 
 - Mantén la documentación en español técnico, con redacción clara e institucional.
+- Antes de modificar cualquier archivo, lee completamente `docs/CODEX_BITACORA.md`.
+- Después de cada modificación funcional o técnica, agrega una nueva entrada al
+  final de `docs/CODEX_BITACORA.md` antes de concluir la tarea.
+- Conserva en la bitácora la solicitud, la respuesta, los mensajes de progreso
+  relevantes, los archivos, las pruebas y los pendientes, redactando cualquier
+  secreto o dato sensible.
+- Nunca elimines, reemplaces ni reorganices entradas anteriores de la bitácora.
+- Incluye la bitácora actualizada en cada commit autorizado para mantener su
+  respaldo automático en Git.
 - Actualiza la documentación cuando un cambio altere la arquitectura, el flujo, los riesgos o la estructura del proyecto.
 - Registra las decisiones relevantes en `Documentacion/Decisiones_Arquitectonicas.md`.
 - Registra los requisitos no definidos como pendientes; no los presentes como decisiones confirmadas.

@@ -240,3 +240,76 @@ No rompe compatibilidad.
 ## Pendientes
 
 - Continuar agregando nuevas solicitudes y respuestas al final de la bitácora.
+
+# Cambio 0005
+Fecha: 2026-07-31
+Autor: Codex
+
+## Solicitud del usuario
+
+> `docs/CODEX_BITACORA.md` pertenece al proyecto, sirve como referencia y debe
+> mantenerse guardado en Git como respaldo ante una eventual pérdida de la
+> máquina de trabajo.
+
+## Respuesta de Codex
+
+Se confirma que la bitácora es documentación oficial del proyecto y debe
+incluirse actualizada en cada commit autorizado. Se incorpora esta obligación
+en `AGENTS.md` para que permanezca vigente al clonar el repositorio o iniciar
+una nueva sesión de Codex. La bitácora se publica en Git, pero no mediante
+`clasp push`, porque no es código ejecutable de Google Apps Script.
+
+## Objetivo
+
+Garantizar que el historial técnico y conversacional tenga respaldo remoto y
+que cualquier agente futuro conozca automáticamente la obligación de leerlo y
+mantenerlo actualizado.
+
+## Archivos modificados
+
+- AGENTS.md
+- docs/CODEX_BITACORA.md
+
+## Cambios realizados
+
+Se añadió a `AGENTS.md` la obligación de:
+
+- leer completamente la bitácora antes de modificar archivos;
+- agregar una nueva entrada después de cada cambio funcional o técnico;
+- conservar solicitudes, respuestas, progreso relevante, pruebas y pendientes;
+- redactar secretos y datos sensibles;
+- no eliminar ni reorganizar entradas anteriores;
+- incluir la bitácora actualizada en cada commit autorizado.
+
+También se registró formalmente que `docs/CODEX_BITACORA.md` forma parte de la
+documentación oficial versionada del proyecto y constituye el respaldo para la
+continuidad desde otros equipos.
+
+## Motivo
+
+Evitar que la regla dependa únicamente del historial de esta conversación y
+asegurar que sea descubierta al abrir o clonar el repositorio en el futuro.
+
+## Impacto
+
+Afecta el procedimiento de trabajo y versionado de todas las tareas futuras.
+No cambia la lógica funcional de Apps Script ni las integraciones externas.
+
+## Compatibilidad
+
+No rompe compatibilidad. Agrega reglas documentales y de trazabilidad.
+
+## Pruebas realizadas
+
+- Lectura completa de la bitácora antes de modificar archivos.
+- Verificación de numeración correlativa hasta `Cambio 0005`.
+- Verificación de la nueva sección operativa en `AGENTS.md`.
+- Verificación de UTF-8 sin BOM.
+- Verificación de `git diff --cached --check`.
+- Confirmación de staging limitado a `AGENTS.md` y
+  `docs/CODEX_BITACORA.md`.
+- Verificación posterior de sincronización entre `main` y `origin/main`.
+
+## Pendientes
+
+- Aplicar estas reglas en todas las solicitudes posteriores.
