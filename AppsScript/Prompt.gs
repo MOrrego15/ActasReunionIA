@@ -71,6 +71,12 @@ function construirPromptActa(contenidoFuente, contexto) {
         'a un correo electrónico visible en el contenido fuente.',
       'El correo asociado es el requisito obligatorio para confirmar que la ' +
         'persona ingresó a la reunión.',
+      'El registro de ingreso con nombre y correo es suficiente: incluye a ' +
+        'la persona aunque no haya hablado ni aparezca en el desarrollo.',
+      'Incluye también organizadores, anfitriones y convocantes cuando su ' +
+        'nombre tenga un correo asociado en el contenido fuente.',
+      'Revisa todas las listas de acceso o asistencia e incluye exactamente ' +
+        'una vez cada nombre que tenga correo asociado.',
       'Si una persona no tiene correo asociado, no la incluyas en ' +
         'participantes, aunque su nombre aparezca en las notas.',
       'Usa como fuente de asistencia las listas o secciones de participantes ' +
@@ -79,6 +85,8 @@ function construirPromptActa(contenidoFuente, contexto) {
         'en temas, narraciones, acuerdos, tareas o referencias a terceros.',
       'No conviertas automáticamente responsables, destinatarios o personas ' +
         'citadas en asistentes.',
+      'No omitas a una persona con correo por no tener intervenciones, tareas ' +
+        'o menciones dentro del contenido narrativo.',
       'Si existe duda sobre la asistencia de una persona, omítela de ' +
         'participantes.',
       'Usa el correo solo como evidencia; no lo copies en nombre ni cargo y ' +

@@ -365,9 +365,10 @@ HTML, Markdown, cercos de código ni JSON incrustado en valores textuales.
 La lista `participantes` contendrá únicamente personas cuyo nombre esté
 asociado a un correo electrónico visible en las notas. El correo se utilizará
 solo como evidencia de ingreso a la reunión y no formará parte del contrato ni
-se almacenará en el catálogo. Una persona sin correo asociado se omitirá aunque
-su nombre aparezca en temas, acuerdos, tareas, responsabilidades o referencias
-a terceros.
+se almacenará en el catálogo. El registro de nombre y correo será suficiente
+aunque la persona no intervenga; esta regla incluye organizadores, anfitriones
+y convocantes. Una persona sin correo asociado se omitirá aunque su nombre
+aparezca en temas, acuerdos, tareas, responsabilidades o referencias a terceros.
 
 ### 11.2 DatosEmisionActa y documento generado
 
