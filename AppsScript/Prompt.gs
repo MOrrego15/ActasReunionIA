@@ -67,7 +67,17 @@ function construirPromptActa(contenidoFuente, contexto) {
       'Usa cadena vacía para textos opcionales ausentes.',
       'Usa arreglos vacíos para listas ausentes.',
       'No incluyas elementos vacíos o incompletos en las listas.',
-      'Cada participante requiere nombre no vacío.',
+      'Incluye en participantes únicamente asistentes con evidencia explícita ' +
+        'de asistencia en el contenido fuente.',
+      'Prioriza listas o secciones identificadas como asistentes, ' +
+        'participantes o presentes.',
+      'No clasifiques como participante a una persona mencionada únicamente ' +
+        'en temas, narraciones, acuerdos, tareas o referencias a terceros.',
+      'No conviertas automáticamente responsables, destinatarios o personas ' +
+        'citadas en asistentes.',
+      'Si existe duda sobre la asistencia de una persona, omítela de ' +
+        'participantes.',
+      'Cada participante confirmado requiere nombre no vacío.',
       'Cada elemento de agenda requiere texto no vacío.',
       'Cada acuerdo y tarea requiere descripcion no vacía.',
       'Numera acuerdos y tareas secuencialmente desde 1.',
