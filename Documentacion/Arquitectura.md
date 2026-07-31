@@ -71,6 +71,9 @@ ValidadorRespuesta.gs
     |
     | RespuestaActaValidada
     v
+Personas.gs ------> ParticipanteActa[]
+    |
+    v
 Acta.gs <--------- DatosEmisionActa
     |
     | Documento Google Docs con formato institucional
@@ -97,6 +100,7 @@ volver a validar el contenido.
 | Constructor de prompt | Combinar instrucciones, plantilla y notas sin realizar la llamada externa. |
 | Cliente OpenAI | Encapsular autenticación, solicitud, tiempo de espera y tratamiento de respuestas de la API. |
 | Validador de respuesta | Verificar presencia, formato y consistencia mínima de la respuesta antes de generar archivos. |
+| Catálogo de personas (`Personas.gs`) | Resolver nombres documentales, cargos y unidades desde la hoja `persona`; registrar con Unidad `UCP` los participantes aún no catalogados. |
 | Generador de actas (`Acta.gs`) | Recibir `RespuestaActaValidada` y `DatosEmisionActa`, generar el documento Google Docs y aplicar el formato institucional. No reinterpreta ni vuelve a validar la respuesta externa. |
 | Exportador Word | Exportar el documento generado al formato `.docx`. |
 | Organizador mensual | Resolver o crear la carpeta mensual y aplicar la nomenclatura del entregable. |
@@ -178,6 +182,7 @@ generará, incrementará, reservará ni consultará directamente a
 generarDocumentoActa(
   respuestaActaValidada,
   datosEmisionActa,
+  participantesActa,
   contexto
 )
 ```
@@ -186,6 +191,7 @@ Responsabilidades de `Acta.gs`:
 
 - recibir `RespuestaActaValidada`;
 - recibir `DatosEmisionActa`;
+- recibir los participantes resueltos por `Personas.gs`;
 - generar el documento Google Docs;
 - aplicar el formato institucional.
 
@@ -281,12 +287,14 @@ El flujo aprobado para esta parte del proceso será:
 1. `OpenAI.gs` devuelve la respuesta técnica.
 2. `ValidadorRespuesta.gs` valida el contrato externo sin corregirlo ni
    transformarlo.
-3. `Correlativo.gs` proporciona el correlativo mediante la coordinación de
+3. `Personas.gs` resuelve los participantes desde la hoja `persona` y registra
+   los nombres aún no catalogados.
+4. `Correlativo.gs` proporciona el correlativo mediante la coordinación de
    `Main.gs`.
-4. `Main.gs` entrega `RespuestaActaValidada`, `DatosEmisionActa` y el contexto
-   técnico a `Acta.gs`.
-5. `Acta.gs` genera el documento Google Docs y aplica el formato institucional.
-6. `Word.gs` exporta y verifica el archivo `.docx`.
+5. `Main.gs` entrega `RespuestaActaValidada`, `DatosEmisionActa`, los
+   participantes resueltos y el contexto técnico a `Acta.gs`.
+6. `Acta.gs` genera el documento Google Docs y aplica el formato institucional.
+7. `Word.gs` exporta y verifica el archivo `.docx`.
 
 ### 10.3 Impacto sobre las fases restantes
 
@@ -295,7 +303,8 @@ El flujo aprobado para esta parte del proceso será:
 - La definición de `RespuestaActaValidada` deberá completarse durante el diseño
   de `ValidadorRespuesta.gs`, de acuerdo con la plantilla institucional.
 - El diseño de `Acta.gs` deberá adoptar la firma
-  `generarDocumentoActa(respuestaActaValidada, datosEmisionActa, contexto)`.
+  `generarDocumentoActa(respuestaActaValidada, datosEmisionActa,
+  participantesActa, contexto)`.
 - Las pruebas de `Acta.gs` deberán comprobar que el contenido validado se
   conserva sin reinterpretación y que el correlativo procede exclusivamente de
   `DatosEmisionActa`.
@@ -312,7 +321,9 @@ La secuencia aprobada para transformar contenido fuente en un documento es:
 construirPromptActa(contenidoFuente, contexto)
   -> solicitarActaEstructurada(mensajes, contexto)
   -> validarRespuestaActa(respuestaTexto, contexto)
-  -> generarDocumentoActa(respuestaActaValidada, datosEmisionActa, contexto)
+  -> resolverParticipantesActa(repositorioProcesadosId, participantes, contexto)
+  -> generarDocumentoActa(respuestaActaValidada, datosEmisionActa,
+       participantesActa, contexto)
 ```
 
 `Prompt.gs` construye mensajes sin invocar servicios; `OpenAI.gs` realiza la
@@ -403,6 +414,7 @@ Config.gs
   -> Prompt.gs
   -> OpenAI.gs
   -> ValidadorRespuesta.gs
+  -> Personas.gs: resolverParticipantesActa
   -> Correlativo.gs
   -> Procesados.gs: registrarInicioProcesamiento
   -> Acta.gs

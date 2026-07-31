@@ -15,6 +15,7 @@ const MAIN_CODIGOS_ERROR = Object.freeze({
   PROMPT_ERROR: 'MAIN_PROMPT_ERROR',
   OPENAI_ERROR: 'MAIN_OPENAI_ERROR',
   VALIDACION_ERROR: 'MAIN_VALIDACION_ERROR',
+  PERSONAS_ERROR: 'MAIN_PERSONAS_ERROR',
   CORRELATIVO_ERROR: 'MAIN_CORRELATIVO_ERROR',
   ACTA_ERROR: 'MAIN_ACTA_ERROR',
   WORD_ERROR: 'MAIN_WORD_ERROR',
@@ -39,6 +40,7 @@ const MAIN_ETAPAS = Object.freeze({
   PROMPT: 'PROMPT',
   OPENAI: 'OPENAI',
   VALIDACION: 'VALIDACION',
+  PERSONAS: 'PERSONAS',
   CORRELATIVO: 'CORRELATIVO',
   ACTA: 'ACTA',
   WORD: 'WORD',
@@ -284,6 +286,19 @@ function _mainProcesarDocumento(documento, posicion, configuracion, contexto) {
         'dd/MM/yyyy'
       );
 
+    const personas = resolverParticipantesActa(
+      configuracion.procesados.repositorioId,
+      validacion.datos.respuestaActaValidada.participantes,
+      contexto
+    );
+    if (!_mainResultadoExitoso(personas) || !personas.datos ||
+      !Array.isArray(personas.datos.participantes)) {
+      return _mainResultadoDesdeModulo(
+        posicion, MAIN_ETAPAS.PERSONAS, correlativo, personas,
+        MAIN_CODIGOS_ERROR.PERSONAS_ERROR
+      );
+    }
+
     const reserva = reservarSiguienteCorrelativo(contexto);
     if (!_mainResultadoExitoso(reserva) || !reserva.datos ||
       !Number.isSafeInteger(reserva.datos.correlativo) ||
@@ -319,6 +334,7 @@ function _mainProcesarDocumento(documento, posicion, configuracion, contexto) {
         carpetaDestinoId: configuracion.actas.carpetaRaizId,
         carpetaRecursosId: configuracion.recursos.carpetaOtrosId
       },
+      personas.datos.participantes,
       contexto
     );
     if (!_mainResultadoExitoso(acta) || !acta.datos ||

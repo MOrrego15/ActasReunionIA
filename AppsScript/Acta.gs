@@ -30,6 +30,9 @@ const ACTA_FORMATO = Object.freeze({
   ANCHO_COLUMNA_TITULO: 190,
   ANCHO_COLUMNA_CONTROL: 56,
   ANCHO_COLUMNA_VALOR: 76,
+  ANCHO_ASISTENTE_NOMBRE: 165,
+  ANCHO_ASISTENTE_CARGO: 100,
+  ANCHO_ASISTENTE_UNIDAD: 57,
   ANCHO_LOGO: 100,
   ALTO_LOGO: 32
 });
@@ -68,10 +71,17 @@ const ACTA_CODIGOS_ERROR = Object.freeze({
  * @param {{correlativo: number, carpetaDestinoId: string,
  *     carpetaRecursosId: string}} datosEmisionActa
  *     Datos técnicos de emisión.
+ * @param {{nombre: string, cargo: string, unidad: string}[]} participantesActa
+ *     Participantes resueltos desde el catálogo institucional.
  * @param {{idEjecucion: string}} contexto Contexto técnico obligatorio.
  * @returns {{exito: boolean, datos: ({idDocumentoGoogle: string}|null), error: (Object|null)}}
  */
-function generarDocumentoActa(respuestaActaValidada, datosEmisionActa, contexto) {
+function generarDocumentoActa(
+  respuestaActaValidada,
+  datosEmisionActa,
+  participantesActa,
+  contexto
+) {
   if (!_actaValidarRespuesta(respuestaActaValidada)) {
     return _actaFinalizarError(ACTA_CODIGOS_ERROR.DATOS_INVALIDOS,
       'Los datos estructurados del acta no son válidos.', undefined,
@@ -80,6 +90,11 @@ function generarDocumentoActa(respuestaActaValidada, datosEmisionActa, contexto)
   if (!_actaValidarEmision(datosEmisionActa)) {
     return _actaFinalizarError(ACTA_CODIGOS_ERROR.CONFIGURACION_INVALIDA,
       'Los datos de emisión del acta no son válidos.', undefined,
+      'validacion');
+  }
+  if (!_actaValidarParticipantes(participantesActa)) {
+    return _actaFinalizarError(ACTA_CODIGOS_ERROR.DATOS_INVALIDOS,
+      'Los participantes resueltos del acta no son válidos.', undefined,
       'validacion');
   }
   if (!_actaValidarContexto(contexto)) {
@@ -120,7 +135,8 @@ function generarDocumentoActa(respuestaActaValidada, datosEmisionActa, contexto)
       documento,
       respuestaActaValidada,
       logoInstitucional,
-      datosEmisionActa.correlativo
+      datosEmisionActa.correlativo,
+      participantesActa
     );
     documento.saveAndClose();
   } catch (errorEscritura) {
@@ -196,6 +212,14 @@ function _actaValidarEmision(datos) {
     esCadenaNoVacia(datos.carpetaRecursosId);
 }
 
+function _actaValidarParticipantes(participantes) {
+  return Array.isArray(participantes) && participantes.every(function (item) {
+    return _actaClavesExactas(item, ['nombre','cargo','unidad']) &&
+      esCadenaNoVacia(item.nombre) && typeof item.cargo === 'string' &&
+      typeof item.unidad === 'string';
+  });
+}
+
 function _actaValidarContexto(contexto) {
   return _actaClavesExactas(contexto, ['idEjecucion']) &&
     esCadenaNoVacia(contexto.idEjecucion);
@@ -219,7 +243,8 @@ function _actaEscribirDocumento(
   documento,
   acta,
   logoInstitucional,
-  correlativo
+  correlativo,
+  participantesActa
 ) {
   const cuerpo = documento.getBody();
   _actaConfigurarPagina(cuerpo);
@@ -227,12 +252,7 @@ function _actaEscribirDocumento(
 
   _actaAgregarDatosReunion(cuerpo, correlativo, acta.fechaReunion);
 
-  _actaAgregarSeccion(cuerpo, 'Participantes');
-  const participantes = [['Nombre', 'Cargo']];
-  acta.participantes.forEach(function (item) {
-    participantes.push([item.nombre, item.cargo]);
-  });
-  cuerpo.appendTable(participantes);
+  _actaAgregarAsistentes(cuerpo, participantesActa);
 
   _actaAgregarSeccion(cuerpo, 'Agenda');
   acta.agenda.forEach(function (item) {
@@ -489,6 +509,59 @@ function _actaConstruirNumeroReunion(correlativo, fechaFormateada) {
   }
   const anio = coincidencia[1] || coincidencia[2];
   return String(correlativo) + '-' + anio + '-' + ACTA_REUNION.CODIGO;
+}
+
+function _actaAgregarAsistentes(cuerpo, participantes) {
+  const tablaExterior = cuerpo.appendTable([['Asistentes', '']]);
+  tablaExterior.setBorderWidth(0.75);
+  const celdaTitulo = tablaExterior.getRow(0).getCell(0);
+  const celdaContenido = tablaExterior.getRow(0).getCell(1);
+  celdaTitulo.setWidth(ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA);
+  celdaContenido.setWidth(ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO);
+  celdaTitulo.setBackgroundColor('#d9d9d9');
+  celdaTitulo.setVerticalAlignment(DocumentApp.VerticalAlignment.CENTER);
+  _actaFormatearCelda(
+    celdaTitulo,
+    true,
+    10,
+    DocumentApp.HorizontalAlignment.LEFT
+  );
+
+  celdaContenido.clear();
+  celdaContenido.setPaddingTop(0);
+  celdaContenido.setPaddingBottom(0);
+  celdaContenido.setPaddingLeft(0);
+  celdaContenido.setPaddingRight(0);
+  const filas = [['Nombres y apellidos', 'Cargo', 'Unidad']];
+  participantes.forEach(function (participante) {
+    filas.push([
+      participante.nombre,
+      participante.cargo,
+      participante.unidad
+    ]);
+  });
+  const tablaParticipantes = celdaContenido.appendTable(filas);
+  tablaParticipantes.setBorderWidth(0.75);
+  _actaCompactarCeldaConTabla(celdaContenido, tablaParticipantes);
+
+  for (let indice = 0;
+    indice < tablaParticipantes.getNumRows();
+    indice += 1) {
+    const fila = tablaParticipantes.getRow(indice);
+    fila.getCell(0).setWidth(ACTA_FORMATO.ANCHO_ASISTENTE_NOMBRE);
+    fila.getCell(1).setWidth(ACTA_FORMATO.ANCHO_ASISTENTE_CARGO);
+    fila.getCell(2).setWidth(ACTA_FORMATO.ANCHO_ASISTENTE_UNIDAD);
+    for (let columna = 0; columna < 3; columna += 1) {
+      const celda = fila.getCell(columna);
+      if (indice === 0) celda.setBackgroundColor('#d9d9d9');
+      _actaFormatearCelda(
+        celda,
+        indice === 0,
+        9,
+        DocumentApp.HorizontalAlignment.LEFT
+      );
+    }
+  }
 }
 
 function _actaAgregarSeccion(cuerpo, titulo) {
