@@ -317,8 +317,7 @@ function _actaAgregarCabecera(cuerpo, fechaReunion, logoInstitucional) {
   const tabla = cuerpo.appendTable([
     ['', ''],
     ['Proyecto:', ACTA_CABECERA.PROYECTO],
-    ['Director de Proyecto:', ACTA_DIRECTOR_PROYECTO],
-    ['', '']
+    ['Director de Proyecto:', ACTA_DIRECTOR_PROYECTO]
   ]);
   tabla.setBorderWidth(0.75);
 
@@ -345,9 +344,6 @@ function _actaAgregarCabecera(cuerpo, fechaReunion, logoInstitucional) {
     'Director de Proyecto:',
     ACTA_DIRECTOR_PROYECTO
   );
-  const filaSeparadora = tabla.getRow(3);
-  filaSeparadora.getCell(1).merge();
-  filaSeparadora.setMinimumHeight(15);
 }
 
 function _actaConfigurarAnchosFila(fila, anchoEtiqueta, anchoContenido) {
