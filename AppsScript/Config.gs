@@ -50,9 +50,15 @@ function _configConstruir(propiedadesScript) {
     propiedadesInvalidas,
     false
   );
-  const identificadorCarpetaPlantilla = _configLeerObligatoria(
+  const identificadorPlantilla = _configLeerObligatoria(
     propiedadesScript,
     'PLANTILLA_ACTA_ID',
+    propiedadesInvalidas,
+    false
+  );
+  const identificadorCarpetaOtros = _configLeerObligatoria(
+    propiedadesScript,
+    'CARPETA_OTRO',
     propiedadesInvalidas,
     false
   );
@@ -93,7 +99,10 @@ function _configConstruir(propiedadesScript) {
       carpetaNotasId: identificadorCarpetaNotas
     }),
     plantilla: Object.freeze({
-      carpetaId: identificadorCarpetaPlantilla
+      documentoId: identificadorPlantilla
+    }),
+    recursos: Object.freeze({
+      carpetaOtrosId: identificadorCarpetaOtros
     }),
     actas: Object.freeze({
       carpetaRaizId: identificadorCarpetaRaizActas

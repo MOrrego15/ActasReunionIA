@@ -62,7 +62,7 @@ const ACTA_CODIGOS_ERROR = Object.freeze({
  * Genera, ubica y verifica un Google Docs de acta.
  * @param {RespuestaActaValidada} respuestaActaValidada Datos ya validados.
  * @param {{correlativo: number, carpetaDestinoId: string,
- *     carpetaPlantillaId: string}} datosEmisionActa
+ *     carpetaRecursosId: string}} datosEmisionActa
  *     Datos técnicos de emisión.
  * @param {{idEjecucion: string}} contexto Contexto técnico obligatorio.
  * @returns {{exito: boolean, datos: ({idDocumentoGoogle: string}|null), error: (Object|null)}}
@@ -94,7 +94,7 @@ function generarDocumentoActa(respuestaActaValidada, datosEmisionActa, contexto)
   }
 
   const logoInstitucional = _actaObtenerLogoInstitucional(
-    datosEmisionActa.carpetaPlantillaId,
+    datosEmisionActa.carpetaRecursosId,
     contexto
   );
 
@@ -185,10 +185,10 @@ function _actaValidarRespuesta(acta) {
 
 function _actaValidarEmision(datos) {
   return _actaClavesExactas(datos,
-    ['correlativo','carpetaDestinoId','carpetaPlantillaId']) &&
+    ['correlativo','carpetaDestinoId','carpetaRecursosId']) &&
     Number.isSafeInteger(datos.correlativo) && datos.correlativo > 0 &&
     datos.correlativo <= 999999 && esCadenaNoVacia(datos.carpetaDestinoId) &&
-    esCadenaNoVacia(datos.carpetaPlantillaId);
+    esCadenaNoVacia(datos.carpetaRecursosId);
 }
 
 function _actaValidarContexto(contexto) {
@@ -258,10 +258,10 @@ function _actaEscribirDocumento(documento, acta, logoInstitucional) {
   cuerpo.appendParagraph(acta.observaciones);
 }
 
-function _actaObtenerLogoInstitucional(carpetaPlantillaId, contexto) {
+function _actaObtenerLogoInstitucional(carpetaRecursosId, contexto) {
   try {
-    const carpetaPlantilla = DriveApp.getFolderById(carpetaPlantillaId);
-    const archivos = carpetaPlantilla.getFilesByName(ACTA_LOGO_NOMBRE_ARCHIVO);
+    const carpetaRecursos = DriveApp.getFolderById(carpetaRecursosId);
+    const archivos = carpetaRecursos.getFilesByName(ACTA_LOGO_NOMBRE_ARCHIVO);
 
     if (!archivos.hasNext()) {
       _actaRegistrarAdvertenciaLogo(contexto, 'no_encontrado');
@@ -365,12 +365,18 @@ function _actaAgregarLogo(celda, logoInstitucional) {
 
 function _actaAgregarControlesCabecera(celda, fechaCabecera) {
   celda.clear();
+  celda.setPaddingTop(0);
+  celda.setPaddingBottom(0);
+  celda.setPaddingLeft(0);
+  celda.setPaddingRight(0);
+  celda.setVerticalAlignment(DocumentApp.VerticalAlignment.TOP);
   const tabla = celda.appendTable([
     [ACTA_CABECERA.TITULO, 'Código:', ACTA_CABECERA.CODIGO],
     ['', 'Versión:', ACTA_CABECERA.VERSION],
     [ACTA_CABECERA.METODOLOGIA, 'Fecha:', fechaCabecera]
   ]);
   tabla.setBorderWidth(0.75);
+  _actaCompactarCeldaConTabla(celda, tabla);
 
   for (let indice = 0; indice < tabla.getNumRows(); indice += 1) {
     const fila = tabla.getRow(indice);
@@ -389,6 +395,25 @@ function _actaAgregarControlesCabecera(celda, fechaCabecera) {
     DocumentApp.HorizontalAlignment.CENTER);
   _actaFormatearCelda(tabla.getRow(2).getCell(0), true, 9,
     DocumentApp.HorizontalAlignment.LEFT);
+}
+
+function _actaCompactarCeldaConTabla(celda, tabla) {
+  for (let indice = celda.getNumChildren() - 1; indice >= 0; indice -= 1) {
+    const elemento = celda.getChild(indice);
+    if (elemento === tabla ||
+      elemento.getType() !== DocumentApp.ElementType.PARAGRAPH) {
+      continue;
+    }
+    const parrafo = elemento.asParagraph();
+    if (parrafo.getText().length !== 0) continue;
+    try {
+      celda.removeChild(elemento);
+    } catch (errorCompactacion) {
+      parrafo.setSpacingBefore(0);
+      parrafo.setSpacingAfter(0);
+      parrafo.setLineSpacing(0.06);
+    }
+  }
 }
 
 function _actaConfigurarFilaInstitucional(fila, etiqueta, valor) {

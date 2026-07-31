@@ -317,7 +317,7 @@ function _mainProcesarDocumento(documento, posicion, configuracion, contexto) {
       {
         correlativo: correlativo,
         carpetaDestinoId: configuracion.actas.carpetaRaizId,
-        carpetaPlantillaId: configuracion.plantilla.carpetaId
+        carpetaRecursosId: configuracion.recursos.carpetaOtrosId
       },
       contexto
     );
@@ -469,7 +469,9 @@ function _mainValidarConfiguracion(configuracion) {
       esObjetoPlano(configuracion.gemini) &&
       esCadenaNoVacia(configuracion.gemini.carpetaNotasId) &&
       esObjetoPlano(configuracion.plantilla) &&
-      esCadenaNoVacia(configuracion.plantilla.carpetaId) &&
+      esCadenaNoVacia(configuracion.plantilla.documentoId) &&
+      esObjetoPlano(configuracion.recursos) &&
+      esCadenaNoVacia(configuracion.recursos.carpetaOtrosId) &&
       esObjetoPlano(configuracion.actas) &&
       esCadenaNoVacia(configuracion.actas.carpetaRaizId) &&
       esObjetoPlano(configuracion.procesados) &&
