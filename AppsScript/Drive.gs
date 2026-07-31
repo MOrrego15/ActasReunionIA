@@ -387,6 +387,7 @@ function _driveListarDocumentosFuente(carpeta, operacion, contexto) {
 
   const resultado =
     _driveConstruirResultadoDocumentosExitoso(documentoMasReciente);
+
   _driveRegistrarResultadoDocumentos(
     operacion,
     resultado,

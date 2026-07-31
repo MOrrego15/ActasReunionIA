@@ -107,8 +107,8 @@ function solicitarActaEstructurada(mensajes, contexto) {
   const codigoHttpDiagnostico = respuestaHttp.getResponseCode();
   const cuerpoHttpDiagnostico = respuestaHttp.getContentText();
 
-  console.log('OPENAI_HTTP_STATUS=' + codigoHttpDiagnostico);
-  console.log('OPENAI_HTTP_BODY=' + cuerpoHttpDiagnostico);
+  console.log('OPENAI_HTTP_STATUS=' + respuestaHttp.getResponseCode());
+  // console.log('OPENAI_HTTP_BODY=' + cuerpoHttpDiagnostico);
 
   try {
     const estadoHttp = respuestaHttp.getResponseCode();

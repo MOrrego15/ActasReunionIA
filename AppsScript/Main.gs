@@ -269,6 +269,21 @@ function _mainProcesarDocumento(documento, posicion, configuracion, contexto) {
       );
     }
 
+    const fechaCreacionDocumento = new Date(documento.fechaCreacion);
+
+    if (isNaN(fechaCreacionDocumento.getTime())) {
+      throw new Error(
+        'La fecha de creación del documento fuente no es válida.'
+      );
+    }
+
+    validacion.datos.respuestaActaValidada.fechaReunion =
+      Utilities.formatDate(
+        fechaCreacionDocumento,
+        Session.getScriptTimeZone(),
+        'dd/MM/yyyy'
+      );
+
     const reserva = reservarSiguienteCorrelativo(contexto);
     if (!_mainResultadoExitoso(reserva) || !reserva.datos ||
       !Number.isSafeInteger(reserva.datos.correlativo) ||
