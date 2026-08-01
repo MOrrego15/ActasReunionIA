@@ -819,3 +819,287 @@ No rompe compatibilidad. Es un cambio documental y de continuidad.
 - Confirmar visualmente el resultado definitivo de la Etapa 3.
 - Continuar con las Etapas 4 a 8.
 - Mantener esta bitácora actualizada y respaldada en cada commit autorizado.
+
+# Cambio 0009
+Fecha: 2026-07-31
+Autor: Codex
+
+## Solicitud del usuario
+
+> Al revisar CODEX_BITACORA.md, se detectó que solo estaba documentado el
+> estado más reciente y no toda la información proporcionada en la conversación.
+
+## Respuesta de Codex
+
+Se confirmó la observación. Cambio 0008 contiene una reconstrucción técnica
+extensa, pero no conserva todas las solicitudes y respuestas anteriores en
+orden cronológico. Esta entrada agrega el inventario histórico recuperable.
+No se incluyen secretos, credenciales, correos ni IDs operativos.
+
+## Objetivo
+
+Completar la bitácora como registro portátil incorporando la secuencia de
+solicitudes, decisiones, implementaciones, validaciones, despliegues e
+incidencias ocurridas antes de establecer la bitácora obligatoria.
+
+## Archivos modificados
+
+- docs/CODEX_BITACORA.md
+
+## Cambios realizados
+
+### Historial cronológico recuperado
+
+#### 1. Repositorio y arquitectura inicial
+
+- Se clonó ActasReunionIA, se verificó la rama y se configuró la identidad Git.
+- Se ordenó trabajar únicamente en el repositorio, sin repositorios anidados,
+  credenciales, push no autorizado ni cambios ajenos a cada fase.
+- Se diseñaron y versionaron Arquitectura, Flujo de Procesamiento, Decisiones
+  Arquitectónicas, Riesgos Técnicos y Estructura del Proyecto.
+- Se creó AGENTS.md, previa propuesta y aprobación, con reglas de desarrollo,
+  Git, Google Apps Script, documentación, arquitectura física y versionado.
+- Se crearon las carpetas base faltantes y solo archivos .gitkeep vacíos.
+
+#### 2. Arquitectura modular de Apps Script
+
+- Se definieron Main, Config, Drive, Gemini, Procesados, Correlativo, Prompt,
+  OpenAI, ValidadorRespuesta, Acta, Word, Logger y Utils.
+- Main controla y orquesta el flujo sin reglas de negocio ni acceso directo a
+  servicios. ValidadorRespuesta solo valida e informa; Acta genera el documento.
+- Se crearon inicialmente solo encabezados documentales.
+- AppsScript se confirmó como raíz del proyecto y se creó appsscript.json con
+  America/Lima, V8 y STACKDRIVER.
+
+#### 3. Config, Logger y Utils
+
+- Config.gs se implementó con obtenerConfiguracion y Script Properties.
+- La zona horaria quedó solo en el manifiesto; reglas de nombres y carpetas
+  mensuales no se trataron como configuración.
+- OPENAI_API_KEY puede leerse en memoria, pero nunca registrarse o serializarse.
+- OPENAI_MODELO quedó opcional. Se usaron const, let y objetos inmutables.
+- Logger.gs se implementó con INFO, WARN y ERROR mediante Logger.log.
+- Sus tres APIs públicas devuelven booleanos, no propagan errores y sanitizan
+  secretos, IDs, contenido, prompts, respuestas y datos personales.
+- Utils.gs quedó limitado a cinco validadores puros: cadena no vacía, objeto
+  plano, número finito, booleano y fecha válida.
+
+#### 4. Drive, Correlativo y Procesados
+
+- Drive.gs se diseñó con resultados estructurados, códigos DRIVE_ y sin exponer
+  objetos nativos, iteradores, IDs ni metadatos sensibles.
+- Correlativo.gs reserva de forma atómica en Script Properties bajo ScriptLock.
+  La reserva es definitiva, admite huecos y no tiene rollback.
+- Para Procesados se compararon Script Properties, Spreadsheet y alternativas
+  ligeras; se aprobó una hoja dedicada como fuente de verdad.
+- Procesados.gs implementó consulta, reclamación, finalización y error con
+  idempotencia, validación de esquema, bloqueo, relectura y verificación.
+
+#### 5. Main, fuentes, Acta y flujo E2E
+
+- Las fases 2.10, 2.11 y 2.12, la integración E2E, la auditoría, el cierre
+  documental y la preparación Git llegaron mediante solicitudes extensas,
+  algunas adjuntas como archivos de texto.
+- Se rechazó una vertical que trasladaba a Gemini responsabilidades de Drive,
+  Prompt, OpenAI y validación. El usuario ordenó mantener la arquitectura.
+- GenracionActas.gs fue eliminado definitivamente del plan al no justificar una
+  transformación independiente. Acta consume la respuesta validada.
+- Se implementó, auditó y documentó el flujo E2E.
+- Se creó el commit base E2E y la etiqueta anotada v0.1.0-e2e; después se
+  publicaron rama y etiquetas.
+
+#### 6. Primera prueba real, OpenAI y sincronización
+
+- El usuario confirmó que no había API key compartida en la conversación.
+- Se revisó un DOCX producido por el sistema como referencia de salida.
+- Se corrigió Prompt.gs porque fechaReunion vacía causaba
+  VALIDADOR_CONTRATO_INVALIDO. La ausencia debe producir NO IDENTIFICADA.
+- ValidadorRespuesta.gs y su contrato se mantuvieron intactos.
+- Se configuró gpt-5-mini-2025-08-07, reasoning minimal y 2500 tokens máximos.
+- Se verificaron .clasp.json, la raíz AppsScript y el manifiesto.
+- Se estableció sincronizar primero desde Apps Script, preservar siempre
+  Inicializar.js, incorporar cambios autorizados y desplegar de forma segura.
+
+#### 7. Diagnósticos y diseño visual
+
+- Se diagnosticó ACTA_CARPETA_NO_ACCESIBLE y se revisó la propiedad de carpeta
+  sin exponer su ID.
+- El acta se dividió en ocho etapas: cabecera, datos de reunión, asistentes,
+  agenda, siglas y acrónimos, temas tratados, acuerdos y próxima reunión.
+
+#### 8. Etapa 1: cabecera
+
+- Se tomó como modelo visual un acta institucional suministrada por el usuario.
+- Título, código, versión, metodología y proyecto quedaron fijos; el director
+  quedó como variable técnica.
+- PLANTILLA_ACTA_ID identifica un documento, no la carpeta del logo.
+- CARPETA_OTRO identifica la carpeta donde se busca LogoMEF.jpg.
+- Si falta el logo, se registra WARN y el flujo continúa.
+- Se eliminaron una fila vacía y espacios excesivos.
+- El usuario declaró finalizada la Etapa 1.
+
+#### 9. Etapa 2: datos de reunión
+
+- Reunión usa correlativo-año-CEL002.
+- La fecha corresponde al acta y la hora fija es 09:00 am a 09:20 am.
+- Las etiquetas usan fondo plomo.
+- Un error de escritura se corrigió reemplazando un helper de estilo inexistente.
+- El usuario aprobó el resultado y cerró la Etapa 2.
+
+#### 10. Etapa 3: asistentes
+
+- La tabla usa la celda lateral Asistentes y las columnas Nombres y apellidos,
+  Cargo y Unidad.
+- El catálogo está en la hoja persona del repositorio de procesados, con
+  Nombre Participante, Nombre Documento, Cargo y Unidad.
+- Si no existe una persona, se muestra el nombre original, cargo vacío y UCP,
+  y se agrega una fila para completar después.
+- Una ejecución falló porque la hoja persona no estaba disponible; el usuario
+  corrigió su disponibilidad.
+- Se excluyeron nombres meramente mencionados. Nombre y correo en las notas son
+  evidencia de asistencia; el correo nunca se guarda, muestra ni registra.
+- Se incluyen organizadores y asistentes silenciosos con correo aunque no
+  intervengan. La validación visual final de esta etapa sigue pendiente.
+
+#### 11. Bitácora y progreso visible
+
+- El usuario exigió una bitácora acumulativa, versionada y apta para continuar
+  desde otra computadora.
+- Luego exigió conservar solicitudes, respuestas y mensajes de progreso.
+- AGENTS.md se actualizó para hacer obligatorias estas reglas.
+- Como la interfaz puede colapsar progreso, cada respuesta final debe repetir
+  un Registro de progreso cronológico y añadir después un resumen.
+- Cambio 0008 consolidó el estado técnico, pero resultó demasiado resumido.
+  Cambio 0009 agrega la cronología que faltaba.
+
+### Limitación de recuperación histórica
+
+La cronología se reconstruye desde la conversación disponible, Git, código y
+documentación. El texto literal completo de respuestas antiguas o solicitudes
+entregadas solo como adjuntos ya no está íntegramente disponible. No se inventa:
+se registra su propósito y resultado comprobable. En adelante cada solicitud y
+respuesta debe guardarse en el mismo turno.
+
+## Motivo
+
+El resumen técnico anterior permite retomar el desarrollo, pero no satisfacía
+plenamente la instrucción de conservar la historia de solicitudes y respuestas.
+
+## Impacto
+
+Solo mejora documentación y continuidad. No cambia Apps Script ni configuración.
+
+## Compatibilidad
+
+No rompe compatibilidad y no elimina ni modifica entradas anteriores.
+
+## Pruebas realizadas
+
+- Lectura completa de la bitácora antes de modificarla.
+- Confirmación de ocho entradas y 822 líneas previas.
+- Comparación con el historial conversacional disponible.
+- Verificación de incorporación al final.
+- Verificación de UTF-8 sin BOM, ausencia de secretos y git diff --check.
+
+## Pendientes
+
+- Validar con el usuario si esta granularidad satisface el respaldo requerido.
+- No versionar ni publicar hasta recibir autorización explícita.
+- Registrar cada nueva solicitud y respuesta en el mismo turno.
+
+# Cambio 0010
+Fecha: 2026-07-31
+Autor: Codex
+
+## Solicitud del usuario
+
+> Continuar la Etapa 3 con una función aislada que permita comprobar los
+> participantes antes de modificar el flujo. La primera prueba devolvió tres
+> participantes cuando se esperaban cuatro. Tras compartir una transcripción
+> de referencia, el usuario autorizó ajustar el criterio y desplegarlo.
+
+## Respuesta de Codex
+
+Se desplegó `probarExtraccionParticipantes()` como diagnóstico sin efectos
+persistentes. La revisión controlada de la transcripción confirmó cuatro
+etiquetas de hablante y evidenció que el criterio obligatorio de correo podía
+omitir a un asistente que sí intervino.
+
+Se modificó `Prompt.gs` para construir participantes como la unión deduplicada
+de dos evidencias: nombre con correo visible en listas de asistencia o etiqueta
+`Nombre: intervención` en la transcripción. Las menciones narrativas continúan
+excluidas. El ajuste fue desplegado y verificado en Apps Script.
+
+## Registro de progreso
+
+1. Se creó la función aislada y se desplegó preservando `Inicializar.js`.
+2. El usuario ejecutó la prueba; OpenAI respondió HTTP 200 y el validador
+   confirmó tres participantes.
+3. Se analizó una copia temporal del documento aportado, redactando correos y
+   evitando conservar el contenido completo.
+4. La transcripción mostró cuatro hablantes y confirmó la causa probable.
+5. La copia temporal del documento fue eliminada.
+6. Varios intentos de edición fallaron por el helper aislado de Windows en la
+   unidad sincronizada `H:`.
+7. Se mantuvo la ruta solicitada y se invocó directamente el editor oficial
+   `apply_patch`, que actualizó los archivos sin sobrescrituras directas.
+8. Se documentó la regla como DA-014.
+9. Se descargó el proyecto remoto, se conservó `Inicializar.js`, se superpuso
+   únicamente `Prompt.gs` y se publicaron 17 archivos con `clasp`.
+10. Una descarga independiente confirmó 17 archivos, la prueba diagnóstica,
+    `Inicializar.js` y la coincidencia SHA-256 de `Prompt.gs`.
+
+## Objetivo
+
+Incluir hablantes confirmados por la transcripción sin perder asistentes
+silenciosos acreditados por una lista de acceso con correo.
+
+## Archivos modificados
+
+- AppsScript/Prompt.gs
+- AppsScript/PruebaParticipantes.gs
+- Documentacion/Decisiones_Arquitectonicas.md
+- docs/CODEX_BITACORA.md
+
+## Cambios realizados
+
+- Se añadió `probarExtraccionParticipantes()` sin generación documental,
+  correlativos, estados ni escritura en la hoja `persona`.
+- Se reemplazó el requisito exclusivo de correo por correo o intervención
+  etiquetada en la transcripción.
+- Se mantuvo la exclusión de responsables, destinatarios, terceros citados y
+  nombres meramente mencionados.
+- Se registró DA-014 como decisión aceptada.
+
+## Motivo
+
+La evidencia de asistencia no siempre está concentrada en una lista con
+correos. La transcripción identifica de forma directa a quienes intervinieron.
+
+## Impacto
+
+OpenAI podrá devolver personas que hablen aunque no tengan correo visible. Los
+asistentes silenciosos seguirán entrando por la lista de acceso. La ejecución
+manual de la prueba realiza una llamada real a OpenAI.
+
+## Compatibilidad
+
+No cambia el esquema JSON ni las APIs públicas del flujo. Amplía el criterio
+funcional de selección de participantes.
+
+## Pruebas realizadas
+
+- Ejecución manual inicial del usuario con respuesta HTTP 200.
+- Revisión estructural del DOCX aportado y detección de cuatro hablantes.
+- Revisión del prompt modificado.
+- `clasp push --force` desde copia temporal con 17 archivos.
+- Descarga independiente posterior y coincidencia SHA-256 de `Prompt.gs`.
+- Confirmación de `Inicializar.js` y `PruebaParticipantes.js` remotos.
+- No se ejecutó OpenAI después del ajuste desde este entorno.
+
+## Pendientes
+
+- Ejecutar nuevamente `probarExtraccionParticipantes()`.
+- Confirmar que la salida contiene los cuatro asistentes esperados.
+- Completar los datos documentales del participante abreviado en la hoja
+  `persona` si corresponde.

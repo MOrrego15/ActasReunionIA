@@ -67,28 +67,33 @@ function construirPromptActa(contenidoFuente, contexto) {
       'Usa cadena vacía para textos opcionales ausentes.',
       'Usa arreglos vacíos para listas ausentes.',
       'No incluyas elementos vacíos o incompletos en las listas.',
-      'Incluye en participantes únicamente personas cuyo nombre esté asociado ' +
-        'a un correo electrónico visible en el contenido fuente.',
-      'El correo asociado es el requisito obligatorio para confirmar que la ' +
-        'persona ingresó a la reunión.',
+      'Construye participantes como la unión de dos fuentes de evidencia: ' +
+        'listas de asistencia con nombre y correo visible, y hablantes ' +
+        'identificados explícitamente en la transcripción.',
+      'Considera hablante confirmado a quien aparezca al inicio de una ' +
+        'intervención con el formato Nombre: texto.',
       'El registro de ingreso con nombre y correo es suficiente: incluye a ' +
         'la persona aunque no haya hablado ni aparezca en el desarrollo.',
       'Incluye también organizadores, anfitriones y convocantes cuando su ' +
         'nombre tenga un correo asociado en el contenido fuente.',
-      'Revisa todas las listas de acceso o asistencia e incluye exactamente ' +
-        'una vez cada nombre que tenga correo asociado.',
-      'Si una persona no tiene correo asociado, no la incluyas en ' +
-        'participantes, aunque su nombre aparezca en las notas.',
+      'Incluye a todo hablante identificado en la transcripción aunque no ' +
+        'tenga correo visible en el contenido fuente.',
+      'Revisa las listas de acceso y la transcripción e incluye exactamente ' +
+        'una vez cada participante confirmado por cualquiera de las dos ' +
+        'fuentes de evidencia.',
       'Usa como fuente de asistencia las listas o secciones de participantes ' +
-        'donde figuren juntos el nombre y el correo.',
+        'donde figuren juntos el nombre y el correo, y las etiquetas de ' +
+        'hablante que preceden intervenciones en la transcripción.',
       'No clasifiques como participante a una persona mencionada únicamente ' +
         'en temas, narraciones, acuerdos, tareas o referencias a terceros.',
       'No conviertas automáticamente responsables, destinatarios o personas ' +
         'citadas en asistentes.',
       'No omitas a una persona con correo por no tener intervenciones, tareas ' +
         'o menciones dentro del contenido narrativo.',
-      'Si existe duda sobre la asistencia de una persona, omítela de ' +
-        'participantes.',
+      'Una mención dentro del texto de una intervención no confirma ' +
+        'asistencia; solo confirma asistencia una etiqueta de hablante o el ' +
+        'registro conjunto de nombre y correo.',
+      'Si no existe ninguna de esas dos evidencias, omite a la persona.',
       'Usa el correo solo como evidencia; no lo copies en nombre ni cargo y ' +
         'no agregues propiedades al esquema.',
       'Cada participante confirmado requiere nombre no vacío.',
