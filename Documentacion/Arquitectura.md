@@ -368,10 +368,11 @@ HTML, Markdown, cercos de código ni JSON incrustado en valores textuales.
 
 La lista `participantes` validada de OpenAI es provisional y será reemplazada
 por el sistema antes de consultar `Personas.gs`. Drive leerá los Google Docs
-directos de la carpeta y `Gemini.gs` seleccionará una única transcripción por
-su estructura interna: dos o más hablantes distintos, etiquetas repetidas y
-marcas temporales, título de transcripción o una secuencia suficiente de
-intervenciones. Luego extraerá sus etiquetas `Nombre: intervención`. Los
+directos de la carpeta y `Gemini.gs` seleccionará primero una única referencia
+cuyo nombre contenga `Transcripción` o `Transcript`, sin exigir coincidencia
+del nombre base. Si esa referencia no es única, aplicará el criterio estructural
+de hablantes distintos, etiquetas repetidas y marcas conversacionales. Luego
+extraerá sus etiquetas `Nombre: intervención`. Los
 nombres se deduplicarán y el organizador se añadirá solo si aparece identificado
 explícitamente. Un nombre que
 solo aparezca dentro de una intervención no acreditará asistencia. Al no

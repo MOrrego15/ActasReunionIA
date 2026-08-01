@@ -1604,3 +1604,86 @@ controlada `TRANSCRIPCION` y se elimina la dependencia funcional de nombres.
 ## Pendientes
 
 - Ejecutar después `probarExtraccionParticipantes()` en Apps Script.
+
+# Cambio 0016
+Fecha: 2026-08-01
+Autor: Codex
+
+## Solicitud del usuario
+
+> La ejecución leyó los tres Google Docs, pero no inició la extracción. El
+> usuario había indicado previamente que los errores debían explicarse y
+> resolverse sin esperar una nueva orden de implementación.
+
+## Respuesta de Codex
+
+Se determinó que ningún documento superó el umbral estructural. El selector
+prioriza ahora una única referencia cuyo nombre contenga `Transcripción` o
+`Transcript`, sin exigir coincidencia del nombre base. Solo cuando no existe
+una marca única se utiliza la clasificación estructural como respaldo.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora antes de modificar archivos.
+2. Los registros confirmaron lectura correcta de tres Google Docs y ausencia
+   de la etapa de extracción.
+3. Se identificó que el umbral estructural descartó todos los documentos.
+4. Se añadió prioridad para una marca inequívoca de transcripción en el nombre.
+5. Se mantuvo el análisis estructural como mecanismo secundario.
+6. Una prueba con nombres base diferentes seleccionó la transcripción marcada.
+7. La extracción de prueba devolvió dos hablantes y excluyó una persona solo
+   mencionada.
+8. Como continuación del despliegue previamente autorizado y de la instrucción
+   de resolver errores sin esperar, se publicó la corrección automáticamente.
+9. Se preservaron los 17 archivos remotos y `Inicializar.js`.
+10. Una descarga independiente confirmó la coincidencia SHA-256 de
+    `Gemini.js`, los 17 archivos y `Inicializar.js`.
+
+## Objetivo
+
+Seleccionar la transcripción real cuando Google utiliza un nombre diferente al
+documento de notas y su representación textual no supera el umbral estructural.
+
+## Archivos modificados
+
+- AppsScript/Gemini.gs
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Cambios realizados
+
+- Se filtran primero documentos con `Transcripción` o `Transcript` en el nombre.
+- Una única coincidencia nombrada se selecciona directamente.
+- Cero o varias coincidencias nombradas activan el análisis por contenido.
+- Se actualizaron arquitectura, DA-014 y riesgos.
+
+## Motivo
+
+La marca del tipo de artefacto es más estable que la igualdad del nombre base y
+permite seleccionar el documento correcto sin interpretar las notas temáticas.
+
+## Impacto
+
+Amplía la compatibilidad con nombres reales de archivos. Mantiene errores
+controlados ante ambigüedad y la exclusión de nombres solo mencionados.
+
+## Compatibilidad
+
+No cambia contratos ni esquemas. Modifica únicamente la prioridad interna de
+selección de la transcripción.
+
+## Pruebas realizadas
+
+- Transcripción marcada con nombre base diferente: seleccionada.
+- Documento de notas no marcado: descartado.
+- Dos hablantes extraídos y persona mencionada excluida.
+- Validación sintáctica de `Gemini.gs` con Node.js.
+- `clasp push --force` desde una copia temporal con 17 archivos.
+- Descarga independiente y coincidencia SHA-256 de `Gemini.js`.
+- Confirmación de `Inicializar.js` remoto y limpieza de temporales.
+
+## Pendientes
+
+- Ejecutar nuevamente `probarExtraccionParticipantes()` después del despliegue.

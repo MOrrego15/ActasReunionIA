@@ -51,12 +51,22 @@ function seleccionarTranscripcionAsociada(documentoFuente, documentos, contexto)
   }
 
   try {
-    const coincidencias = documentos.filter(function (documento) {
+    const documentosValidos = documentos.filter(function (documento) {
       return esObjetoPlano(documento) &&
         esCadenaNoVacia(documento.idDocumento) &&
-        esCadenaNoVacia(documento.contenido) &&
-        _geminiEsContenidoTranscripcion(documento.contenido);
+        esCadenaNoVacia(documento.nombre) &&
+        esCadenaNoVacia(documento.contenido);
     });
+    const identificadasPorNombre = documentosValidos.filter(
+      function (documento) {
+        return /(?:transcripci[oó]n|transcript)/i.test(documento.nombre);
+      }
+    );
+    const coincidencias = identificadasPorNombre.length === 1
+      ? identificadasPorNombre
+      : documentosValidos.filter(function (documento) {
+          return _geminiEsContenidoTranscripcion(documento.contenido);
+        });
 
     if (coincidencias.length === 0) {
       return _geminiResultadoError(

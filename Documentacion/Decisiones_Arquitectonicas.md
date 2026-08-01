@@ -99,7 +99,7 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 ## DA-014: Evidencia de asistencia por hablante y organizador
 
 - **Estado:** Aceptada.
-- **Decisión:** Ante la inexistencia de un informe de asistencia, identificar una única transcripción por su estructura interna —varios hablantes, etiquetas repetidas y marcas propias de transcripción—, construir mediante código la lista con sus etiquetas `Nombre: intervención` y añadir una sola vez al organizador identificado explícitamente. Las notas temáticas no serán fuente de participantes y la lista inferida por OpenAI tampoco se utilizará.
+- **Decisión:** Ante la inexistencia de un informe de asistencia, identificar primero una única transcripción por la marca `Transcripción` o `Transcript` en su nombre, sin exigir coincidencia del nombre base; si no existe una marca única, usar como respaldo su estructura interna de varios hablantes, etiquetas repetidas y marcas conversacionales. La lista se construirá mediante código con `Nombre: intervención` y añadirá una sola vez al organizador explícito. Las notas temáticas y la lista inferida por OpenAI no serán fuentes de participantes.
 - **Motivo:** Una etiqueta de hablante acredita intervención directa y permite distinguirla de nombres solamente mencionados, evitando falsos positivos como terceros citados durante la conversación.
 - **Consecuencia:** Los asistentes silenciosos no pueden confirmarse y se omitirán. Los nombres mencionados dentro de intervenciones no se incorporarán. La extracción será determinista, deduplicada y no dependerá de correos, nombres de archivo ni de la interpretación del modelo. La ausencia o multiplicidad de contenidos con estructura de transcripción producirá un error controlado.
 

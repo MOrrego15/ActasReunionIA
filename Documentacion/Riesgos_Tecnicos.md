@@ -29,7 +29,7 @@ La valoración es inicial y deberá revisarse con datos de uso, volumen y polít
 | Cambios de API o modelo de OpenAI | Media | Medio | Encapsular la integración y mantener modelo y versión de prompt configurables. |
 | Diferencias de zona horaria alteran nombres o carpetas | Media | Medio | Configurar explícitamente la zona horaria institucional. |
 | Ausencia de informe de asistencia omite participantes silenciosos | Alta | Medio | Documentar la limitación y usar únicamente etiquetas de hablante más organizador explícito para evitar falsos positivos. |
-| No existe una transcripción estructuralmente identificable y única | Media | Alto | Evaluar hablantes repetidos y marcas de transcripción; detener el documento de forma controlada ante cero o múltiples coincidencias. |
+| No existe una transcripción identificable y única | Media | Alto | Priorizar una marca única en el nombre, usar estructura conversacional como respaldo y detener el documento ante cero o múltiples coincidencias. |
 
 ## 3. Riesgos de consistencia
 
