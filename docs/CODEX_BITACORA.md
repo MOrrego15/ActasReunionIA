@@ -1100,6 +1100,105 @@ funcional de selección de participantes.
 ## Pendientes
 
 - Ejecutar nuevamente `probarExtraccionParticipantes()`.
+
+# Cambio 0018
+Fecha: 2026-08-01
+Autor: Codex
+
+## Solicitud del usuario
+
+> Obtener una solución definitiva y realizar todas las pruebas necesarias sin
+> depender de ejecuciones manuales repetidas para descubrir cada error.
+
+## Respuesta de Codex
+
+Se auditó el flujo con el DOCX real compartido y se identificó la causa raíz:
+el selector mezclaba documentos de reuniones distintas contenidos en la misma
+carpeta. El documento fuente real ya contenía la transcripción completa y cuatro
+hablantes, pero podía competir con otras transcripciones. Se aisló cada ejecución
+al documento fuente actual y a sus vínculos, y se añadió soporte para todas las
+pestañas de Google Docs.
+
+## Registro de progreso
+
+1. Se leyó completamente la documentación obligatoria y la bitácora.
+2. Se revisaron íntegramente los módulos Drive, Gemini, Main y la prueba.
+3. Se analizó localmente el DOCX real sin incorporarlo al repositorio.
+4. El documento real contenía estructura de transcripción y cuatro hablantes.
+5. Se confirmó que Rosita y Janet solo aparecían mencionadas dentro de
+   intervenciones y no como etiquetas de hablante.
+6. Se identificó que leer todos los Google Docs de la carpeta mezclaba reuniones
+   distintas y podía producir una selección ambigua o incorrecta.
+7. Se modificó el alcance para utilizar solo el documento fuente actual y sus
+   Google Docs vinculados.
+8. Se priorizó el documento fuente cuando él mismo contiene la transcripción.
+9. Se intentó ejecutar la prueba con `clasp run`; Apps Script informó que el
+   proyecto no está desplegado como ejecutable de API, por lo que esa vía remota
+   no está disponible.
+10. Se creó una prueba automatizada con escenarios sintéticos y sin información
+    institucional.
+11. La primera prueba de pestañas comparó arreglos de contextos distintos de
+    Node.js y falló pese a valores idénticos; se corrigió el arnés.
+12. La batería automatizada finalizó con cuatro casos correctos.
+13. El extractor se ejecutó localmente contra el DOCX real y devolvió exactamente
+    cuatro participantes, excluyendo a las personas solo mencionadas.
+14. La documentación oficial confirmó que `Document.getBody()` solo cubre la
+    primera pestaña; se migró la lectura a `getTabs()` con recorrido recursivo.
+15. Las validaciones sintácticas de los cuatro módulos y `git diff --check`
+    finalizaron correctamente.
+16. Se desplegaron los 17 archivos de Apps Script desde una copia temporal que
+    preservó todos los módulos remotos.
+17. Una descarga independiente confirmó la coincidencia SHA-256 de Drive,
+    Gemini, Main y PruebaParticipantes.
+18. Se confirmó la permanencia de los 17 archivos y de `Inicializar.js`.
+
+## Objetivo
+
+Obtener participantes por reunión de forma determinista, sin contaminación por
+otros documentos de la carpeta y con compatibilidad para Google Docs con
+pestañas.
+
+## Archivos modificados
+
+- AppsScript/Drive.gs
+- AppsScript/Gemini.gs
+- AppsScript/Main.gs
+- AppsScript/PruebaParticipantes.gs
+- Pruebas/Participantes.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- Documento fuente que compite con una transcripción de otra reunión.
+- Notas temáticas con una única transcripción vinculada.
+- Cuatro hablantes y exclusión de una persona solo mencionada.
+- Recorrido de pestaña principal y pestaña anidada.
+- Ejecución local contra el DOCX real: cuatro participantes.
+- Validación sintáctica de Drive, Gemini, Main y PruebaParticipantes.
+- `git diff --check`.
+- `clasp push --force` desde una copia temporal con 17 archivos.
+- Descarga independiente y coincidencia SHA-256 de los cuatro módulos.
+- Confirmación de `Inicializar.js` remoto.
+
+## Resultado real verificado
+
+- Cantidad: 4.
+- Miguel O.
+- Marisol Lozano Pulla.
+- Miguel Arroyo Leandro.
+- Claudio Alvarez.
+
+## Seguridad
+
+El DOCX real no se copió ni se incorporó a Git. Las pruebas versionables usan
+nombres y contenido sintéticos.
+
+## Pendientes
+
+- Crear commit y publicar en GitHub cuando exista autorización explícita.
 - Confirmar que la salida contiene los cuatro asistentes esperados.
 - Completar los datos documentales del participante abreviado en la hoja
   `persona` si corresponde.

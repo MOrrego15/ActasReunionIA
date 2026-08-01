@@ -57,29 +57,36 @@ function probarExtraccionParticipantes() {
       );
     }
 
-    const listado = listarArchivosEnCarpeta(
-      configuracion.gemini.carpetaNotasId,
+    const documentoFuente = fuentes.datos.documentos[0];
+    const lecturaFuente = leerContenidoDocumentoFuente(
+      documentoFuente.idDocumentoFuente,
       contexto
     );
-    const vinculados = _pruebaParticipantesResultadoExitoso(listado)
+    const vinculados = _pruebaParticipantesResultadoExitoso(lecturaFuente)
       ? listarDocumentosGoogleVinculados(
-          fuentes.datos.documentos[0].idDocumentoFuente,
+          documentoFuente.idDocumentoFuente,
           contexto
         )
       : null;
-    const archivosCandidatos =
-      _pruebaParticipantesResultadoExitoso(listado) &&
+    const contenidosVinculados =
       _pruebaParticipantesResultadoExitoso(vinculados)
-        ? listado.datos.concat(vinculados.datos)
-        : null;
-    const contenidos = Array.isArray(archivosCandidatos)
-      ? leerContenidosDocumentosGoogle(archivosCandidatos, contexto)
+      ? leerContenidosDocumentosGoogle(vinculados.datos, contexto)
       : null;
-    const seleccion = _pruebaParticipantesResultadoExitoso(contenidos) &&
-      contenidos.datos && Array.isArray(contenidos.datos.documentos)
+    const documentosCandidatos =
+      _pruebaParticipantesResultadoExitoso(lecturaFuente) &&
+      _pruebaParticipantesResultadoExitoso(contenidosVinculados) &&
+      contenidosVinculados.datos &&
+      Array.isArray(contenidosVinculados.datos.documentos)
+        ? [{
+            idDocumento: documentoFuente.idDocumentoFuente,
+            nombre: documentoFuente.nombre,
+            contenido: lecturaFuente.datos.contenidoFuente
+          }].concat(contenidosVinculados.datos.documentos)
+        : null;
+    const seleccion = Array.isArray(documentosCandidatos)
       ? seleccionarTranscripcionAsociada(
-          fuentes.datos.documentos[0],
-          contenidos.datos.documentos,
+          documentoFuente,
+          documentosCandidatos,
           contexto
         )
       : null;

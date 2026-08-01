@@ -57,6 +57,19 @@ function seleccionarTranscripcionAsociada(documentoFuente, documentos, contexto)
         esCadenaNoVacia(documento.nombre) &&
         esCadenaNoVacia(documento.contenido);
     });
+    const fuenteActual = documentosValidos.filter(function (documento) {
+      return documento.idDocumento === documentoFuente.idDocumentoFuente &&
+        _geminiEsContenidoTranscripcion(documento.contenido);
+    });
+    if (fuenteActual.length === 1) {
+      return {
+        exito: true,
+        datos: {
+          idDocumentoTranscripcion: fuenteActual[0].idDocumento
+        },
+        error: null
+      };
+    }
     const identificadasPorNombre = documentosValidos.filter(
       function (documento) {
         return /(?:transcripci[oó]n|transcript)/i.test(documento.nombre);

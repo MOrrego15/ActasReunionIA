@@ -32,6 +32,8 @@ La valoración es inicial y deberá revisarse con datos de uso, volumen y polít
 | No existe una transcripción identificable y única | Media | Alto | Priorizar una marca única en el nombre, usar estructura conversacional como respaldo y detener el documento ante cero o múltiples coincidencias. |
 | La transcripción está vinculada desde las notas y no reside directamente en la carpeta configurada | Alta | Alto | Recorrer hipervínculos y chips inteligentes de las notas, aceptar solo Google Docs accesibles y deduplicarlos por ID. |
 | El vínculo a la transcripción no es accesible o ya no existe | Media | Alto | Omitir el vínculo inválido sin exponerlo en registros y mantener un error controlado si no queda una transcripción única. |
+| Varias transcripciones de reuniones distintas comparten la carpeta | Alta | Alto | Limitar cada selección al documento fuente actual y a los documentos enlazados desde él; nunca usar toda la carpeta como conjunto de candidatos. |
+| Contenido o vínculos ubicados en pestañas secundarias de Google Docs | Media | Alto | Recorrer con `getTabs()` todas las pestañas principales y anidadas para leer texto y elementos vinculados. |
 
 ## 3. Riesgos de consistencia
 

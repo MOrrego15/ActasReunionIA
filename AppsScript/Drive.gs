@@ -193,7 +193,9 @@ function listarDocumentosGoogleVinculados(idDocumentoFuente, contexto) {
   try {
     const documento = DocumentApp.openById(idDocumentoFuente);
     const urls = [];
-    _driveRecolectarUrlsDocumento(documento.getBody(), urls);
+    _driveObtenerCuerposDocumento(documento).forEach(function (cuerpo) {
+      _driveRecolectarUrlsDocumento(cuerpo, urls);
+    });
     const porId = Object.create(null);
     urls.forEach(function (url) {
       const id = _driveExtraerIdDocumentoGoogle(url);
@@ -226,6 +228,31 @@ function listarDocumentosGoogleVinculados(idDocumentoFuente, contexto) {
       DRIVE_CODIGOS_ERROR.ERROR,
       'No fue posible revisar los documentos vinculados.'
     );
+  }
+}
+
+function _driveObtenerCuerposDocumento(documento) {
+  const cuerpos = [];
+  if (documento && typeof documento.getTabs === 'function') {
+    documento.getTabs().forEach(function (pestana) {
+      _driveRecolectarCuerposPestana(pestana, cuerpos);
+    });
+  }
+  if (cuerpos.length === 0 && documento &&
+    typeof documento.getBody === 'function') {
+    cuerpos.push(documento.getBody());
+  }
+  return cuerpos;
+}
+
+function _driveRecolectarCuerposPestana(pestana, cuerpos) {
+  if (!pestana) return;
+  if (pestana.getType() === DocumentApp.TabType.DOCUMENT_TAB) {
+    cuerpos.push(pestana.asDocumentTab().getBody());
+  }
+  const hijas = pestana.getChildTabs();
+  for (let indice = 0; indice < hijas.length; indice += 1) {
+    _driveRecolectarCuerposPestana(hijas[indice], cuerpos);
   }
 }
 
@@ -841,7 +868,14 @@ function leerContenidoDocumentoFuente(idDocumentoFuente, contexto) {
     }
 
     const documento = DocumentApp.openById(idDocumentoFuente);
-    const contenidoFuente = documento.getBody().getText();
+    const contenidoFuente = _driveObtenerCuerposDocumento(documento)
+      .map(function (cuerpo) {
+        return cuerpo.getText();
+      })
+      .filter(function (contenido) {
+        return esCadenaNoVacia(contenido);
+      })
+      .join('\n');
 
     if (!esCadenaNoVacia(contenidoFuente)) {
       return _driveFinalizarLecturaError(

@@ -290,31 +290,28 @@ function _mainProcesarDocumento(documento, posicion, configuracion, contexto) {
         'dd/MM/yyyy'
       );
 
-    const listadoArchivos = listarArchivosEnCarpeta(
-      configuracion.gemini.carpetaNotasId,
+    const documentosVinculados = listarDocumentosGoogleVinculados(
+      documento.idDocumentoFuente,
       contexto
     );
-    const documentosVinculados = _mainResultadoExitoso(listadoArchivos)
-      ? listarDocumentosGoogleVinculados(
-          documento.idDocumentoFuente,
-          contexto
-        )
+    const contenidosVinculados = _mainResultadoExitoso(documentosVinculados)
+      ? leerContenidosDocumentosGoogle(documentosVinculados.datos, contexto)
       : null;
-    const archivosCandidatos =
-      _mainResultadoExitoso(listadoArchivos) &&
-      _mainResultadoExitoso(documentosVinculados)
-        ? listadoArchivos.datos.concat(documentosVinculados.datos)
+    const documentosCandidatos =
+      _mainResultadoExitoso(contenidosVinculados) &&
+      contenidosVinculados.datos &&
+      Array.isArray(contenidosVinculados.datos.documentos)
+        ? [{
+            idDocumento: documento.idDocumentoFuente,
+            nombre: documento.nombre,
+            contenido: lectura.datos.contenidoFuente
+          }].concat(contenidosVinculados.datos.documentos)
         : null;
-    const contenidosDocumentos = Array.isArray(archivosCandidatos)
-      ? leerContenidosDocumentosGoogle(archivosCandidatos, contexto)
-      : null;
     const seleccionTranscripcion =
-      _mainResultadoExitoso(contenidosDocumentos) &&
-      contenidosDocumentos.datos &&
-      Array.isArray(contenidosDocumentos.datos.documentos)
+      Array.isArray(documentosCandidatos)
       ? seleccionarTranscripcionAsociada(
           documento,
-          contenidosDocumentos.datos.documentos,
+          documentosCandidatos,
           contexto
         )
       : null;

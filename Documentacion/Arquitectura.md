@@ -321,9 +321,9 @@ La secuencia aprobada para transformar contenido fuente en un documento es:
 construirPromptActa(contenidoFuente, contexto)
   -> solicitarActaEstructurada(mensajes, contexto)
   -> validarRespuestaActa(respuestaTexto, contexto)
-  -> listarArchivosEnCarpeta(carpetaNotasId, contexto)
   -> listarDocumentosGoogleVinculados(documentoFuente, contexto)
-  -> leerContenidosDocumentosGoogle(archivosDirectosYVinculados, contexto)
+  -> leerContenidosDocumentosGoogle(documentosVinculados, contexto)
+  -> combinar(documentoFuenteActual, documentosVinculados)
   -> seleccionarTranscripcionAsociada(documentoFuente, documentos, contexto)
   -> extraerParticipantesConfirmados(contenidoTranscripcion, contexto)
   -> resolverParticipantesActa(repositorioProcesadosId, participantes, contexto)
@@ -368,10 +368,14 @@ entera, positiva y secuencial desde uno. No se admiten propiedades adicionales,
 HTML, Markdown, cercos de código ni JSON incrustado en valores textuales.
 
 La lista `participantes` validada de OpenAI es provisional y será reemplazada
-por el sistema antes de consultar `Personas.gs`. Drive leerá los Google Docs
-directos de la carpeta y los Google Docs enlazados desde las notas mediante
-hipervínculos de texto o chips inteligentes. Los candidatos se deduplicarán por
-su identificador estable. `Gemini.gs` seleccionará primero una única referencia
+por el sistema antes de consultar `Personas.gs`. Drive leerá exclusivamente
+el documento fuente actual y los Google Docs enlazados desde él mediante
+hipervínculos de texto o chips inteligentes; no incorporará otros documentos de
+la carpeta, porque pueden pertenecer a reuniones diferentes. La lectura y la
+búsqueda de vínculos recorrerán todas las pestañas principales y anidadas del
+Google Docs. Los candidatos se deduplicarán por su identificador estable.
+`Gemini.gs` priorizará el propio documento fuente cuando su contenido tenga
+estructura de transcripción; en caso contrario seleccionará una única referencia
 cuyo nombre contenga `Transcripción` o `Transcript`, sin exigir coincidencia
 del nombre base. Si esa referencia no es única, aplicará el criterio estructural
 de hablantes distintos, etiquetas repetidas y marcas conversacionales. Luego
