@@ -374,6 +374,9 @@ hipervínculos de texto o chips inteligentes; no incorporará otros documentos d
 la carpeta, porque pueden pertenecer a reuniones diferentes. La lectura y la
 búsqueda de vínculos recorrerán todas las pestañas principales y anidadas del
 Google Docs. Los candidatos se deduplicarán por su identificador estable.
+`Drive.gs` descartará además los vínculos cuyo ID coincida con el documento
+fuente, porque representan otra pestaña o sección del mismo Google Docs y su
+contenido ya fue incorporado al leer todas las pestañas.
 `Gemini.gs` priorizará el propio documento fuente cuando su contenido tenga
 estructura de transcripción; en caso contrario seleccionará una única referencia
 cuyo nombre contenga `Transcripción` o `Transcript`, sin exigir coincidencia

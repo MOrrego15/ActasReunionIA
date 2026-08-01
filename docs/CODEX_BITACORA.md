@@ -1199,6 +1199,64 @@ nombres y contenido sintéticos.
 ## Pendientes
 
 - Crear commit y publicar en GitHub cuando exista autorización explícita.
+
+# Cambio 0019
+Fecha: 2026-08-01
+Autor: Codex
+
+## Solicitud del usuario
+
+> La ejecución encontró un documento vinculado y lo leyó, pero finalizó sin
+> iniciar la extracción de participantes.
+
+## Respuesta de Codex
+
+El vínculo encontrado correspondía al mismo Google Docs fuente, normalmente a
+otra pestaña. Al combinar la fuente con ese vínculo se repetía el mismo ID y el
+selector recibía dos candidatos equivalentes, produciendo ambigüedad. Se
+descartaron las autorreferencias y se añadió una segunda deduplicación defensiva
+en el selector.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora antes de modificar archivos.
+2. Los registros confirmaron lectura correcta del documento fuente, un vínculo
+   encontrado, lectura correcta del vínculo y ausencia de extracción.
+3. Se relacionó el resultado con el segundo DOCX real, cuyo enlace apunta a otra
+   pestaña del mismo documento.
+4. Se impidió que Drive devuelva un vínculo con el mismo ID de la fuente.
+5. Se deduplicaron por ID todos los candidatos válidos dentro de Gemini.
+6. Se añadió una prueba con dos candidatos del mismo ID y contenido.
+7. La batería finalizó con cinco casos correctos.
+8. Las validaciones sintácticas y `git diff --check` terminaron correctamente.
+9. Se desplegaron los 17 archivos preservando el proyecto remoto completo.
+10. Una descarga independiente confirmó la coincidencia SHA-256 de Drive y
+    Gemini, la permanencia de los 17 archivos y de `Inicializar.js`.
+
+## Archivos modificados
+
+- AppsScript/Drive.gs
+- AppsScript/Gemini.gs
+- Pruebas/Participantes.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- Autorreferencia duplicada al mismo Google Docs: seleccionada una sola vez.
+- Cinco casos automatizados correctos.
+- Validación sintáctica de Drive y Gemini.
+- `git diff --check`.
+- `clasp push --force` desde una copia temporal con 17 archivos.
+- Descarga independiente y coincidencia SHA-256 de Drive y Gemini.
+- Confirmación de `Inicializar.js` remoto.
+
+## Pendientes
+
+- Ejecutar nuevamente `probarExtraccionParticipantes()` para confirmar el
+  resultado operativo.
 - Confirmar que la salida contiene los cuatro asistentes esperados.
 - Completar los datos documentales del participante abreviado en la hoja
   `persona` si corresponde.

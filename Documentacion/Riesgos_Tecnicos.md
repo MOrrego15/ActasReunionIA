@@ -34,6 +34,7 @@ La valoración es inicial y deberá revisarse con datos de uso, volumen y polít
 | El vínculo a la transcripción no es accesible o ya no existe | Media | Alto | Omitir el vínculo inválido sin exponerlo en registros y mantener un error controlado si no queda una transcripción única. |
 | Varias transcripciones de reuniones distintas comparten la carpeta | Alta | Alto | Limitar cada selección al documento fuente actual y a los documentos enlazados desde él; nunca usar toda la carpeta como conjunto de candidatos. |
 | Contenido o vínculos ubicados en pestañas secundarias de Google Docs | Media | Alto | Recorrer con `getTabs()` todas las pestañas principales y anidadas para leer texto y elementos vinculados. |
+| Un vínculo interno a otra pestaña repite el ID del documento fuente | Alta | Alto | Descartar autorreferencias y deduplicar todos los candidatos por ID antes de seleccionar la transcripción. |
 
 ## 3. Riesgos de consistencia
 

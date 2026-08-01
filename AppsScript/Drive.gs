@@ -199,7 +199,7 @@ function listarDocumentosGoogleVinculados(idDocumentoFuente, contexto) {
     const porId = Object.create(null);
     urls.forEach(function (url) {
       const id = _driveExtraerIdDocumentoGoogle(url);
-      if (!id || porId[id]) return;
+      if (!id || id === idDocumentoFuente || porId[id]) return;
       try {
         const archivo = DriveApp.getFileById(id);
         if (!archivo.isTrashed() &&

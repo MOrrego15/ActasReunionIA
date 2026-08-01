@@ -76,6 +76,21 @@ assert.strictEqual(
   'El documento fuente actual debe prevalecer sobre otra transcripción.'
 );
 
+const seleccionFuenteDuplicada = sandbox.seleccionarTranscripcionAsociada(
+  { idDocumentoFuente: 'fuente', nombre: 'Notas de Gemini' },
+  [
+    documento('fuente', 'Notas de Gemini', transcripcionFuente),
+    documento('fuente', 'Notas de Gemini', transcripcionFuente)
+  ],
+  contexto
+);
+assert.strictEqual(seleccionFuenteDuplicada.exito, true);
+assert.strictEqual(
+  seleccionFuenteDuplicada.datos.idDocumentoTranscripcion,
+  'fuente',
+  'Una autorreferencia al mismo Google Docs no debe crear ambigüedad.'
+);
+
 const seleccionVinculada = sandbox.seleccionarTranscripcionAsociada(
   { idDocumentoFuente: 'notas', nombre: 'Notas de Gemini' },
   [
@@ -132,4 +147,4 @@ assert.deepStrictEqual(
   'Debe recorrer pestañas principales y anidadas.'
 );
 
-console.log('Participantes.test.js: 4 casos correctos.');
+console.log('Participantes.test.js: 5 casos correctos.');

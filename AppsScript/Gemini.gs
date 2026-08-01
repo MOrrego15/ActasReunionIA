@@ -51,11 +51,15 @@ function seleccionarTranscripcionAsociada(documentoFuente, documentos, contexto)
   }
 
   try {
+    const idsIncluidos = Object.create(null);
     const documentosValidos = documentos.filter(function (documento) {
-      return esObjetoPlano(documento) &&
+      const valido = esObjetoPlano(documento) &&
         esCadenaNoVacia(documento.idDocumento) &&
         esCadenaNoVacia(documento.nombre) &&
         esCadenaNoVacia(documento.contenido);
+      if (!valido || idsIncluidos[documento.idDocumento]) return false;
+      idsIncluidos[documento.idDocumento] = true;
+      return true;
     });
     const fuenteActual = documentosValidos.filter(function (documento) {
       return documento.idDocumento === documentoFuente.idDocumentoFuente &&
