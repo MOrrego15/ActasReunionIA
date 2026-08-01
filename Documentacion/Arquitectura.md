@@ -365,12 +365,13 @@ HTML, Markdown, cercos de código ni JSON incrustado en valores textuales.
 
 La lista `participantes` validada de OpenAI es provisional y será reemplazada
 por el sistema antes de consultar `Personas.gs`. `Gemini.gs` extraerá de forma
-determinista las etiquetas `Nombre: intervención` ubicadas después del
-encabezado de transcripción, las deduplicará y añadirá al organizador solo si
-aparece identificado explícitamente antes de la transcripción. Un nombre que
+determinista las etiquetas `Nombre: intervención` presentes en el contenido,
+las deduplicará, excluirá encabezados documentales conocidos y añadirá al
+organizador solo si aparece identificado explícitamente. Un nombre que
 solo aparezca dentro de una intervención no acreditará asistencia. Al no
 existir un informe de asistencia, los asistentes silenciosos no pueden
-confirmarse y se omitirán.
+confirmarse y se omitirán. La extracción no depende de que el documento
+contenga un encabezado literal de transcripción.
 
 ### 11.2 DatosEmisionActa y documento generado
 

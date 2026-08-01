@@ -51,22 +51,16 @@ function extraerParticipantesConfirmados(contenidoFuente, contexto) {
     const lineas = contenidoFuente.replace(/\r\n?/g, '\n').split('\n');
     const participantes = [];
     const indices = Object.create(null);
-    let enTranscripcion = false;
     let organizador = '';
 
     lineas.forEach(function (lineaOriginal) {
       const linea = lineaOriginal.trim();
       if (!linea) return;
-      if (/(?:^|\s|-)transcripci[oó]n(?:\s|$)/i.test(linea)) {
-        enTranscripcion = true;
-        return;
-      }
-      if (!enTranscripcion) {
-        const coincidenciaOrganizador = linea.match(
-          /^(?:organizador|organizer)\s*:\s*(.+?)\s*$/i
-        );
-        if (coincidenciaOrganizador &&
-          _geminiEsNombrePersona(coincidenciaOrganizador[1])) {
+      const coincidenciaOrganizador = linea.match(
+        /^(?:organizador|organizer)\s*:\s*(.+?)\s*$/i
+      );
+      if (coincidenciaOrganizador) {
+        if (_geminiEsNombrePersona(coincidenciaOrganizador[1])) {
           organizador = coincidenciaOrganizador[1].trim();
         }
         return;
@@ -101,7 +95,7 @@ function _geminiEsNombrePersona(valor) {
   if (!esCadenaNoVacia(valor) || valor.length > 120 || /@/.test(valor)) {
     return false;
   }
-  if (/^(?:https?|fecha|hora|lugar|reuni[oó]n|tema|resumen|notas?)\b/i.test(valor)) {
+  if (/^(?:https?|fecha|hora|lugar|reuni[oó]n|tema|resumen|notas?|organizador|organizer|participantes?|asistentes?|transcripci[oó]n|proyecto|metodolog[ií]a|convocatoria|duraci[oó]n|agenda|acuerdos?|tareas?|acciones?|objetivo|ubicaci[oó]n|invitados?)\b/i.test(valor)) {
     return false;
   }
   return /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ.'’-]*(?:\s+[A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ.'’-]*)*$/.test(valor);

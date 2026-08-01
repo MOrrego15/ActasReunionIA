@@ -1316,3 +1316,93 @@ reemplazan determinísticamente antes de generar el acta.
 - Confirmar visualmente los cuatro asistentes esperados en la Etapa 3.
 - Mantener documentada la limitación de asistentes silenciosos mientras no
   exista una fuente formal de asistencia.
+
+# Cambio 0013
+Fecha: 2026-08-01
+Autor: Codex
+
+## Solicitud del usuario
+
+> La prueba desplegada devolvió cero participantes. El usuario autorizó
+> corregir y desplegar la extracción sin depender del encabezado literal de
+> transcripción.
+
+## Respuesta de Codex
+
+Se eliminó el requisito de encontrar previamente la palabra `Transcripción`.
+El extractor reconoce etiquetas `Nombre: intervención` en todo el contenido,
+procesa `Organizador:` como metadato separado y excluye encabezados
+documentales conocidos para impedir que se conviertan en participantes.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora antes de modificar archivos.
+2. Se identificó el encabezado obligatorio como causa de la lista vacía.
+3. El usuario autorizó expresamente el ajuste y despliegue.
+4. Se retiró el estado interno que esperaba el encabezado de transcripción.
+5. Se procesó el organizador antes de evaluar etiquetas de hablante.
+6. Se amplió la exclusión de encabezados documentales.
+7. Una prueba sin encabezado confirmó tres hablantes, ningún encabezado como
+   persona y exclusión de la persona solamente mencionada.
+8. La prueba con el DOCX real mantuvo cuatro participantes y el falso positivo
+   ausente.
+9. Se descargaron los 17 archivos remotos y se preservó `Inicializar.js`.
+10. Se desplegó `Gemini.gs` con `clasp`.
+11. Una descarga independiente confirmó 17 archivos, coincidencia SHA-256 de
+    `Gemini.js` y presencia de `Inicializar.js`.
+
+## Objetivo
+
+Reconocer hablantes en el Google Docs operativo aunque su texto no contenga el
+encabezado literal observado en el DOCX exportado.
+
+## Archivos modificados
+
+- AppsScript/Gemini.gs
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- docs/CODEX_BITACORA.md
+
+## Cambios realizados
+
+- Se reconocen etiquetas de hablante en todo el documento.
+- `Organizador:` se interpreta como metadato y no como etiqueta de hablante.
+- Se excluyen fecha, hora, lugar, reunión, tema, resumen, notas, participantes,
+  asistentes, proyecto, metodología, convocatoria, duración, agenda, acuerdos,
+  tareas, acciones, objetivo, ubicación e invitados, entre otros encabezados.
+- Se actualizó la arquitectura y DA-014 para retirar la dependencia del
+  encabezado de transcripción.
+
+## Motivo
+
+La representación de texto del Google Docs operativo no conserva
+necesariamente el mismo encabezado que el DOCX exportado. La etiqueta de
+hablante sigue siendo evidencia suficiente sin depender de esa marca previa.
+
+## Impacto
+
+Evita resultados vacíos causados por diferencias estructurales entre Google
+Docs y DOCX. Conserva la exclusión de nombres mencionados y la limitación de
+asistentes silenciosos.
+
+## Compatibilidad
+
+No cambia contratos públicos ni el esquema de participantes. Solo amplía el
+ámbito donde se buscan etiquetas válidas y refuerza las exclusiones.
+
+## Pruebas realizadas
+
+- Validación sintáctica de `Gemini.gs` con Node.js.
+- Caso sin encabezado de transcripción con metadatos, organizador, hablantes
+  repetidos y una persona solo mencionada.
+- Confirmación de que los encabezados no fueron clasificados como personas.
+- Prueba contra el DOCX proporcionado: cuatro participantes y falso positivo
+  ausente, sin registrar contenido institucional.
+- `clasp push --force` desde una copia temporal con 17 archivos.
+- Descarga independiente y coincidencia SHA-256 de `Gemini.js`.
+- Confirmación de `Inicializar.js` remoto y limpieza segura de temporales.
+
+## Pendientes
+
+- Ejecutar nuevamente `probarExtraccionParticipantes()` en Apps Script.
+- Confirmar que el Google Docs operativo devuelve los cuatro participantes.
