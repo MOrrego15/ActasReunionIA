@@ -61,8 +61,19 @@ function probarExtraccionParticipantes() {
       configuracion.gemini.carpetaNotasId,
       contexto
     );
-    const contenidos = _pruebaParticipantesResultadoExitoso(listado)
-      ? leerContenidosDocumentosGoogle(listado.datos, contexto)
+    const vinculados = _pruebaParticipantesResultadoExitoso(listado)
+      ? listarDocumentosGoogleVinculados(
+          fuentes.datos.documentos[0].idDocumentoFuente,
+          contexto
+        )
+      : null;
+    const archivosCandidatos =
+      _pruebaParticipantesResultadoExitoso(listado) &&
+      _pruebaParticipantesResultadoExitoso(vinculados)
+        ? listado.datos.concat(vinculados.datos)
+        : null;
+    const contenidos = Array.isArray(archivosCandidatos)
+      ? leerContenidosDocumentosGoogle(archivosCandidatos, contexto)
       : null;
     const seleccion = _pruebaParticipantesResultadoExitoso(contenidos) &&
       contenidos.datos && Array.isArray(contenidos.datos.documentos)

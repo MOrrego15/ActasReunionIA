@@ -175,6 +175,92 @@ function listarArchivosEnCarpeta(carpetaId, contexto) {
 }
 
 /**
+ * Localiza Google Docs vinculados desde un documento mediante hipervínculos
+ * de texto y chips inteligentes. No registra URLs, IDs ni títulos.
+ *
+ * @param {string} idDocumentoFuente Documento que contiene los vínculos.
+ * @param {{idEjecucion: string}} contexto Contexto técnico obligatorio.
+ * @returns {ResultadoListadoArchivos} Descriptores de Google Docs vinculados.
+ */
+function listarDocumentosGoogleVinculados(idDocumentoFuente, contexto) {
+  if (!_driveValidarIdentificador(idDocumentoFuente) ||
+    !_driveValidarContextoDocumentos(contexto)) {
+    return _driveConstruirResultadoError(
+      DRIVE_CODIGOS_ERROR.PARAMETRO_INVALIDO,
+      'Los parámetros para listar documentos vinculados no son válidos.'
+    );
+  }
+  try {
+    const documento = DocumentApp.openById(idDocumentoFuente);
+    const urls = [];
+    _driveRecolectarUrlsDocumento(documento.getBody(), urls);
+    const porId = Object.create(null);
+    urls.forEach(function (url) {
+      const id = _driveExtraerIdDocumentoGoogle(url);
+      if (!id || porId[id]) return;
+      try {
+        const archivo = DriveApp.getFileById(id);
+        if (!archivo.isTrashed() &&
+          archivo.getMimeType() === DRIVE_MIME_DOCUMENTO_GOOGLE) {
+          porId[id] = _driveConstruirDescriptorArchivo(archivo);
+        }
+      } catch (errorVinculo) {
+        // Los vínculos inaccesibles o ajenos a Google Docs se omiten.
+      }
+    });
+    const descriptores = Object.keys(porId).map(function (id) {
+      return porId[id];
+    });
+    registrarInfo(
+      'Drive',
+      'listarDocumentosGoogleVinculados',
+      'La búsqueda de documentos vinculados finalizó correctamente.',
+      {
+        idEjecucion: contexto.idEjecucion,
+        datos: { cantidad: descriptores.length }
+      }
+    );
+    return _driveConstruirResultadoExitoso(descriptores);
+  } catch (errorDocumento) {
+    return _driveConstruirResultadoError(
+      DRIVE_CODIGOS_ERROR.ERROR,
+      'No fue posible revisar los documentos vinculados.'
+    );
+  }
+}
+
+function _driveRecolectarUrlsDocumento(elemento, urls) {
+  if (!elemento) return;
+  const tipo = elemento.getType();
+  if (tipo === DocumentApp.ElementType.RICH_LINK) {
+    const urlRichLink = elemento.asRichLink().getUrl();
+    if (esCadenaNoVacia(urlRichLink)) urls.push(urlRichLink);
+    return;
+  }
+  if (tipo === DocumentApp.ElementType.TEXT) {
+    const texto = elemento.asText();
+    texto.getTextAttributeIndices().forEach(function (indice) {
+      const urlTexto = texto.getLinkUrl(indice);
+      if (esCadenaNoVacia(urlTexto)) urls.push(urlTexto);
+    });
+    return;
+  }
+  if (typeof elemento.getNumChildren === 'function') {
+    for (let indice = 0; indice < elemento.getNumChildren(); indice += 1) {
+      _driveRecolectarUrlsDocumento(elemento.getChild(indice), urls);
+    }
+  }
+}
+
+function _driveExtraerIdDocumentoGoogle(url) {
+  if (!esCadenaNoVacia(url)) return null;
+  const coincidenciaRuta = url.match(/\/document\/d\/([A-Za-z0-9_-]{10,})/);
+  if (coincidenciaRuta) return coincidenciaRuta[1];
+  const coincidenciaParametro = url.match(/[?&]id=([A-Za-z0-9_-]{10,})/);
+  return coincidenciaParametro ? coincidenciaParametro[1] : null;
+}
+
+/**
  * @typedef {Object} DocumentoFuenteDrive
  * @property {string} idDocumentoFuente Identificador estable de Drive.
  * @property {string} nombre Nombre real del documento.
@@ -808,6 +894,7 @@ function leerContenidosDocumentosGoogle(archivos, contexto) {
   }
   try {
     const documentos = [];
+    const idsLeidos = Object.create(null);
     for (let indice = 0; indice < archivos.length; indice += 1) {
       const archivo = archivos[indice];
       if (!esObjetoPlano(archivo) ||
@@ -821,6 +908,8 @@ function leerContenidosDocumentosGoogle(archivos, contexto) {
           'Drive devolvió un descriptor de documento no válido.'
         );
       }
+      if (idsLeidos[archivo.id]) continue;
+      idsLeidos[archivo.id] = true;
       const lectura = leerContenidoDocumentoFuente(archivo.id, contexto);
       if (!lectura.exito || !lectura.datos ||
         !esCadenaNoVacia(lectura.datos.contenidoFuente)) {

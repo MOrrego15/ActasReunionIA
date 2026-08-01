@@ -1687,3 +1687,96 @@ selección de la transcripción.
 ## Pendientes
 
 - Ejecutar nuevamente `probarExtraccionParticipantes()` después del despliegue.
+
+# Cambio 0017
+Fecha: 2026-08-01
+Autor: Codex
+
+## Solicitud del usuario
+
+> La nueva ejecución volvió a leer tres documentos, pero terminó sin mostrar
+> participantes ni iniciar la extracción.
+
+## Respuesta de Codex
+
+Los registros demostraron que la transcripción no estaba entre los Google Docs
+directos de la carpeta configurada. Se amplió la búsqueda para localizar Google
+Docs enlazados desde las notas mediante hipervínculos de texto o chips
+inteligentes, combinarlos con los archivos directos y aplicar después la misma
+selección estricta de transcripción y hablantes.
+
+## Registro de progreso
+
+1. Se revisaron los registros: tres lecturas correctas y ninguna extracción.
+2. Se descartó un error de lectura y se identificó una ausencia de candidatos.
+3. Se verificó en la API oficial de Apps Script el acceso a `RICH_LINK`,
+   `RichLink.getUrl()`, atributos de texto y `Text.getLinkUrl()`.
+4. Se implementó la búsqueda recursiva de vínculos dentro del documento de
+   notas, aceptando únicamente Google Docs accesibles.
+5. Se combinaron y deduplicaron por ID los documentos directos y vinculados.
+6. Se integró la búsqueda tanto en el flujo principal como en la función de
+   prueba, sin usar OpenAI para extraer participantes.
+7. Se mantuvo la regla definitiva: solo etiquetas de hablante y organizador
+   explícito; una persona meramente mencionada continúa excluida.
+8. La validación inicial con `node --check archivo.gs` no fue compatible con
+   Node.js 24 por la extensión `.gs`; se repitió mediante entrada estándar.
+9. La validación sintáctica compatible finalizó sin errores en los cuatro
+   módulos revisados.
+10. Se desplegaron 17 archivos desde una copia temporal que preservó el estado
+    remoto.
+11. Una descarga independiente confirmó la coincidencia SHA-256 de Drive,
+    Main y PruebaParticipantes, además de los 17 archivos e `Inicializar.js`.
+
+## Objetivo
+
+Encontrar la transcripción real cuando Gemini la referencia desde las notas
+pero no la almacena como archivo directo en la carpeta configurada.
+
+## Archivos modificados
+
+- AppsScript/Drive.gs
+- AppsScript/Main.gs
+- AppsScript/PruebaParticipantes.gs
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Cambios realizados
+
+- Se recorren hipervínculos de texto y chips inteligentes del documento fuente.
+- Solo se aceptan vínculos que resuelven a Google Docs accesibles y vigentes.
+- Se deduplican candidatos por identificador de Drive.
+- Los vínculos inaccesibles o ajenos a Google Docs se omiten sin registrar
+  URLs, IDs, títulos ni contenido.
+- Main y `probarExtraccionParticipantes()` usan el mismo conjunto combinado.
+
+## Motivo
+
+La evidencia de ejecución mostró que ninguno de los tres documentos directos
+era la transcripción. Las notas de Gemini pueden contener la referencia al
+documento de transcripción como vínculo o chip, aunque esté fuera de la carpeta.
+
+## Impacto
+
+La localización admite la organización real de archivos sin relajar el criterio
+de asistencia ni incorporar nombres presentes únicamente en el relato.
+
+## Compatibilidad
+
+No cambia el esquema del acta ni el contrato de participantes. Añade una fuente
+técnica de candidatos antes de ejecutar el selector existente.
+
+## Pruebas realizadas
+
+- Extracción de ID desde URL `/document/d/...`.
+- Extracción de ID desde URL con parámetro `id`.
+- Validación sintáctica de Drive, Gemini, Main y la prueba con Node.js.
+- `git diff --check` sin errores.
+- `clasp push --force` desde una copia temporal con 17 archivos.
+- Descarga independiente y coincidencia SHA-256 de los tres módulos publicados.
+- Confirmación de `Inicializar.js` remoto.
+
+## Pendientes
+
+- Ejecutar nuevamente `probarExtraccionParticipantes()`.

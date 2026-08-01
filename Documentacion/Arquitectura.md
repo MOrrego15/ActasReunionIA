@@ -322,7 +322,8 @@ construirPromptActa(contenidoFuente, contexto)
   -> solicitarActaEstructurada(mensajes, contexto)
   -> validarRespuestaActa(respuestaTexto, contexto)
   -> listarArchivosEnCarpeta(carpetaNotasId, contexto)
-  -> leerContenidosDocumentosGoogle(archivos, contexto)
+  -> listarDocumentosGoogleVinculados(documentoFuente, contexto)
+  -> leerContenidosDocumentosGoogle(archivosDirectosYVinculados, contexto)
   -> seleccionarTranscripcionAsociada(documentoFuente, documentos, contexto)
   -> extraerParticipantesConfirmados(contenidoTranscripcion, contexto)
   -> resolverParticipantesActa(repositorioProcesadosId, participantes, contexto)
@@ -368,7 +369,9 @@ HTML, Markdown, cercos de código ni JSON incrustado en valores textuales.
 
 La lista `participantes` validada de OpenAI es provisional y será reemplazada
 por el sistema antes de consultar `Personas.gs`. Drive leerá los Google Docs
-directos de la carpeta y `Gemini.gs` seleccionará primero una única referencia
+directos de la carpeta y los Google Docs enlazados desde las notas mediante
+hipervínculos de texto o chips inteligentes. Los candidatos se deduplicarán por
+su identificador estable. `Gemini.gs` seleccionará primero una única referencia
 cuyo nombre contenga `Transcripción` o `Transcript`, sin exigir coincidencia
 del nombre base. Si esa referencia no es única, aplicará el criterio estructural
 de hablantes distintos, etiquetas repetidas y marcas conversacionales. Luego

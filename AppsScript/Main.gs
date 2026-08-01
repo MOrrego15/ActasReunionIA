@@ -294,8 +294,19 @@ function _mainProcesarDocumento(documento, posicion, configuracion, contexto) {
       configuracion.gemini.carpetaNotasId,
       contexto
     );
-    const contenidosDocumentos = _mainResultadoExitoso(listadoArchivos)
-      ? leerContenidosDocumentosGoogle(listadoArchivos.datos, contexto)
+    const documentosVinculados = _mainResultadoExitoso(listadoArchivos)
+      ? listarDocumentosGoogleVinculados(
+          documento.idDocumentoFuente,
+          contexto
+        )
+      : null;
+    const archivosCandidatos =
+      _mainResultadoExitoso(listadoArchivos) &&
+      _mainResultadoExitoso(documentosVinculados)
+        ? listadoArchivos.datos.concat(documentosVinculados.datos)
+        : null;
+    const contenidosDocumentos = Array.isArray(archivosCandidatos)
+      ? leerContenidosDocumentosGoogle(archivosCandidatos, contexto)
       : null;
     const seleccionTranscripcion =
       _mainResultadoExitoso(contenidosDocumentos) &&
