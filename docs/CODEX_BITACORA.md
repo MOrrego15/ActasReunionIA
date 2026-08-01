@@ -1201,3 +1201,118 @@ funcional de selección de participantes.
 - Ejecutar nuevamente `probarExtraccionParticipantes()`.
 - Confirmar que no aparecen personas meramente mencionadas.
 - Confirmar que el organizador y las personas con correo aparecen una sola vez.
+
+# Cambio 0012
+Fecha: 2026-08-01
+Autor: Codex
+
+## Solicitud del usuario
+
+> La regla basada en correo devolvió cinco personas e incluyó a una persona
+> solamente mencionada que no ingresó a la reunión. Se confirmó que Google
+> Meet no genera un informe de asistencia y se autorizó implementar y
+> desplegar una regla basada en hablantes confirmados más el organizador.
+
+## Respuesta de Codex
+
+Se reemplazó la inferencia de participantes por una extracción determinista.
+El sistema utiliza exclusivamente etiquetas `Nombre: intervención` posteriores
+al encabezado de transcripción, deduplica los nombres y añade al organizador
+solo cuando esté identificado explícitamente antes de esa sección. La lista
+generada por OpenAI se descarta antes de consultar el catálogo de personas.
+
+La función `probarExtraccionParticipantes()` reutiliza ahora este extractor y
+ya no realiza llamadas a OpenAI. La prueba controlada sobre el DOCX aportado
+devolvió cuatro participantes y confirmó que la persona únicamente mencionada
+no fue incluida.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora y la documentación arquitectónica.
+2. Se comprobó en el DOCX que el falso positivo aparecía solo dentro de una
+   intervención y no como etiqueta de hablante.
+3. Se confirmó que no existe un informe de asistencia con nombres y correos.
+4. El usuario autorizó expresamente la regla de hablantes más organizador.
+5. Se implementó `extraerParticipantesConfirmados()` en `Gemini.gs`.
+6. Se integró la sustitución determinista después de validar OpenAI y antes de
+   resolver el catálogo de personas.
+7. Se retiró del prompt la responsabilidad de inferir participantes.
+8. La función manual de prueba dejó de llamar a OpenAI.
+9. Una primera prueba detectó una incidencia de codificación en el texto
+   enviado por PowerShell; se aisló y se repitió con Unicode estable.
+10. Las pruebas sintácticas y funcionales finalizaron correctamente.
+11. La prueba con el DOCX real devolvió cuatro participantes y ningún falso
+    positivo para la persona mencionada.
+12. Se descargaron los 17 archivos remotos y se preservó `Inicializar.js`.
+13. Se desplegaron los cuatro módulos Apps Script modificados con `clasp`.
+14. Una descarga independiente confirmó 17 archivos y coincidencia SHA-256
+    para `Gemini`, `Main`, `Prompt` y `PruebaParticipantes`.
+
+## Objetivo
+
+Evitar que terceros mencionados sean incorporados como asistentes y eliminar
+la dependencia de la interpretación probabilística de OpenAI para esta regla.
+
+## Archivos modificados
+
+- AppsScript/Gemini.gs
+- AppsScript/Main.gs
+- AppsScript/PruebaParticipantes.gs
+- AppsScript/Prompt.gs
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Cambios realizados
+
+- Se añadió una extracción determinista de etiquetas de hablante.
+- Se exige un encabezado de transcripción antes de reconocer hablantes.
+- Se deduplican nombres ignorando mayúsculas y acentos.
+- Se admite una etiqueta de uno o varios términos.
+- Se añade una sola vez al organizador identificado explícitamente antes de la
+  transcripción.
+- Se reemplazan los participantes devueltos por OpenAI antes de `Personas.gs`.
+- La prueba aislada ya no consume la API de OpenAI.
+- Se actualizó DA-014 y se documentó el riesgo de omitir asistentes silenciosos.
+
+## Motivo
+
+Sin un informe de asistencia no es posible acreditar a quienes ingresaron pero
+no hablaron. Las etiquetas de hablante constituyen la evidencia verificable
+disponible y permiten separar asistentes activos de personas solo mencionadas.
+
+## Impacto
+
+Se eliminan falsos positivos narrativos. Como limitación aceptada, los
+asistentes silenciosos se omitirán. El cambio no altera el esquema del acta ni
+la estructura del catálogo de personas.
+
+## Compatibilidad
+
+Se conserva el contrato `participantes: [{nombre, cargo}]`. El flujo mantiene
+la validación de OpenAI para los demás campos, pero los participantes se
+reemplazan determinísticamente antes de generar el acta.
+
+## Pruebas realizadas
+
+- Prueba local con organizador, hablantes repetidos, nombre de un término y
+  una persona solamente mencionada.
+- Confirmación de deduplicación del organizador.
+- Confirmación de exclusión de la persona mencionada.
+- Validación sintáctica con Node.js de los cuatro archivos Apps Script
+  modificados.
+- Prueba contra el DOCX proporcionado: cuatro participantes y falso positivo
+  ausente, sin registrar nombres, correos ni contenido institucional.
+- `clasp push --force` desde una copia temporal con 17 archivos.
+- Descarga independiente posterior y coincidencia SHA-256 de los cuatro
+  módulos desplegados.
+- Confirmación de `Inicializar.js` remoto y eliminación segura de temporales.
+
+## Pendientes
+
+- Ejecutar `probarExtraccionParticipantes()` en Apps Script para confirmar la
+  lectura del Google Docs operativo.
+- Confirmar visualmente los cuatro asistentes esperados en la Etapa 3.
+- Mantener documentada la limitación de asistentes silenciosos mientras no
+  exista una fuente formal de asistencia.

@@ -67,34 +67,14 @@ function construirPromptActa(contenidoFuente, contexto) {
       'Usa cadena vacía para textos opcionales ausentes.',
       'Usa arreglos vacíos para listas ausentes.',
       'No incluyas elementos vacíos o incompletos en las listas.',
-      'Incluye en participantes únicamente personas cuyo nombre esté asociado ' +
-        'a un correo electrónico visible en una lista o sección formal de ' +
-        'asistencia, más el organizador identificado formalmente.',
-      'El registro de ingreso con nombre y correo es suficiente: incluye a ' +
-        'la persona aunque no haya hablado ni aparezca en el desarrollo.',
-      'Incluye al organizador exactamente una vez. Si ya está incluido por ' +
-        'nombre y correo, no lo repitas.',
-      'Si el organizador no tiene correo visible, inclúyelo solo cuando su ' +
-        'nombre esté identificado explícitamente como organizador en ' +
-        'metadatos, encabezados o una sección formal de la reunión.',
-      'Revisa todas las listas de acceso o asistencia e incluye exactamente ' +
-        'una vez cada nombre que tenga correo asociado.',
-      'Usa como fuente de asistencia las listas o secciones de participantes ' +
-        'donde figuren juntos el nombre y el correo.',
-      'No uses etiquetas de hablante, intervenciones ni la transcripción como ' +
-        'evidencia de asistencia.',
+      'La lista de participantes será reemplazada por una extracción ' +
+        'determinista del sistema; devuelve un arreglo vacío.',
       'No clasifiques como participante a una persona mencionada únicamente ' +
         'en temas, narraciones, acuerdos, tareas o referencias a terceros.',
       'No conviertas automáticamente responsables, destinatarios o personas ' +
         'citadas en asistentes.',
-      'No omitas a una persona con correo por no tener intervenciones, tareas ' +
-        'o menciones dentro del contenido narrativo.',
       'Mencionar a una persona nunca confirma su asistencia, aunque aparezca ' +
         'varias veces en notas o transcripción.',
-      'Si una persona no tiene nombre con correo asociado y tampoco es el ' +
-        'organizador identificado formalmente, omítela de participantes.',
-      'Usa el correo solo como evidencia; no lo copies en nombre ni cargo y ' +
-        'no agregues propiedades al esquema.',
       'Cada participante confirmado requiere nombre no vacío.',
       'Cada elemento de agenda requiere texto no vacío.',
       'Cada acuerdo y tarea requiere descripcion no vacía.',

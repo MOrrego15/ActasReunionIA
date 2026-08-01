@@ -96,12 +96,12 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Motivo:** Reducir exposición y mantener Git enfocado en artefactos de desarrollo.
 - **Pendiente:** Definir reglas concretas de exclusión cuando se creen las carpetas funcionales.
 
-## DA-014: Evidencia de asistencia por acceso y organizador
+## DA-014: Evidencia de asistencia por hablante y organizador
 
 - **Estado:** Aceptada.
-- **Decisión:** Construir la lista de participantes con las personas cuyo nombre tenga un correo visible en listas formales de asistencia y añadir, una sola vez, al organizador identificado explícitamente en metadatos, encabezados o una sección formal cuando todavía no esté incluido por correo.
-- **Motivo:** El correo visible acredita el ingreso e incluye asistentes silenciosos. El organizador debe aparecer en el acta aunque la fuente no muestre su correo.
-- **Consecuencia:** Las etiquetas de hablante, intervenciones y menciones narrativas no acreditan asistencia. Sin nombre con correo ni identificación formal como organizador, la persona debe excluirse. Los correos se usan solo como evidencia y nunca se guardan, muestran ni registran.
+- **Decisión:** Ante la inexistencia de un informe de asistencia, construir la lista mediante código con las etiquetas `Nombre: intervención` posteriores al encabezado de transcripción y añadir una sola vez al organizador identificado explícitamente antes de esa sección. La lista inferida por OpenAI no se utilizará como fuente de participantes.
+- **Motivo:** Una etiqueta de hablante acredita intervención directa y permite distinguirla de nombres solamente mencionados, evitando falsos positivos como terceros citados durante la conversación.
+- **Consecuencia:** Los asistentes silenciosos no pueden confirmarse y se omitirán. Los nombres mencionados dentro de intervenciones no se incorporarán. La extracción será determinista, deduplicada y no dependerá de correos ni de la interpretación del modelo.
 
 ## Decisiones pendientes
 

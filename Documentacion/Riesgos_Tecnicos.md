@@ -28,6 +28,7 @@ La valoración es inicial y deberá revisarse con datos de uso, volumen y polít
 | Registros excesivos filtran contenido de reuniones | Media | Alto | Registrar metadatos mínimos y errores sanitizados, nunca prompts completos por defecto. |
 | Cambios de API o modelo de OpenAI | Media | Medio | Encapsular la integración y mantener modelo y versión de prompt configurables. |
 | Diferencias de zona horaria alteran nombres o carpetas | Media | Medio | Configurar explícitamente la zona horaria institucional. |
+| Ausencia de informe de asistencia omite participantes silenciosos | Alta | Medio | Documentar la limitación y usar únicamente etiquetas de hablante más organizador explícito para evitar falsos positivos. |
 
 ## 3. Riesgos de consistencia
 
@@ -103,4 +104,3 @@ Estos supuestos deberán validarse; no constituyen requisitos confirmados.
 - ambientes de desarrollo, prueba y producción;
 - responsables de la plantilla y de la aprobación final;
 - objetivos de disponibilidad y soporte.
-

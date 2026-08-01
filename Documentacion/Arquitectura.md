@@ -321,6 +321,7 @@ La secuencia aprobada para transformar contenido fuente en un documento es:
 construirPromptActa(contenidoFuente, contexto)
   -> solicitarActaEstructurada(mensajes, contexto)
   -> validarRespuestaActa(respuestaTexto, contexto)
+  -> extraerParticipantesConfirmados(contenidoFuente, contexto)
   -> resolverParticipantesActa(repositorioProcesadosId, participantes, contexto)
   -> generarDocumentoActa(respuestaActaValidada, datosEmisionActa,
        participantesActa, contexto)
@@ -362,13 +363,14 @@ un valor `null` siempre es inválido. Los acuerdos y tareas se numeran de forma
 entera, positiva y secuencial desde uno. No se admiten propiedades adicionales,
 HTML, Markdown, cercos de código ni JSON incrustado en valores textuales.
 
-La lista `participantes` contendrá únicamente personas cuyo nombre esté
-asociado a un correo electrónico visible en las notas. El correo se utilizará
-solo como evidencia de ingreso a la reunión y no formará parte del contrato ni
-se almacenará en el catálogo. El registro de nombre y correo será suficiente
-aunque la persona no intervenga; esta regla incluye organizadores, anfitriones
-y convocantes. Una persona sin correo asociado se omitirá aunque su nombre
-aparezca en temas, acuerdos, tareas, responsabilidades o referencias a terceros.
+La lista `participantes` validada de OpenAI es provisional y será reemplazada
+por el sistema antes de consultar `Personas.gs`. `Gemini.gs` extraerá de forma
+determinista las etiquetas `Nombre: intervención` ubicadas después del
+encabezado de transcripción, las deduplicará y añadirá al organizador solo si
+aparece identificado explícitamente antes de la transcripción. Un nombre que
+solo aparezca dentro de una intervención no acreditará asistencia. Al no
+existir un informe de asistencia, los asistentes silenciosos no pueden
+confirmarse y se omitirán.
 
 ### 11.2 DatosEmisionActa y documento generado
 

@@ -2,8 +2,8 @@
  * Módulo: PruebaParticipantes
  *
  * Diagnóstico manual y aislado de la extracción de participantes. Lee el
- * documento fuente más reciente y reutiliza el flujo vigente hasta la
- * validación de OpenAI. No genera actas, no reserva correlativos, no modifica
+ * documento fuente más reciente y aplica la extracción determinista. No
+ * genera actas, no llama a OpenAI, no reserva correlativos, no modifica
  * estados de procesamiento y no consulta ni actualiza el catálogo persona.
  */
 
@@ -11,9 +11,7 @@ const PRUEBA_PARTICIPANTES_CODIGOS_ERROR = Object.freeze({
   CONFIGURACION_INVALIDA: 'PRUEBA_PARTICIPANTES_CONFIGURACION_INVALIDA',
   FUENTE_NO_DISPONIBLE: 'PRUEBA_PARTICIPANTES_FUENTE_NO_DISPONIBLE',
   LECTURA_ERROR: 'PRUEBA_PARTICIPANTES_LECTURA_ERROR',
-  PROMPT_ERROR: 'PRUEBA_PARTICIPANTES_PROMPT_ERROR',
-  OPENAI_ERROR: 'PRUEBA_PARTICIPANTES_OPENAI_ERROR',
-  VALIDACION_ERROR: 'PRUEBA_PARTICIPANTES_VALIDACION_ERROR',
+  EXTRACCION_ERROR: 'PRUEBA_PARTICIPANTES_EXTRACCION_ERROR',
   ERROR: 'PRUEBA_PARTICIPANTES_ERROR'
 });
 
@@ -21,7 +19,7 @@ const PRUEBA_PARTICIPANTES_CODIGOS_ERROR = Object.freeze({
  * Extrae los participantes del documento fuente más reciente.
  *
  * Esta función está destinada exclusivamente a ejecución manual desde el
- * editor de Apps Script. Realiza una llamada real a OpenAI. Para observar el
+ * editor de Apps Script. Para observar el
  * valor devuelto sin registrar datos personales, ejecútala con el depurador y
  * revisa la variable local `resultado` en la última línea.
  *
@@ -69,49 +67,20 @@ function probarExtraccionParticipantes() {
       );
     }
 
-    const prompt = construirPromptActa(
+    const extraccion = extraerParticipantesConfirmados(
       lectura.datos.contenidoFuente,
       contexto
     );
-    if (!_pruebaParticipantesResultadoExitoso(prompt) ||
-      !prompt.datos || !Array.isArray(prompt.datos.mensajes)) {
+    if (!_pruebaParticipantesResultadoExitoso(extraccion) ||
+      !extraccion.datos ||
+      !Array.isArray(extraccion.datos.participantes)) {
       return _pruebaParticipantesError(
-        PRUEBA_PARTICIPANTES_CODIGOS_ERROR.PROMPT_ERROR,
-        'No fue posible construir el prompt de la prueba.'
+        PRUEBA_PARTICIPANTES_CODIGOS_ERROR.EXTRACCION_ERROR,
+        'No fue posible extraer los participantes de la prueba.'
       );
     }
 
-    const respuestaOpenAI = solicitarActaEstructurada(
-      prompt.datos.mensajes,
-      contexto
-    );
-    if (!_pruebaParticipantesResultadoExitoso(respuestaOpenAI) ||
-      !respuestaOpenAI.datos ||
-      !esCadenaNoVacia(respuestaOpenAI.datos.respuestaTexto)) {
-      return _pruebaParticipantesError(
-        PRUEBA_PARTICIPANTES_CODIGOS_ERROR.OPENAI_ERROR,
-        'OpenAI no devolvió una respuesta utilizable para la prueba.'
-      );
-    }
-
-    const validacion = validarRespuestaActa(
-      respuestaOpenAI.datos.respuestaTexto,
-      contexto
-    );
-    if (!_pruebaParticipantesResultadoExitoso(validacion) ||
-      !validacion.datos ||
-      !esObjetoPlano(validacion.datos.respuestaActaValidada) ||
-      !Array.isArray(
-        validacion.datos.respuestaActaValidada.participantes
-      )) {
-      return _pruebaParticipantesError(
-        PRUEBA_PARTICIPANTES_CODIGOS_ERROR.VALIDACION_ERROR,
-        'La respuesta de la prueba no cumple el contrato del acta.'
-      );
-    }
-
-    const participantes =
-      validacion.datos.respuestaActaValidada.participantes.map(
+    const participantes = extraccion.datos.participantes.map(
         function (participante) {
           return {
             nombre: participante.nombre,

@@ -15,6 +15,7 @@ const MAIN_CODIGOS_ERROR = Object.freeze({
   PROMPT_ERROR: 'MAIN_PROMPT_ERROR',
   OPENAI_ERROR: 'MAIN_OPENAI_ERROR',
   VALIDACION_ERROR: 'MAIN_VALIDACION_ERROR',
+  ASISTENCIA_ERROR: 'MAIN_ASISTENCIA_ERROR',
   PERSONAS_ERROR: 'MAIN_PERSONAS_ERROR',
   CORRELATIVO_ERROR: 'MAIN_CORRELATIVO_ERROR',
   ACTA_ERROR: 'MAIN_ACTA_ERROR',
@@ -40,6 +41,7 @@ const MAIN_ETAPAS = Object.freeze({
   PROMPT: 'PROMPT',
   OPENAI: 'OPENAI',
   VALIDACION: 'VALIDACION',
+  ASISTENCIA: 'ASISTENCIA',
   PERSONAS: 'PERSONAS',
   CORRELATIVO: 'CORRELATIVO',
   ACTA: 'ACTA',
@@ -285,6 +287,20 @@ function _mainProcesarDocumento(documento, posicion, configuracion, contexto) {
         Session.getScriptTimeZone(),
         'dd/MM/yyyy'
       );
+
+    const asistencia = extraerParticipantesConfirmados(
+      lectura.datos.contenidoFuente,
+      contexto
+    );
+    if (!_mainResultadoExitoso(asistencia) || !asistencia.datos ||
+      !Array.isArray(asistencia.datos.participantes)) {
+      return _mainResultadoDesdeModulo(
+        posicion, MAIN_ETAPAS.ASISTENCIA, correlativo, asistencia,
+        MAIN_CODIGOS_ERROR.ASISTENCIA_ERROR
+      );
+    }
+    validacion.datos.respuestaActaValidada.participantes =
+      asistencia.datos.participantes;
 
     const personas = resolverParticipantesActa(
       configuracion.procesados.repositorioId,
