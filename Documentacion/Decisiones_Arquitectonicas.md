@@ -96,12 +96,12 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Motivo:** Reducir exposición y mantener Git enfocado en artefactos de desarrollo.
 - **Pendiente:** Definir reglas concretas de exclusión cuando se creen las carpetas funcionales.
 
-## DA-014: Evidencia de asistencia por acceso o intervención
+## DA-014: Evidencia de asistencia por acceso y organizador
 
 - **Estado:** Aceptada.
-- **Decisión:** Construir la lista de participantes como la unión deduplicada de personas con nombre y correo visible en listas de asistencia y personas identificadas como hablantes mediante etiquetas `Nombre: intervención` en la transcripción.
-- **Motivo:** Las transcripciones pueden acreditar la presencia de hablantes cuyo correo no aparece en las notas, mientras que las listas de acceso permiten conservar asistentes silenciosos.
-- **Consecuencia:** Una mención narrativa no acredita asistencia. Sin correo asociado ni etiqueta de hablante, la persona debe excluirse. Los correos se usan solo como evidencia y nunca se guardan, muestran ni registran.
+- **Decisión:** Construir la lista de participantes con las personas cuyo nombre tenga un correo visible en listas formales de asistencia y añadir, una sola vez, al organizador identificado explícitamente en metadatos, encabezados o una sección formal cuando todavía no esté incluido por correo.
+- **Motivo:** El correo visible acredita el ingreso e incluye asistentes silenciosos. El organizador debe aparecer en el acta aunque la fuente no muestre su correo.
+- **Consecuencia:** Las etiquetas de hablante, intervenciones y menciones narrativas no acreditan asistencia. Sin nombre con correo ni identificación formal como organizador, la persona debe excluirse. Los correos se usan solo como evidencia y nunca se guardan, muestran ni registran.
 
 ## Decisiones pendientes
 

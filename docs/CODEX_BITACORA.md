@@ -1103,3 +1103,101 @@ funcional de selección de participantes.
 - Confirmar que la salida contiene los cuatro asistentes esperados.
 - Completar los datos documentales del participante abreviado en la hoja
   `persona` si corresponde.
+
+# Cambio 0011
+Fecha: 2026-08-01
+Autor: Codex
+
+## Solicitud del usuario
+
+> La prueba con evidencia por intervención devolvió personas mencionadas que
+> no participaron. Se definió como regla definitiva incluir personas con
+> nombre y correo visible, añadir al organizador cuando todavía no esté
+> incluido por correo y no incluir nunca personas meramente mencionadas. El
+> usuario solicitó ajustar y desplegar, actualizando la bitácora y realizando
+> finalmente commit y push.
+
+## Respuesta de Codex
+
+Se retiró del prompt la transcripción como evidencia de asistencia. La lista de
+participantes se limita a personas con nombre y correo en listas o secciones
+formales de asistencia, más el organizador identificado explícitamente en
+metadatos, encabezados o una sección formal cuando no haya sido incluido por
+correo. Las menciones, intervenciones, tareas, acuerdos y referencias a terceros
+no acreditan asistencia.
+
+La decisión DA-014 fue actualizada, el prompt se desplegó en Apps Script y una
+descarga independiente confirmó la integridad del archivo y la conservación de
+los componentes remotos obligatorios.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora antes de modificar archivos.
+2. Se revisaron `Prompt.gs` y DA-014.
+3. Se sustituyó la regla provisional basada en correo o intervención.
+4. Se estableció correo visible o identificación formal como organizador.
+5. Se prohibió usar etiquetas de hablante, intervenciones y menciones como
+   evidencia de asistencia.
+6. Se actualizó DA-014 con la regla definitiva.
+7. Se verificaron las instrucciones relevantes del prompt.
+8. Se descargó el proyecto remoto con 17 archivos y se preservó
+   `Inicializar.js`.
+9. Se superpuso únicamente `Prompt.gs` y se ejecutó `clasp push --force`.
+10. Una segunda descarga confirmó 17 archivos, `Inicializar.js`, la función de
+    prueba y la coincidencia SHA-256 de `Prompt.gs`.
+
+## Objetivo
+
+Evitar falsos asistentes causados por nombres mencionados y conservar tanto a
+los asistentes acreditados por correo como al organizador formal de la reunión.
+
+## Archivos modificados
+
+- AppsScript/Prompt.gs
+- Documentacion/Decisiones_Arquitectonicas.md
+- docs/CODEX_BITACORA.md
+
+## Cambios realizados
+
+- Se eliminó la transcripción como fuente de evidencia de asistencia.
+- Se exigió nombre con correo visible en una lista o sección formal.
+- Se añadió al organizador solo cuando esté identificado formalmente y todavía
+  no se encuentre incluido por correo.
+- Se exigió deduplicar al organizador y los demás participantes.
+- Se excluyeron expresamente nombres mencionados, responsables, destinatarios,
+  personas citadas y etiquetas de hablante sin correo.
+- Se actualizó el título, decisión, motivo y consecuencia de DA-014.
+
+## Motivo
+
+La regla provisional produjo falsos positivos al interpretar nombres
+mencionados como participantes. La evidencia debe provenir de secciones
+formales y no del contenido narrativo.
+
+## Impacto
+
+El modelo dejará de incorporar participantes únicamente por aparecer en la
+transcripción. El organizador seguirá incluido aunque su correo no sea visible,
+siempre que la fuente lo identifique formalmente como tal.
+
+## Compatibilidad
+
+No cambia el esquema JSON ni las APIs públicas. Restringe y precisa el criterio
+funcional de selección de participantes.
+
+## Pruebas realizadas
+
+- Revisión textual de la regla definitiva en `Prompt.gs`.
+- Revisión de DA-014 actualizada.
+- `clasp pull` previo con 17 archivos.
+- `clasp push --force` con 17 archivos.
+- `clasp pull` independiente posterior.
+- Coincidencia SHA-256 de `Prompt.gs` local y remoto.
+- Confirmación de `Inicializar.js` y `PruebaParticipantes.js` remotos.
+- No se realizó una llamada real a OpenAI desde este entorno.
+
+## Pendientes
+
+- Ejecutar nuevamente `probarExtraccionParticipantes()`.
+- Confirmar que no aparecen personas meramente mencionadas.
+- Confirmar que el organizador y las personas con correo aparecen una sola vez.
