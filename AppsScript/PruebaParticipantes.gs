@@ -10,6 +10,8 @@
 const PRUEBA_PARTICIPANTES_CODIGOS_ERROR = Object.freeze({
   CONFIGURACION_INVALIDA: 'PRUEBA_PARTICIPANTES_CONFIGURACION_INVALIDA',
   FUENTE_NO_DISPONIBLE: 'PRUEBA_PARTICIPANTES_FUENTE_NO_DISPONIBLE',
+  TRANSCRIPCION_NO_DISPONIBLE:
+    'PRUEBA_PARTICIPANTES_TRANSCRIPCION_NO_DISPONIBLE',
   LECTURA_ERROR: 'PRUEBA_PARTICIPANTES_LECTURA_ERROR',
   EXTRACCION_ERROR: 'PRUEBA_PARTICIPANTES_EXTRACCION_ERROR',
   ERROR: 'PRUEBA_PARTICIPANTES_ERROR'
@@ -55,8 +57,25 @@ function probarExtraccionParticipantes() {
       );
     }
 
+    const listado = listarArchivosEnCarpeta(
+      configuracion.gemini.carpetaNotasId,
+      contexto
+    );
+    const seleccion = _pruebaParticipantesResultadoExitoso(listado)
+      ? seleccionarTranscripcionAsociada(
+          fuentes.datos.documentos[0], listado.datos, contexto)
+      : null;
+    if (!_pruebaParticipantesResultadoExitoso(seleccion) ||
+      !seleccion.datos ||
+      !esCadenaNoVacia(seleccion.datos.idDocumentoTranscripcion)) {
+      return _pruebaParticipantesError(
+        PRUEBA_PARTICIPANTES_CODIGOS_ERROR.TRANSCRIPCION_NO_DISPONIBLE,
+        'No existe una transcripción única asociada al documento fuente.'
+      );
+    }
+
     const lectura = leerContenidoDocumentoFuente(
-      fuentes.datos.documentos[0].idDocumentoFuente,
+      seleccion.datos.idDocumentoTranscripcion,
       contexto
     );
     if (!_pruebaParticipantesResultadoExitoso(lectura) ||

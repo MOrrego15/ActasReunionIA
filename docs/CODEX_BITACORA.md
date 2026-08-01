@@ -1406,3 +1406,106 @@ No cambia contratos públicos ni el esquema de participantes. Solo amplía el
 
 - Ejecutar nuevamente `probarExtraccionParticipantes()` en Apps Script.
 - Confirmar que el Google Docs operativo devuelve los cuatro participantes.
+
+# Cambio 0014
+Fecha: 2026-08-01
+Autor: Codex
+
+## Solicitud del usuario
+
+> La prueba clasificó cinco títulos temáticos como participantes. El usuario
+> solicitó modificar y desplegar la solución correcta.
+
+## Respuesta de Codex
+
+Se eliminó el uso de las notas temáticas como fuente de participantes. La
+prueba y el flujo principal listan los archivos de la carpeta, localizan una
+única transcripción cuyo nombre base coincide con el documento de notas, leen
+esa transcripción y extraen únicamente sus etiquetas de hablante. Ante cero o
+múltiples coincidencias, el documento falla de forma controlada.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora antes de modificar archivos.
+2. Se revisó el selector de Drive y se confirmó que entrega únicamente el
+   Google Docs más reciente.
+3. Se confirmó que la función de prueba estaba leyendo las notas temáticas.
+4. Se descartó ampliar indefinidamente una lista negra de títulos.
+5. Se implementó el emparejamiento por nombre base entre notas y transcripción.
+6. Se integró la lectura de la transcripción en la prueba aislada.
+7. Se integró la misma selección en el flujo principal antes de extraer
+   participantes.
+8. Se probaron nombres de reunión coincidentes, una transcripción ajena y la
+   exclusión de una persona solamente mencionada.
+9. Se validó la sintaxis de los tres archivos Apps Script modificados.
+10. El primer intento de `clasp pull` fue rechazado por Google con
+    `invalid_rapt`; no se descargó ni publicó ningún archivo.
+11. Se inició `clasp login`, pero la autorización no se completó dentro del
+    tiempo de espera y una comprobación posterior mantuvo `invalid_rapt`.
+12. El usuario completó posteriormente la autenticación de `clasp`.
+13. Se descargaron los 17 archivos remotos, se preservó `Inicializar.js` y se
+    desplegaron `Gemini`, `Main` y `PruebaParticipantes`.
+14. Una descarga independiente confirmó 17 archivos, presencia de
+    `Inicializar.js` y coincidencia SHA-256 de los tres módulos desplegados.
+
+## Objetivo
+
+Separar las fuentes: usar las notas para construir el contenido del acta y la
+transcripción asociada únicamente para identificar hablantes confirmados.
+
+## Archivos modificados
+
+- AppsScript/Gemini.gs
+- AppsScript/Main.gs
+- AppsScript/PruebaParticipantes.gs
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Cambios realizados
+
+- Se añadió `seleccionarTranscripcionAsociada()` como regla pura en
+  `Gemini.gs`.
+- El nombre base elimina los sufijos `Notas de Gemini`, `Transcripción` o
+  `Transcript`, normaliza mayúsculas, espacios y acentos, y exige igualdad.
+- Solo se aceptan Google Docs directos cuyo nombre indique transcripción.
+- Cero coincidencias produce `GEMINI_TRANSCRIPCION_NO_ENCONTRADA`.
+- Varias coincidencias producen `GEMINI_TRANSCRIPCION_AMBIGUA`.
+- `probarExtraccionParticipantes()` lee la transcripción seleccionada y sigue
+  sin llamar a OpenAI.
+- `Main.gs` usa las notas para OpenAI y la transcripción para participantes.
+
+## Motivo
+
+Las notas contienen títulos con dos puntos que no son hablantes. La
+transcripción es la única fuente disponible donde las etiquetas anteriores a
+una intervención representan participantes activos.
+
+## Impacto
+
+Evita clasificar temas como personas. Añade una lectura adicional de Drive por
+documento y requiere una convención de nombres coherente entre las notas y su
+transcripción.
+
+## Compatibilidad
+
+No cambia el esquema del acta ni del catálogo de personas. El flujo añade una
+etapa controlada `TRANSCRIPCION` antes de resolver asistentes.
+
+## Pruebas realizadas
+
+- Emparejamiento exacto entre `Notas de Gemini` y `Transcripción`.
+- Exclusión de una transcripción perteneciente a otra reunión.
+- Extracción de dos hablantes y exclusión de una persona solo mencionada.
+- Validación sintáctica de `Gemini.gs`, `Main.gs` y
+  `PruebaParticipantes.gs` con Node.js.
+- `clasp push --force` desde una copia temporal con 17 archivos.
+- Descarga independiente y coincidencia SHA-256 de los tres módulos.
+- Confirmación de `Inicializar.js` remoto y limpieza segura de temporales.
+
+## Pendientes
+
+- Ejecutar `probarExtraccionParticipantes()` contra la carpeta operativa.
+- Confirmar que la convención real de nombres produce una única coincidencia.
+- Confirmar que la salida contiene únicamente los cuatro hablantes esperados.

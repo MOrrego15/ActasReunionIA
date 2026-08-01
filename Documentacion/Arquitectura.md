@@ -321,7 +321,10 @@ La secuencia aprobada para transformar contenido fuente en un documento es:
 construirPromptActa(contenidoFuente, contexto)
   -> solicitarActaEstructurada(mensajes, contexto)
   -> validarRespuestaActa(respuestaTexto, contexto)
-  -> extraerParticipantesConfirmados(contenidoFuente, contexto)
+  -> listarArchivosEnCarpeta(carpetaNotasId, contexto)
+  -> seleccionarTranscripcionAsociada(documentoFuente, archivos, contexto)
+  -> leerContenidoDocumentoFuente(idDocumentoTranscripcion, contexto)
+  -> extraerParticipantesConfirmados(contenidoTranscripcion, contexto)
   -> resolverParticipantesActa(repositorioProcesadosId, participantes, contexto)
   -> generarDocumentoActa(respuestaActaValidada, datosEmisionActa,
        participantesActa, contexto)
@@ -364,14 +367,15 @@ entera, positiva y secuencial desde uno. No se admiten propiedades adicionales,
 HTML, Markdown, cercos de código ni JSON incrustado en valores textuales.
 
 La lista `participantes` validada de OpenAI es provisional y será reemplazada
-por el sistema antes de consultar `Personas.gs`. `Gemini.gs` extraerá de forma
-determinista las etiquetas `Nombre: intervención` presentes en el contenido,
-las deduplicará, excluirá encabezados documentales conocidos y añadirá al
-organizador solo si aparece identificado explícitamente. Un nombre que
+por el sistema antes de consultar `Personas.gs`. `Gemini.gs` seleccionará una
+única transcripción cuyo nombre base coincida con el documento de notas y
+extraerá de forma determinista sus etiquetas `Nombre: intervención`. Los
+nombres se deduplicarán y el organizador se añadirá solo si aparece identificado
+explícitamente. Un nombre que
 solo aparezca dentro de una intervención no acreditará asistencia. Al no
 existir un informe de asistencia, los asistentes silenciosos no pueden
-confirmarse y se omitirán. La extracción no depende de que el documento
-contenga un encabezado literal de transcripción.
+confirmarse y se omitirán. Si la transcripción asociada no existe o no es
+única, el procesamiento fallará de forma controlada.
 
 ### 11.2 DatosEmisionActa y documento generado
 

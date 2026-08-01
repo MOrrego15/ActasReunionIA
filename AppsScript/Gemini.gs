@@ -24,8 +24,73 @@
 const GEMINI_CODIGOS_ERROR = Object.freeze({
   PARAMETRO_INVALIDO: 'GEMINI_PARAMETRO_INVALIDO',
   CONTEXTO_INVALIDO: 'GEMINI_CONTEXTO_INVALIDO',
+  TRANSCRIPCION_NO_ENCONTRADA: 'GEMINI_TRANSCRIPCION_NO_ENCONTRADA',
+  TRANSCRIPCION_AMBIGUA: 'GEMINI_TRANSCRIPCION_AMBIGUA',
   ERROR: 'GEMINI_ERROR'
 });
+
+/**
+ * Selecciona la transcripción asociada a unas notas mediante el nombre base.
+ * No lee Drive ni interpreta contenido documental.
+ *
+ * @param {{idDocumentoFuente: string, nombre: string}} documentoFuente Notas.
+ * @param {Object[]} archivos Descriptores devueltos por Drive.
+ * @param {{idEjecucion: string}} contexto Contexto técnico.
+ * @returns {{exito: boolean, datos: ({idDocumentoTranscripcion: string}|null),
+ *     error: (Object|null)}} Transcripción única asociada.
+ */
+function seleccionarTranscripcionAsociada(documentoFuente, archivos, contexto) {
+  if (!esObjetoPlano(documentoFuente) ||
+    !esCadenaNoVacia(documentoFuente.nombre) || !Array.isArray(archivos)) {
+    return _geminiResultadoError(GEMINI_CODIGOS_ERROR.PARAMETRO_INVALIDO,
+      'Los datos para seleccionar la transcripción no son válidos.');
+  }
+  if (!_geminiValidarContexto(contexto)) {
+    return _geminiResultadoError(GEMINI_CODIGOS_ERROR.CONTEXTO_INVALIDO,
+      'El contexto de selección no es válido.');
+  }
+
+  try {
+    const nombreBase = _geminiNormalizarNombreReunion(documentoFuente.nombre);
+    const coincidencias = archivos.filter(function (archivo) {
+      return esObjetoPlano(archivo) && esCadenaNoVacia(archivo.id) &&
+        esCadenaNoVacia(archivo.nombre) &&
+        archivo.mimeType === DRIVE_MIME_DOCUMENTO_GOOGLE &&
+        archivo.esAccesoDirecto === false &&
+        /(?:transcripci[oó]n|transcript)/i.test(archivo.nombre) &&
+        _geminiNormalizarNombreReunion(archivo.nombre) === nombreBase;
+    });
+
+    if (coincidencias.length === 0) {
+      return _geminiResultadoError(
+        GEMINI_CODIGOS_ERROR.TRANSCRIPCION_NO_ENCONTRADA,
+        'No se encontró una transcripción asociada a las notas.'
+      );
+    }
+    if (coincidencias.length !== 1) {
+      return _geminiResultadoError(
+        GEMINI_CODIGOS_ERROR.TRANSCRIPCION_AMBIGUA,
+        'Existe más de una transcripción asociada a las notas.'
+      );
+    }
+    return {
+      exito: true,
+      datos: { idDocumentoTranscripcion: coincidencias[0].id },
+      error: null
+    };
+  } catch (errorSeleccion) {
+    return _geminiResultadoError(GEMINI_CODIGOS_ERROR.ERROR,
+      'No fue posible seleccionar la transcripción asociada.');
+  }
+}
+
+function _geminiNormalizarNombreReunion(nombre) {
+  return nombre.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/\s*-?\s*(?:notas?\s+de\s+gemini|transcripcion|transcript)\s*$/i, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 /**
  * Obtiene asistentes confirmados mediante etiquetas de hablante de la

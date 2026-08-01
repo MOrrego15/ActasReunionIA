@@ -29,6 +29,7 @@ La valoración es inicial y deberá revisarse con datos de uso, volumen y polít
 | Cambios de API o modelo de OpenAI | Media | Medio | Encapsular la integración y mantener modelo y versión de prompt configurables. |
 | Diferencias de zona horaria alteran nombres o carpetas | Media | Medio | Configurar explícitamente la zona horaria institucional. |
 | Ausencia de informe de asistencia omite participantes silenciosos | Alta | Medio | Documentar la limitación y usar únicamente etiquetas de hablante más organizador explícito para evitar falsos positivos. |
+| No existe una transcripción única asociada a las notas | Media | Alto | Emparejar por nombre base y detener el documento de forma controlada ante cero o múltiples coincidencias. |
 
 ## 3. Riesgos de consistencia
 

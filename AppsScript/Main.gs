@@ -12,6 +12,7 @@ const MAIN_CODIGOS_ERROR = Object.freeze({
   FUENTES_ERROR: 'MAIN_FUENTES_ERROR',
   PROCESADOS_ERROR: 'MAIN_PROCESADOS_ERROR',
   LECTURA_ERROR: 'MAIN_LECTURA_ERROR',
+  TRANSCRIPCION_ERROR: 'MAIN_TRANSCRIPCION_ERROR',
   PROMPT_ERROR: 'MAIN_PROMPT_ERROR',
   OPENAI_ERROR: 'MAIN_OPENAI_ERROR',
   VALIDACION_ERROR: 'MAIN_VALIDACION_ERROR',
@@ -38,6 +39,7 @@ const MAIN_ETAPAS = Object.freeze({
   OBTENCION_FUENTES: 'OBTENCION_FUENTES',
   CONSULTA_PROCESADOS: 'CONSULTA_PROCESADOS',
   LECTURA_FUENTE: 'LECTURA_FUENTE',
+  TRANSCRIPCION: 'TRANSCRIPCION',
   PROMPT: 'PROMPT',
   OPENAI: 'OPENAI',
   VALIDACION: 'VALIDACION',
@@ -288,8 +290,38 @@ function _mainProcesarDocumento(documento, posicion, configuracion, contexto) {
         'dd/MM/yyyy'
       );
 
+    const listadoArchivos = listarArchivosEnCarpeta(
+      configuracion.gemini.carpetaNotasId,
+      contexto
+    );
+    const seleccionTranscripcion = _mainResultadoExitoso(listadoArchivos)
+      ? seleccionarTranscripcionAsociada(
+          documento, listadoArchivos.datos, contexto)
+      : null;
+    if (!_mainResultadoExitoso(seleccionTranscripcion) ||
+      !seleccionTranscripcion.datos ||
+      !esCadenaNoVacia(
+        seleccionTranscripcion.datos.idDocumentoTranscripcion
+      )) {
+      return _mainResultadoDesdeModulo(
+        posicion, MAIN_ETAPAS.TRANSCRIPCION, correlativo,
+        seleccionTranscripcion, MAIN_CODIGOS_ERROR.TRANSCRIPCION_ERROR
+      );
+    }
+    const lecturaTranscripcion = leerContenidoDocumentoFuente(
+      seleccionTranscripcion.datos.idDocumentoTranscripcion,
+      contexto
+    );
+    if (!_mainResultadoExitoso(lecturaTranscripcion) ||
+      !lecturaTranscripcion.datos ||
+      !esCadenaNoVacia(lecturaTranscripcion.datos.contenidoFuente)) {
+      return _mainResultadoDesdeModulo(
+        posicion, MAIN_ETAPAS.TRANSCRIPCION, correlativo,
+        lecturaTranscripcion, MAIN_CODIGOS_ERROR.TRANSCRIPCION_ERROR
+      );
+    }
     const asistencia = extraerParticipantesConfirmados(
-      lectura.datos.contenidoFuente,
+      lecturaTranscripcion.datos.contenidoFuente,
       contexto
     );
     if (!_mainResultadoExitoso(asistencia) || !asistencia.datos ||
