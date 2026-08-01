@@ -1509,3 +1509,98 @@ etapa controlada `TRANSCRIPCION` antes de resolver asistentes.
 - Ejecutar `probarExtraccionParticipantes()` contra la carpeta operativa.
 - Confirmar que la convención real de nombres produce una única coincidencia.
 - Confirmar que la salida contiene únicamente los cuatro hablantes esperados.
+
+# Cambio 0015
+Fecha: 2026-08-01
+Autor: Codex
+
+## Solicitud del usuario
+
+> La selección por nombre no produjo participantes y el usuario solicitó
+> solucionarlo.
+
+## Respuesta de Codex
+
+Se reemplazó el emparejamiento por nombre por una clasificación determinista
+del contenido. Drive lee de forma controlada los Google Docs directos de la
+carpeta y Gemini acepta como transcripción únicamente un documento que tenga
+al menos dos hablantes distintos, etiquetas repetidas y además título o marcas
+de tiempo de transcripción, o una secuencia suficiente de intervenciones.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora antes de modificar archivos.
+2. Se descartó depender nuevamente de nombres de archivo no confirmados.
+3. Se diseñó una detección estructural separada del acceso técnico a Drive.
+4. Se añadió la lectura controlada de todos los Google Docs directos.
+5. Se añadió la clasificación de transcripción por hablantes y marcas.
+6. Se integró la nueva selección en la prueba y en el flujo principal.
+7. El primer comando de edición aplicó el parche, aunque su envoltorio de
+   PowerShell falló al imprimir el resultado; se verificó el estado antes de
+   continuar y no se duplicaron cambios.
+8. Una prueba simuló exactamente cinco títulos temáticos y una transcripción:
+   las notas fueron descartadas y la transcripción fue seleccionada.
+9. La extracción simulada mantuvo fuera a una persona solo mencionada.
+10. Se validó la sintaxis de los cuatro módulos Apps Script modificados.
+11. El usuario autorizó expresamente el despliegue.
+12. Se descargaron los 17 archivos remotos y se preservó `Inicializar.js`.
+13. Se desplegaron Drive, Gemini, Main y PruebaParticipantes con `clasp`.
+14. Una descarga independiente confirmó 17 archivos, `Inicializar.js` y
+    coincidencia SHA-256 de los cuatro módulos desplegados.
+
+## Objetivo
+
+Identificar la transcripción real sin depender de su nombre y evitar que las
+secciones temáticas de las notas sean interpretadas como participantes.
+
+## Archivos modificados
+
+- AppsScript/Drive.gs
+- AppsScript/Gemini.gs
+- AppsScript/Main.gs
+- AppsScript/PruebaParticipantes.gs
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Cambios realizados
+
+- Se añadió `leerContenidosDocumentosGoogle()` en Drive.
+- `seleccionarTranscripcionAsociada()` evalúa contenido y no nombres.
+- La transcripción requiere al menos dos hablantes distintos y repetición de
+  alguna etiqueta.
+- También requiere título, marca temporal o al menos cinco intervenciones.
+- Cero o múltiples candidatos mantienen errores controlados.
+- Main y la prueba usan la misma selección estructural.
+
+## Motivo
+
+La convención real de nombres no permitió emparejar notas y transcripción. En
+cambio, la estructura conversacional permite distinguir una transcripción de
+un resumen con títulos únicos.
+
+## Impacto
+
+Se leen los tres Google Docs candidatos de la carpeta antes de seleccionar la
+transcripción. No se registra contenido ni se envía esta prueba a OpenAI.
+
+## Compatibilidad
+
+No cambia el esquema de participantes ni el acta. Se conserva la etapa
+controlada `TRANSCRIPCION` y se elimina la dependencia funcional de nombres.
+
+## Pruebas realizadas
+
+- Cinco títulos temáticos únicos: descartados como notas.
+- Transcripción con tres hablantes, repeticiones, marca temporal y título:
+  seleccionada correctamente.
+- Persona mencionada dentro de una intervención: excluida.
+- Validación sintáctica con Node.js de Drive, Gemini, Main y la prueba.
+- `clasp push --force` desde una copia temporal con 17 archivos.
+- Descarga independiente y coincidencia SHA-256 de los cuatro módulos.
+- Confirmación de `Inicializar.js` remoto y limpieza segura de temporales.
+
+## Pendientes
+
+- Ejecutar después `probarExtraccionParticipantes()` en Apps Script.

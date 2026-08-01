@@ -322,8 +322,8 @@ construirPromptActa(contenidoFuente, contexto)
   -> solicitarActaEstructurada(mensajes, contexto)
   -> validarRespuestaActa(respuestaTexto, contexto)
   -> listarArchivosEnCarpeta(carpetaNotasId, contexto)
-  -> seleccionarTranscripcionAsociada(documentoFuente, archivos, contexto)
-  -> leerContenidoDocumentoFuente(idDocumentoTranscripcion, contexto)
+  -> leerContenidosDocumentosGoogle(archivos, contexto)
+  -> seleccionarTranscripcionAsociada(documentoFuente, documentos, contexto)
   -> extraerParticipantesConfirmados(contenidoTranscripcion, contexto)
   -> resolverParticipantesActa(repositorioProcesadosId, participantes, contexto)
   -> generarDocumentoActa(respuestaActaValidada, datosEmisionActa,
@@ -367,9 +367,11 @@ entera, positiva y secuencial desde uno. No se admiten propiedades adicionales,
 HTML, Markdown, cercos de código ni JSON incrustado en valores textuales.
 
 La lista `participantes` validada de OpenAI es provisional y será reemplazada
-por el sistema antes de consultar `Personas.gs`. `Gemini.gs` seleccionará una
-única transcripción cuyo nombre base coincida con el documento de notas y
-extraerá de forma determinista sus etiquetas `Nombre: intervención`. Los
+por el sistema antes de consultar `Personas.gs`. Drive leerá los Google Docs
+directos de la carpeta y `Gemini.gs` seleccionará una única transcripción por
+su estructura interna: dos o más hablantes distintos, etiquetas repetidas y
+marcas temporales, título de transcripción o una secuencia suficiente de
+intervenciones. Luego extraerá sus etiquetas `Nombre: intervención`. Los
 nombres se deduplicarán y el organizador se añadirá solo si aparece identificado
 explícitamente. Un nombre que
 solo aparezca dentro de una intervención no acreditará asistencia. Al no

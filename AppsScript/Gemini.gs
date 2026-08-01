@@ -30,18 +30,18 @@ const GEMINI_CODIGOS_ERROR = Object.freeze({
 });
 
 /**
- * Selecciona la transcripción asociada a unas notas mediante el nombre base.
+ * Selecciona una transcripción por su estructura interna.
  * No lee Drive ni interpreta contenido documental.
  *
  * @param {{idDocumentoFuente: string, nombre: string}} documentoFuente Notas.
- * @param {Object[]} archivos Descriptores devueltos por Drive.
+ * @param {Object[]} documentos Google Docs leídos por Drive.
  * @param {{idEjecucion: string}} contexto Contexto técnico.
  * @returns {{exito: boolean, datos: ({idDocumentoTranscripcion: string}|null),
  *     error: (Object|null)}} Transcripción única asociada.
  */
-function seleccionarTranscripcionAsociada(documentoFuente, archivos, contexto) {
+function seleccionarTranscripcionAsociada(documentoFuente, documentos, contexto) {
   if (!esObjetoPlano(documentoFuente) ||
-    !esCadenaNoVacia(documentoFuente.nombre) || !Array.isArray(archivos)) {
+    !esCadenaNoVacia(documentoFuente.nombre) || !Array.isArray(documentos)) {
     return _geminiResultadoError(GEMINI_CODIGOS_ERROR.PARAMETRO_INVALIDO,
       'Los datos para seleccionar la transcripción no son válidos.');
   }
@@ -51,14 +51,11 @@ function seleccionarTranscripcionAsociada(documentoFuente, archivos, contexto) {
   }
 
   try {
-    const nombreBase = _geminiNormalizarNombreReunion(documentoFuente.nombre);
-    const coincidencias = archivos.filter(function (archivo) {
-      return esObjetoPlano(archivo) && esCadenaNoVacia(archivo.id) &&
-        esCadenaNoVacia(archivo.nombre) &&
-        archivo.mimeType === DRIVE_MIME_DOCUMENTO_GOOGLE &&
-        archivo.esAccesoDirecto === false &&
-        /(?:transcripci[oó]n|transcript)/i.test(archivo.nombre) &&
-        _geminiNormalizarNombreReunion(archivo.nombre) === nombreBase;
+    const coincidencias = documentos.filter(function (documento) {
+      return esObjetoPlano(documento) &&
+        esCadenaNoVacia(documento.idDocumento) &&
+        esCadenaNoVacia(documento.contenido) &&
+        _geminiEsContenidoTranscripcion(documento.contenido);
     });
 
     if (coincidencias.length === 0) {
@@ -75,7 +72,7 @@ function seleccionarTranscripcionAsociada(documentoFuente, archivos, contexto) {
     }
     return {
       exito: true,
-      datos: { idDocumentoTranscripcion: coincidencias[0].id },
+      datos: { idDocumentoTranscripcion: coincidencias[0].idDocumento },
       error: null
     };
   } catch (errorSeleccion) {
@@ -84,12 +81,19 @@ function seleccionarTranscripcionAsociada(documentoFuente, archivos, contexto) {
   }
 }
 
-function _geminiNormalizarNombreReunion(nombre) {
-  return nombre.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/\s*-?\s*(?:notas?\s+de\s+gemini|transcripcion|transcript)\s*$/i, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+function _geminiEsContenidoTranscripcion(contenido) {
+  const nombres = _geminiObtenerEtiquetasHablante(contenido);
+  const unicos = Object.create(null);
+  nombres.forEach(function (nombre) {
+    unicos[_geminiNormalizarNombrePersona(nombre)] = true;
+  });
+  const cantidadUnicos = Object.keys(unicos).length;
+  const tieneRepeticiones = nombres.length > cantidadUnicos;
+  const tieneMarca = /(?:transcripci[oó]n|transcript)/i.test(contenido);
+  const tieneTiempo = /(?:^|\n)\s*\d{1,2}:\d{2}(?::\d{2})?\s*(?:$|\n)/m
+    .test(contenido);
+  return cantidadUnicos >= 2 && tieneRepeticiones &&
+    (tieneMarca || tieneTiempo || nombres.length >= 5);
 }
 
 /**
@@ -113,11 +117,11 @@ function extraerParticipantesConfirmados(contenidoFuente, contexto) {
   }
 
   try {
-    const lineas = contenidoFuente.replace(/\r\n?/g, '\n').split('\n');
     const participantes = [];
     const indices = Object.create(null);
     let organizador = '';
 
+    const lineas = contenidoFuente.replace(/\r\n?/g, '\n').split('\n');
     lineas.forEach(function (lineaOriginal) {
       const linea = lineaOriginal.trim();
       if (!linea) return;
@@ -156,6 +160,28 @@ function extraerParticipantesConfirmados(contenidoFuente, contexto) {
   }
 }
 
+function _geminiObtenerEtiquetasHablante(contenido) {
+  const nombres = [];
+  contenido.replace(/\r\n?/g, '\n').split('\n').forEach(
+    function (lineaOriginal) {
+      const linea = lineaOriginal.trim();
+      const coincidencia = linea.match(/^([^:]{1,120})\s*:\s*(.*)$/);
+      if (!coincidencia) return;
+      const nombre = coincidencia[1].trim();
+      if (_geminiEsNombrePersona(nombre) &&
+        !/^(?:organizador|organizer)$/i.test(nombre)) {
+        nombres.push(nombre);
+      }
+    }
+  );
+  return nombres;
+}
+
+function _geminiNormalizarNombrePersona(nombre) {
+  return nombre.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
 function _geminiEsNombrePersona(valor) {
   if (!esCadenaNoVacia(valor) || valor.length > 120 || /@/.test(valor)) {
     return false;
@@ -167,8 +193,7 @@ function _geminiEsNombrePersona(valor) {
 }
 
 function _geminiAgregarParticipante(participantes, indices, nombre) {
-  const clave = nombre.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase().replace(/\s+/g, ' ').trim();
+  const clave = _geminiNormalizarNombrePersona(nombre);
   if (indices[clave]) return;
   indices[clave] = true;
   participantes.push({ nombre: nombre, cargo: '' });

@@ -294,9 +294,18 @@ function _mainProcesarDocumento(documento, posicion, configuracion, contexto) {
       configuracion.gemini.carpetaNotasId,
       contexto
     );
-    const seleccionTranscripcion = _mainResultadoExitoso(listadoArchivos)
+    const contenidosDocumentos = _mainResultadoExitoso(listadoArchivos)
+      ? leerContenidosDocumentosGoogle(listadoArchivos.datos, contexto)
+      : null;
+    const seleccionTranscripcion =
+      _mainResultadoExitoso(contenidosDocumentos) &&
+      contenidosDocumentos.datos &&
+      Array.isArray(contenidosDocumentos.datos.documentos)
       ? seleccionarTranscripcionAsociada(
-          documento, listadoArchivos.datos, contexto)
+          documento,
+          contenidosDocumentos.datos.documentos,
+          contexto
+        )
       : null;
     if (!_mainResultadoExitoso(seleccionTranscripcion) ||
       !seleccionTranscripcion.datos ||

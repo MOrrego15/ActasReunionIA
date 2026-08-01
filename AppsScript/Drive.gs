@@ -791,6 +791,60 @@ function leerContenidoDocumentoFuente(idDocumentoFuente, contexto) {
   }
 }
 
+/**
+ * Lee el contenido de todos los Google Docs directos de un listado técnico.
+ *
+ * @param {DescriptorArchivo[]} archivos Descriptores de la carpeta.
+ * @param {{idEjecucion: string}} contexto Contexto técnico obligatorio.
+ * @returns {{exito: boolean, datos: ({documentos: Object[]}|null),
+ *     error: (ErrorDriveControlado|null)}} Documentos leídos.
+ */
+function leerContenidosDocumentosGoogle(archivos, contexto) {
+  if (!Array.isArray(archivos) || !_driveValidarContextoDocumentos(contexto)) {
+    return _driveConstruirResultadoError(
+      DRIVE_CODIGOS_ERROR.PARAMETRO_INVALIDO,
+      'El listado de documentos no es válido.'
+    );
+  }
+  try {
+    const documentos = [];
+    for (let indice = 0; indice < archivos.length; indice += 1) {
+      const archivo = archivos[indice];
+      if (!esObjetoPlano(archivo) ||
+        archivo.mimeType !== DRIVE_MIME_DOCUMENTO_GOOGLE ||
+        archivo.esAccesoDirecto !== false) {
+        continue;
+      }
+      if (!esCadenaNoVacia(archivo.id) || !esCadenaNoVacia(archivo.nombre)) {
+        return _driveConstruirResultadoError(
+          DRIVE_CODIGOS_ERROR.RESPUESTA_INVALIDA,
+          'Drive devolvió un descriptor de documento no válido.'
+        );
+      }
+      const lectura = leerContenidoDocumentoFuente(archivo.id, contexto);
+      if (!lectura.exito || !lectura.datos ||
+        !esCadenaNoVacia(lectura.datos.contenidoFuente)) {
+        return lectura;
+      }
+      documentos.push({
+        idDocumento: archivo.id,
+        nombre: archivo.nombre,
+        contenido: lectura.datos.contenidoFuente
+      });
+    }
+    return {
+      exito: true,
+      datos: { documentos: documentos },
+      error: null
+    };
+  } catch (errorLecturaMultiple) {
+    return _driveConstruirResultadoError(
+      DRIVE_CODIGOS_ERROR.ERROR,
+      'No fue posible leer los documentos de la carpeta.'
+    );
+  }
+}
+
 function _driveFinalizarLecturaError(
   operacion,
   codigo,
