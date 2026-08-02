@@ -5,7 +5,10 @@ const vm = require('vm');
 const estado = {
   blobCreado: null,
   urlExportacion: null,
-  opcionesExportacion: null
+  opcionesExportacion: null,
+  urlEliminacion: null,
+  eliminacionPosteriorVerificacion: false,
+  verificacionEjecutada: false
 };
 
 function crearBlob() {
@@ -60,6 +63,12 @@ const sandbox = {
   },
   UrlFetchApp: {
     fetch(url, opciones) {
+      if (opciones.method === 'delete') {
+        estado.urlEliminacion = url;
+        estado.eliminacionPosteriorVerificacion =
+          estado.verificacionEjecutada;
+        return { getResponseCode: () => 204 };
+      }
       estado.urlExportacion = url;
       estado.opcionesExportacion = opciones;
       return {
@@ -70,7 +79,9 @@ const sandbox = {
   },
   DriveApp: {
     getFileById(id) {
-      return id === 'origen-1' ? archivoOrigen : archivoSalida;
+      if (id === 'origen-1') return archivoOrigen;
+      estado.verificacionEjecutada = true;
+      return archivoSalida;
     },
     getFolderById() {
       return {
@@ -121,6 +132,21 @@ assert.strictEqual(
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 );
 assert.strictEqual(estado.blobCreado.nombre, '31.07.2026-025-Daily.docx');
+assert.strictEqual(
+  estado.urlEliminacion,
+  'https://www.googleapis.com/drive/v3/files/origen-1'
+);
+assert.strictEqual(estado.eliminacionPosteriorVerificacion, true);
+
+sandbox.UrlFetchApp.fetch = () => ({ getResponseCode: () => 500 });
+assert.strictEqual(
+  sandbox._wordEliminarDocumentoGooglePermanente(
+    'origen-1',
+    'token-prueba',
+    { idEjecucion: 'prueba-2' }
+  ),
+  false
+);
 const manifiesto = JSON.parse(
   fs.readFileSync('AppsScript/appsscript.json', 'utf8')
 );

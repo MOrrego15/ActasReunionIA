@@ -419,7 +419,9 @@ incremental.
 La sección `Siglas y Acrónimos` se ubica inmediatamente después de Agenda.
 Usa una celda lateral ploma y una tabla interior sin bordes con numeración del
 1 al 11. Su catálogo es fijo y no se extrae de OpenAI ni del contenido de la
-reunión.
+reunión. Los párrafos usan espaciado anterior y posterior en cero y las celdas
+interiores usan relleno superior e inferior en cero para evitar separación
+vertical entre acrónimos.
 
 La sección `TEMAS TRATADOS:` se ubica después de Siglas y Acrónimos y usa
 directamente la lista validada `acuerdos`. Cada acuerdo conserva su número y
@@ -518,6 +520,12 @@ La fecha del nombre acepta exclusivamente `AAAA-MM-DD`, `DD/MM/AAAA` o
 `DD.MM.AAAA`, con validación de calendario. Una fecha distinta produce
 `WORD_FECHA_INVALIDA`; no se usa la fecha actual como sustitución. El
 correlativo tiene un mínimo de tres dígitos y nunca se trunca.
+
+Después de crear y verificar el DOCX, `Word.gs` elimina permanentemente el
+Google Docs temporal mediante `DELETE /drive/v3/files/{fileId}`. La eliminación
+usa exclusivamente el identificador devuelto por `generarDocumentoActa`; no
+afecta el documento fuente. Si la exportación, verificación o eliminación
+falla, el procesamiento no se marca como completado.
 
 ### 12.4 Idempotencia y estados
 

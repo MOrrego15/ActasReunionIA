@@ -113,7 +113,7 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 ## DA-016: Catálogo fijo de siglas y acrónimos
 
 - **Estado:** Aceptada.
-- **Decisión:** La Fase 5 mostrará siempre el catálogo autorizado de 11 siglas y acrónimos, numerado en orden fijo. La sección usará una celda lateral ploma `Siglas y Acrónimos` y una tabla interior de número y descripción sin bordes visibles.
+- **Decisión:** La Fase 5 mostrará siempre el catálogo autorizado de 11 siglas y acrónimos, numerado en orden fijo. La sección usará una celda lateral ploma `Siglas y Acrónimos` y una tabla interior de número y descripción sin bordes visibles, sin espaciado de párrafo ni relleno vertical entre elementos.
 - **Motivo:** El contenido corresponde al vocabulario institucional estable de las reuniones Daily de Inversiones y debe conservar una presentación uniforme.
 - **Consecuencia:** La sección no depende de OpenAI ni del texto de la reunión. Cualquier alta, baja o modificación del catálogo requerirá una decisión y un cambio de código explícitos.
 
@@ -144,6 +144,13 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Decisión:** `Word.gs` usará `GET /drive/v3/files/{fileId}/export` con el MIME DOCX oficial. `appsscript.json` declarará explícitamente los alcances de Drive, Docs, Sheets y solicitudes externas usados por el proyecto.
 - **Motivo:** La ejecución real demostró que `File.getAs()` no convierte Google Docs a DOCX. La referencia oficial limita esa conversión y Drive API sí publica DOCX como formato de exportación. El 403 anterior ocurrió sin garantizar el alcance Drive dentro del token temporal.
 - **Consecuencia:** La siguiente ejecución requiere reautorización del usuario. El proyecto no solicita alcances adicionales a los servicios que ya utiliza funcionalmente.
+
+## DA-021: Eliminación permanente del Google Docs temporal
+
+- **Estado:** Aceptada.
+- **Decisión:** Después de crear y verificar el DOCX, `Word.gs` eliminará permanentemente mediante Drive API el Google Docs temporal generado para el acta. Nunca eliminará el documento fuente.
+- **Motivo:** El entregable institucional definitivo es el archivo DOCX y el usuario autorizó expresamente que el documento intermedio no permanezca en Drive.
+- **Consecuencia:** La eliminación no es recuperable. Si devuelve error, el procesamiento queda en `ERROR`; si la exportación o verificación falla, la eliminación no se intenta.
 
 ## Decisiones pendientes
 

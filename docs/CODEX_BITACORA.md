@@ -2713,3 +2713,119 @@ requiere que la cuenta ejecutora acepte nuevamente los permisos de Google.
 3. `clasp push --force` publicó correctamente los 17 archivos.
 4. Una descarga independiente confirmó 17 archivos, `Inicializar.js` y
    coincidencia SHA-256 de Word y el manifiesto.
+
+# Cambio 0032
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Eliminar los espacios en blanco entre cada elemento de la sección
+> `Siglas y Acrónimos`.
+
+## Respuesta de Codex
+
+Se mantuvo en cero el espaciado anterior y posterior de los párrafos y se
+eliminó adicionalmente el relleno superior e inferior de las 22 celdas de la
+tabla interior. La numeración, textos, tipografía, anchos y alineación vertical
+se conservaron.
+
+## Registro de progreso
+
+1. Se revisó la imagen y la implementación vigente de Siglas y Acrónimos.
+2. Se confirmó que los párrafos ya tenían espaciado anterior y posterior cero.
+3. Se identificó el relleno vertical de las celdas interiores como la
+   separación restante.
+4. Se estableció relleno superior e inferior en cero para las columnas de
+   número y descripción de los once elementos.
+5. La prueba fue ampliada para verificar 44 propiedades de relleno.
+6. Todas las pruebas visuales y funcionales relacionadas pasaron.
+
+## Archivos modificados
+
+- AppsScript/Acta.gs
+- Pruebas/ActaSiglas.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- Once siglas en orden fijo.
+- Espaciado de párrafo anterior y posterior en cero.
+- Relleno superior e inferior de ambas columnas en cero.
+- Regresiones de Cierre, Temas, Agenda, Word, Validador y Participantes.
+- Validación sintáctica y `git diff --check`.
+
+## Pendientes
+
+- Confirmar visualmente la sección compacta en un acta generada.
+
+# Cambio 0033
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Eliminar permanentemente el Google Docs temporal después de confirmar la
+> creación correcta del archivo `.docx`.
+
+## Respuesta de Codex
+
+`Word.gs` elimina permanentemente mediante Drive API exclusivamente el Google
+Docs temporal cuyo identificador fue devuelto por `generarDocumentoActa`. La
+operación se ejecuta después de crear y verificar el DOCX. Nunca se selecciona
+el objetivo por nombre ni se elimina el documento fuente. Si la eliminación
+falla, Word devuelve `WORD_ELIMINACION_ERROR` y el procesamiento no se marca
+como completado.
+
+## Registro de progreso
+
+1. Se informó que la eliminación permanente no es recuperable.
+2. El usuario autorizó expresamente la eliminación permanente.
+3. Se revisó el orden real entre generación del acta, exportación Word,
+   verificación y confirmación de procesamiento.
+4. Se incorporó `DELETE /drive/v3/files/{fileId}` usando el mismo token de
+   Drive ya autorizado para la exportación.
+5. La eliminación ocurre después de `_wordVerificarArchivo()` y antes de que
+   `exportarDocumentoWord()` devuelva éxito.
+6. Se agregó el código controlado `WORD_ELIMINACION_ERROR`.
+7. La prueba verifica el orden de operaciones, la URL exacta y el rechazo de
+   una eliminación HTTP fallida.
+8. Todas las pruebas y regresiones finalizaron correctamente.
+
+## Archivos modificados
+
+- AppsScript/Word.gs
+- Pruebas/WordExportacion.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Flujo_Procesamiento.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- Exportación y creación del DOCX antes de eliminar.
+- Verificación del DOCX antes de eliminar.
+- `DELETE` dirigido al identificador exacto del temporal.
+- Respuesta HTTP 204 aceptada.
+- Respuesta HTTP 500 rechazada sin reportar éxito.
+- Regresiones de Siglas, Cierre, Temas, Agenda, Validador y Participantes.
+- Validación sintáctica y `git diff --check`.
+
+## Pendientes
+
+- Confirmar que el siguiente flujo real crea el DOCX y elimina el Google Docs
+  temporal sin afectar el documento fuente.
+
+## Despliegue y verificación
+
+1. El usuario autorizó expresamente desplegar los Cambios 0032 y 0033.
+2. Se descargaron y preservaron los 17 archivos remotos, incluido
+   `Inicializar.js`.
+3. Se incorporaron exclusivamente `Acta.js` y `Word.js` desde los módulos
+   locales probados.
+4. `clasp push --force` publicó correctamente los 17 archivos.
+5. Una descarga independiente confirmó 17 archivos, `Inicializar.js` y
+   coincidencia SHA-256 de Acta y Word.

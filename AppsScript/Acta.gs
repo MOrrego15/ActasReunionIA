@@ -582,6 +582,10 @@ function _actaAgregarSiglasAcronimos(cuerpo) {
     const celdaDescripcion = fila.getCell(1);
     celdaNumero.setWidth(ACTA_FORMATO.ANCHO_SIGLA_NUMERO);
     celdaDescripcion.setWidth(ACTA_FORMATO.ANCHO_SIGLA_DESCRIPCION);
+    celdaNumero.setPaddingTop(0);
+    celdaNumero.setPaddingBottom(0);
+    celdaDescripcion.setPaddingTop(0);
+    celdaDescripcion.setPaddingBottom(0);
     _actaFormatearCelda(
       celdaNumero,
       false,

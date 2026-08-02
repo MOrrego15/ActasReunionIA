@@ -42,6 +42,7 @@ La valoración es inicial y deberá revisarse con datos de uso, volumen y polít
 | OpenAI inventa un responsable no explícito | Media | Alto | Instruir que no invente responsables de tareas, aceptar cadena vacía y mostrar solo la descripción sin prefijo ni dos puntos. |
 | La próxima reunión cae en feriado | Media | Medio | Aplicar el siguiente día de lunes a viernes; incorporar feriados únicamente cuando se autorice una fuente de calendario oficial. |
 | La exportación DOCX supera la cuota o pierde autorización | Baja | Alto | Declarar los alcances efectivos en el manifiesto, distinguir errores HTTP y no marcar el documento como procesado antes de verificar el archivo. |
+| Se elimina por error un documento distinto del temporal generado | Baja | Crítico | Aceptar exclusivamente el identificador devuelto por `generarDocumentoActa`, eliminar después de verificar el DOCX y no usar nombres ni búsquedas para seleccionar el objetivo. |
 
 ## 3. Riesgos de consistencia
 

@@ -25,6 +25,7 @@ const WORD_CODIGOS_ERROR = Object.freeze({
   RESPUESTA_INVALIDA: 'WORD_RESPUESTA_INVALIDA',
   CREACION_ERROR: 'WORD_CREACION_ERROR',
   VERIFICACION_ERROR: 'WORD_VERIFICACION_ERROR',
+  ELIMINACION_ERROR: 'WORD_ELIMINACION_ERROR',
   ERROR: 'WORD_ERROR'
 });
 
@@ -215,6 +216,19 @@ function exportarDocumentoWord(
     );
   }
 
+  if (!_wordEliminarDocumentoGooglePermanente(
+    idDocumentoGoogle,
+    token,
+    contexto
+  )) {
+    return _wordFinalizarError(
+      WORD_CODIGOS_ERROR.ELIMINACION_ERROR,
+      'No fue posible eliminar permanentemente el documento temporal.',
+      contexto,
+      'eliminacion'
+    );
+  }
+
   const resultado = {
     exito: true,
     datos: { idArchivoDocx: idArchivoDocx },
@@ -228,6 +242,34 @@ function exportarDocumentoWord(
     false
   );
   return resultado;
+}
+
+function _wordEliminarDocumentoGooglePermanente(
+  idDocumentoGoogle,
+  token,
+  contexto
+) {
+  try {
+    const respuesta = UrlFetchApp.fetch(
+      WORD_ENDPOINT_EXPORTACION + encodeURIComponent(idDocumentoGoogle),
+      {
+        method: 'delete',
+        headers: { Authorization: 'Bearer ' + token },
+        muteHttpExceptions: true
+      }
+    );
+    const estadoHttp = respuesta.getResponseCode();
+    if (estadoHttp < 200 || estadoHttp >= 300) return false;
+    _wordRegistrar(
+      'El documento temporal fue eliminado permanentemente.',
+      contexto,
+      { etapa: 'eliminacion', resultado: 'correcto' },
+      false
+    );
+    return true;
+  } catch (errorEliminacion) {
+    return false;
+  }
 }
 
 function _wordValidarDatosExportacion(datos) {

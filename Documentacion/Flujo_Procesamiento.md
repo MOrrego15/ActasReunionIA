@@ -82,12 +82,17 @@ Coordinar una ejecución que transforme como máximo un documento pendiente de G
     - Guardarlo en la carpeta mensual con el nombre calculado.
     - Verificar la existencia del archivo resultante.
 
-17. **Confirmar el procesamiento.**
+17. **Eliminar el Google Docs temporal.**
+    - Usar exclusivamente el identificador del acta generado en la ejecución.
+    - Eliminarlo permanentemente solo después de verificar el `.docx`.
+    - No eliminar nunca el documento fuente.
+
+18. **Confirmar el procesamiento.**
     - Actualizar el registro a `COMPLETADO`.
     - Persistir los identificadores de las salidas y la fecha final.
     - A partir de este momento, el documento fuente no vuelve a ser candidato.
 
-18. **Cerrar la ejecución.**
+19. **Cerrar la ejecución.**
     - Registrar resultado y duración.
     - Liberar el bloqueo en una operación garantizada de cierre.
 
@@ -146,7 +151,7 @@ Se registra el estado técnico sanitizado. No se crea el entregable definitivo n
 
 ### 5.6 Fallo durante la generación o exportación
 
-El registro conserva los identificadores de cualquier salida parcial. El documento no se marca como completado hasta validar el `.docx`. La política para reutilizar o eliminar artefactos parciales queda pendiente.
+El registro conserva los identificadores de cualquier salida parcial. El documento no se marca como completado hasta validar el `.docx` y eliminar permanentemente el Google Docs temporal. Si falla la exportación o verificación, el temporal se conserva; si falla la eliminación, el estado queda en error para conciliación manual.
 
 ### 5.7 Fallo al confirmar el registro
 
@@ -171,4 +176,3 @@ Es un error crítico porque puede permitir duplicidades. La salida deberá conse
 - `.docx` creado y localizado;
 - registro confirmado como `COMPLETADO`;
 - bloqueo liberado.
-

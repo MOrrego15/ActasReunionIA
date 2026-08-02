@@ -57,8 +57,14 @@ function celdaSimulada(textoInicial = '') {
       estado.alineacionVertical = valor;
       return this;
     },
-    setPaddingTop() { return this; },
-    setPaddingBottom() { return this; },
+    setPaddingTop(valor) {
+      estado.rellenoSuperior = valor;
+      return this;
+    },
+    setPaddingBottom(valor) {
+      estado.rellenoInferior = valor;
+      return this;
+    },
     setPaddingLeft() { return this; },
     setPaddingRight() { return this; },
     clear() {
@@ -160,6 +166,10 @@ tablaInterior.celdas.forEach((fila) => {
   assert.strictEqual(fila[1].estado.texto.tamano, 9);
   assert.strictEqual(fila[0].estado.alineacionVertical, 'TOP');
   assert.strictEqual(fila[1].estado.alineacionVertical, 'TOP');
+  assert.strictEqual(fila[0].estado.rellenoSuperior, 0);
+  assert.strictEqual(fila[0].estado.rellenoInferior, 0);
+  assert.strictEqual(fila[1].estado.rellenoSuperior, 0);
+  assert.strictEqual(fila[1].estado.rellenoInferior, 0);
 });
 
 console.log('ActaSiglas.test.js: 11 elementos y formato correctos.');
