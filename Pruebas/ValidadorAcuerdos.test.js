@@ -47,6 +47,7 @@ assert.deepStrictEqual(
 const prompt = fs.readFileSync('AppsScript/Prompt.gs', 'utf8');
 assert.match(prompt, /acuerdos: \[\{numero:integer,descripcion:string no vacía,/);
 assert.match(prompt, /responsable:string/);
+assert.match(prompt, /Cada tarea debe incluir responsable/);
 assert.match(prompt, /usa cadena vacía si no existe/);
 
 const sandboxOpenAI = {};

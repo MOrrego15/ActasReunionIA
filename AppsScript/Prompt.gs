@@ -79,7 +79,7 @@ function construirPromptActa(contenidoFuente, contexto) {
       'Cada participante confirmado requiere nombre no vacío.',
       'Cada elemento de agenda requiere texto no vacío.',
       'Cada acuerdo y tarea requiere descripcion no vacía.',
-      'Cada acuerdo debe incluir responsable; usa cadena vacía si no existe ' +
+      'Cada tarea debe incluir responsable; usa cadena vacía si no existe ' +
         'un responsable explícito en las notas.',
       'Numera acuerdos y tareas secuencialmente desde 1.',
       'No incluyas HTML, Markdown, bloques de código ni JSON en textos.',

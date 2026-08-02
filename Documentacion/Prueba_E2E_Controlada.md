@@ -81,9 +81,8 @@ Deben revisarse, como mínimo, permisos equivalentes para:
   `https://www.googleapis.com/auth/spreadsheets`;
 - llamadas a servicios externos mediante `UrlFetchApp`:
   `https://www.googleapis.com/auth/script.external_request`;
-- exportación autenticada del documento mediante el token de la ejecución; el
-  token debe incluir el alcance de Drive requerido por la llamada de
-  exportación;
+- conversión del documento mediante `DriveApp.File.getAs()` con alcance de
+  Drive, sin administrar manualmente el token de la ejecución;
 - acceso al almacenamiento de propiedades del script. La documentación de
   `PropertiesService` no identifica un consentimiento OAuth independiente para
   este uso; debe comprobarse el conjunto finalmente detectado por Apps Script.

@@ -63,7 +63,11 @@ function crearCelda(contenido = '') {
 
 function crearFila(valores) {
   const celdas = valores.map((valor) => crearCelda(valor));
-  celdas[1].merge = () => celdas[0];
+  celdas[1].merge = () => {
+    const fusionada = celdas[0];
+    celdas.splice(1, 1);
+    return fusionada;
+  };
   return {
     celdas,
     getCell: (indice) => celdas[indice]
@@ -95,18 +99,18 @@ vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync('AppsScript/Acta.gs', 'utf8'), sandbox);
 
 assert.strictEqual(
-  sandbox._actaConstruirTextoAcuerdo({
+  sandbox._actaConstruirTextoTarea({
     responsable: 'Miguel Orrego',
     descripcion: 'Continuar con la actividad.'
   }),
   'Miguel Orrego: Continuar con la actividad.'
 );
 assert.strictEqual(
-  sandbox._actaConstruirTextoAcuerdo({
+  sandbox._actaConstruirTextoTarea({
     responsable: '',
     descripcion: 'Continuar con la actividad.'
   }),
-  'Sin responsable Continuar con la actividad.'
+  'Continuar con la actividad.'
 );
 assert.strictEqual(
   sandbox._actaCalcularProximaReunion('31/07/2026'),
@@ -157,13 +161,17 @@ assert.strictEqual(
   'Acuerdos'
 );
 assert.strictEqual(tabla.filas[1].celdas[0].estado.fondo, '#d9d9d9');
+assert.strictEqual(tabla.filas[1].celdas.length, 1);
+assert.strictEqual(tabla.filas[1].celdas[0].estado.ancho, 425);
+assert.strictEqual(tabla.filas[2].celdas.length, 1);
+assert.strictEqual(tabla.filas[2].celdas[0].estado.ancho, 425);
 assert.deepStrictEqual(
   tabla.filas[2].celdas[0].estado.listas.map(
     (item) => item.estado.texto.contenido
   ),
   [
     'Miguel Orrego: Continuar con la actividad.',
-    'Sin responsable Revisar el documento.'
+    'Revisar el documento.'
   ]
 );
 tabla.filas[2].celdas[0].estado.listas.forEach((item) => {

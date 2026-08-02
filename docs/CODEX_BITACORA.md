@@ -2396,3 +2396,189 @@ calendario oficial autorizada.
 4. Una descarga independiente confirmó 17 archivos, la permanencia de
    `Inicializar.js` y coincidencia SHA-256 entre `AppsScript/Acta.gs` y
    `Acta.js` remoto.
+
+# Cambio 0027
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Revisar y actuar sobre el registro de una ejecución End-to-End que terminó
+> con `WORD_AUTENTICACION_ERROR` durante la exportación del acta.
+
+## Respuesta de Codex
+
+El acta se generó correctamente y los cuatro participantes se resolvieron; el
+fallo ocurrió únicamente al exportar el Google Docs mediante una llamada HTTP
+a Drive API autenticada con `ScriptApp.getOAuthToken()`. Se reemplazó esa vía
+por la conversión nativa `File.getAs(MimeType.MICROSOFT_WORD)`, eliminando el
+token y la solicitud HTTP manuales.
+
+## Registro de progreso
+
+1. Se leyó completamente el registro adjunto y se ubicó la etapa final `WORD`.
+2. Se confirmó que Drive, OpenAI, participantes, correlativo y generación del
+   Google Docs finalizaron correctamente.
+3. Se revisaron `Word.gs`, el manifiesto y la documentación de autorizaciones.
+4. La documentación oficial de Apps Script confirmó que `File.getAs()` permite
+   convertir un archivo y que `MimeType.MICROSOFT_WORD` representa DOCX.
+5. Se eliminó la administración manual del token OAuth y `UrlFetchApp` de la
+   exportación Word.
+6. Se mantuvieron el nombre institucional, la carpeta destino, el MIME y la
+   verificación posterior del archivo.
+7. Se agregó una prueba aislada que ejecuta la exportación sin definir
+   `ScriptApp` ni `UrlFetchApp`.
+8. Todas las pruebas y regresiones finalizaron correctamente.
+
+## Archivos modificados
+
+- AppsScript/Word.gs
+- Pruebas/WordExportacion.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Prueba_E2E_Controlada.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- `WordExportacion.test.js`: conversión DOCX nativa, nombre, MIME, carpeta y
+  verificación correctos.
+- Confirmación de ausencia de `getOAuthToken` y `UrlFetchApp.fetch` en
+  `Word.gs`.
+- Regresiones de Cierre, Validador de acuerdos, Temas, Siglas, Agenda y
+  Participantes.
+- Validación sintáctica de `Word.gs`.
+- `git diff --check` sin errores.
+
+## Pendientes
+
+- Desplegar `Word.gs` cuando el usuario lo autorice expresamente.
+- Reejecutar de forma controlada el documento en estado `ERROR`, conforme a la
+  política que impide reintentos automáticos.
+
+# Cambio 0028
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Corregir la sección visual `Acuerdos`: los acuerdos del documento son las
+> tareas. Cada elemento debe usar `Responsable: descripción`; cuando no exista
+> responsable, debe mostrarse solamente la descripción, sin dos puntos.
+
+## Respuesta de Codex
+
+La sección `Acuerdos` del cierre ahora consume `acta.tareas`. Con responsable
+presenta `Responsable: descripción`; con responsable vacío presenta solo la
+descripción. Se eliminó definitivamente el prefijo `Sin responsable`. La
+sección `Temas tratados` continúa usando `acta.acuerdos` y las viñetas del
+cierre mantienen espaciado anterior y posterior en cero.
+
+## Registro de progreso
+
+1. Se confirmó con el usuario que una tarea sin responsable conserva su
+   descripción y omite los dos puntos.
+2. Se revisaron los contratos de `acuerdos` y `tareas`, el generador, el prompt
+   y las pruebas del cierre.
+3. Se cambió exclusivamente la fuente de la sección visual `Acuerdos` a
+   `acta.tareas`.
+4. Se reemplazó el formateador de acuerdos por un formateador de tareas.
+5. Se actualizó el prompt para exigir responsable opcional en cada tarea y no
+   en cada acuerdo.
+6. Se actualizaron arquitectura, decisión DA-018 y riesgos técnicos.
+7. Las pruebas confirmaron ambos formatos y el espaciado compacto.
+8. También se repitió satisfactoriamente la prueba de exportación Word
+   pendiente y todas las regresiones documentales.
+
+## Archivos modificados
+
+- AppsScript/Acta.gs
+- AppsScript/Prompt.gs
+- Pruebas/ActaCierre.test.js
+- Pruebas/ValidadorAcuerdos.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- Tarea con responsable: `Nombre: descripción`.
+- Tarea sin responsable: solo `descripción`.
+- Viñetas con espaciado anterior y posterior en cero.
+- Pruebas de Cierre, Validador de acuerdos, Word, Temas, Siglas, Agenda y
+  Participantes.
+- Validación sintáctica de `Acta.gs` y `Prompt.gs`.
+- `git diff --check` sin errores.
+
+## Pendientes
+
+- Desplegar conjuntamente los Cambios 0027 y 0028 cuando el usuario lo
+  autorice expresamente.
+
+# Cambio 0029
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Confirmar que las tareas encontradas en el documento son los acuerdos, con
+> formato `Responsable: descripción`, y hacer que la columna de acuerdos ocupe
+> el ancho completo de la página mostrado en el modelo.
+
+## Respuesta de Codex
+
+Se mantuvo `acta.tareas` como fuente de la sección visual `Acuerdos`. Se
+corrigió la fusión de celdas para recuperar la celda superviviente después de
+fusionar y fijar en ella el ancho institucional total de 425 puntos. El
+encabezado y la lista de tareas ahora ocupan las dos columnas de la tabla.
+
+## Registro de progreso
+
+1. Se revisó la imagen y se identificó que el contenido permanecía confinado
+   al ancho de la columna izquierda.
+2. Se verificó en la documentación oficial que `TableCell.merge()` mueve la
+   celda actual a su hermana anterior y elimina la celda actual.
+3. Se modificó el generador para fusionar primero y recuperar después la celda
+   de índice cero.
+4. Se fijó el ancho de encabezado y contenido en la suma de las columnas:
+   103 + 322 = 425 puntos.
+5. La simulación de prueba ahora elimina la segunda celda como lo hace Google
+   Docs y comprueba que quede una sola celda de 425 puntos.
+6. Se confirmaron nuevamente los formatos con y sin responsable, el espaciado
+   compacto y todas las regresiones.
+
+## Archivos modificados
+
+- AppsScript/Acta.gs
+- Pruebas/ActaCierre.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- Encabezado `Acuerdos` fusionado en una sola celda de 425 puntos.
+- Lista de tareas fusionada en una sola celda de 425 puntos.
+- Tarea con responsable: `Responsable: descripción`.
+- Tarea sin responsable: solo la descripción.
+- Viñetas sin espacio anterior ni posterior.
+- Regresiones de Word, Temas, Siglas, Agenda y Participantes.
+- Validación sintáctica y `git diff --check`.
+
+## Pendientes
+
+- Reejecutar controladamente el documento en estado `ERROR` y confirmar
+  visualmente el ancho completo, las tareas y la exportación DOCX.
+
+## Despliegue y verificación
+
+1. El usuario autorizó expresamente desplegar los Cambios 0027, 0028 y 0029.
+2. Se descargaron los 17 archivos remotos a una copia temporal y se preservó
+   `Inicializar.js`.
+3. Se incorporaron exclusivamente `Acta.js`, `Prompt.js` y `Word.js` desde los
+   módulos locales probados.
+4. `clasp push --force` publicó correctamente los 17 archivos.
+5. Una descarga independiente confirmó 17 archivos, `Inicializar.js` y
+   coincidencia SHA-256 de Acta, Prompt y Word.

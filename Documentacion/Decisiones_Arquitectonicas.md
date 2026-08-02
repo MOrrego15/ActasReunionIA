@@ -127,9 +127,16 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 ## DA-018: Cierre con acuerdos responsables y próxima reunión
 
 - **Estado:** Aceptada.
-- **Decisión:** La Fase 7 mostrará una fila vacía de `Riesgos o problemas`, un encabezado plomo `Acuerdos` y una lista con viñetas. Cada acuerdo incorporará un responsable opcional en el contrato. Con responsable se usará `Nombre: descripción`; sin responsable se usará `Sin responsable descripción`, sin dos puntos. La Fase 8 calculará `Próxima reunión` como el siguiente día de lunes a viernes a partir de la fecha del acta, omitiendo sábados y domingos, y mostrará el mes en español.
+- **Decisión:** La Fase 7 mostrará una fila vacía de `Riesgos o problemas`, un encabezado plomo `Acuerdos` y una lista con viñetas alimentada por `tareas`. Con responsable se usará `Nombre: descripción`; sin responsable se mostrará solo la descripción, sin prefijo ni dos puntos. La Fase 8 calculará `Próxima reunión` como el siguiente día de lunes a viernes a partir de la fecha del acta, omitiendo sábados y domingos, y mostrará el mes en español.
 - **Motivo:** Reproducir el modelo institucional y evitar inventar responsables ausentes.
-- **Consecuencia:** Prompt, esquema JSON de OpenAI, validador y generador comparten el nuevo campo `responsable` en acuerdos. El cálculo conserva los cambios de mes y año, y si el día siguiente cae sábado o domingo avanza hasta el lunes. Los feriados no se excluyen mientras no exista un calendario autorizado.
+- **Consecuencia:** La sección `Temas tratados` continúa usando `acuerdos`, mientras la sección visual `Acuerdos` usa `tareas` y su campo `responsable`. El encabezado y el contenido de `Acuerdos` fusionan ambas columnas y usan el ancho total de la tabla. El cálculo conserva los cambios de mes y año, y si el día siguiente cae sábado o domingo avanza hasta el lunes. Los feriados no se excluyen mientras no exista un calendario autorizado.
+
+## DA-019: Conversión Word mediante el servicio nativo de Drive
+
+- **Estado:** Aceptada.
+- **Decisión:** `Word.gs` convertirá el Google Docs mediante `File.getAs(MimeType.MICROSOFT_WORD)` y no llamará manualmente a `GET /drive/v3/files/{fileId}/export` con `ScriptApp.getOAuthToken()`.
+- **Motivo:** La ejecución real generó correctamente el acta, pero el endpoint HTTP rechazó el token temporal con `WORD_AUTENTICACION_ERROR`. El servicio nativo encapsula la conversión y utiliza los permisos de Drive detectados por Apps Script.
+- **Consecuencia:** Se elimina la administración manual del token y la dependencia de `UrlFetchApp` para la conversión. Se mantienen el nombre, la carpeta de destino y la verificación posterior del DOCX.
 
 ## Decisiones pendientes
 

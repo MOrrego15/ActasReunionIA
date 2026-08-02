@@ -295,7 +295,7 @@ function _actaEscribirDocumento(
 
   _actaAgregarTemasTratados(cuerpo, acta.acuerdos);
 
-  _actaAgregarCierre(cuerpo, acta.acuerdos, acta.fechaReunion);
+  _actaAgregarCierre(cuerpo, acta.tareas, acta.fechaReunion);
 }
 
 function _actaObtenerLogoInstitucional(carpetaRecursosId, contexto) {
@@ -655,7 +655,7 @@ function _actaAgregarTemasTratados(cuerpo, acuerdos) {
   }
 }
 
-function _actaAgregarCierre(cuerpo, acuerdos, fechaReunion) {
+function _actaAgregarCierre(cuerpo, tareas, fechaReunion) {
   const tabla = cuerpo.appendTable([
     ['Riesgos o problemas', ''],
     ['Acuerdos', ''],
@@ -678,7 +678,12 @@ function _actaAgregarCierre(cuerpo, acuerdos, fechaReunion) {
   );
 
   const filaTitulo = tabla.getRow(1);
-  const celdaTitulo = filaTitulo.getCell(1).merge();
+  filaTitulo.getCell(1).merge();
+  const celdaTitulo = filaTitulo.getCell(0);
+  celdaTitulo.setWidth(
+    ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA +
+    ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO
+  );
   celdaTitulo.setText('Acuerdos');
   celdaTitulo.setBackgroundColor('#d9d9d9');
   _actaFormatearCelda(
@@ -689,13 +694,18 @@ function _actaAgregarCierre(cuerpo, acuerdos, fechaReunion) {
   );
 
   const filaContenido = tabla.getRow(2);
-  const celdaContenido = filaContenido.getCell(1).merge();
+  filaContenido.getCell(1).merge();
+  const celdaContenido = filaContenido.getCell(0);
+  celdaContenido.setWidth(
+    ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA +
+    ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO
+  );
   celdaContenido.clear();
   celdaContenido.setPaddingTop(0);
   celdaContenido.setPaddingBottom(0);
-  for (let indice = 0; indice < acuerdos.length; indice += 1) {
+  for (let indice = 0; indice < tareas.length; indice += 1) {
     const item = celdaContenido.appendListItem(
-      _actaConstruirTextoAcuerdo(acuerdos[indice])
+      _actaConstruirTextoTarea(tareas[indice])
     );
     item.setGlyphType(DocumentApp.GlyphType.BULLET);
     item.setSpacingBefore(0);
@@ -731,11 +741,11 @@ function _actaAgregarCierre(cuerpo, acuerdos, fechaReunion) {
   );
 }
 
-function _actaConstruirTextoAcuerdo(acuerdo) {
-  const responsable = acuerdo.responsable.trim();
+function _actaConstruirTextoTarea(tarea) {
+  const responsable = tarea.responsable.trim();
   return responsable
-    ? responsable + ': ' + acuerdo.descripcion
-    : 'Sin responsable ' + acuerdo.descripcion;
+    ? responsable + ': ' + tarea.descripcion
+    : tarea.descripcion;
 }
 
 function _actaCalcularProximaReunion(fechaReunion) {

@@ -429,13 +429,15 @@ evitar líneas o espacios vacíos entre temas.
 La sección sustituye la presentación independiente de `Resumen Ejecutivo`.
 
 El cierre documental combina las Fases 7 y 8 en una tabla institucional:
-`Riesgos o problemas` permanece vacío; `Acuerdos` usa un encabezado plomo
-y viñetas; y `Próxima reunión` muestra el siguiente día de lunes a viernes a
+`Riesgos o problemas` permanece vacío; `Acuerdos` usa las tareas validadas en
+un encabezado plomo y viñetas; y `Próxima reunión` muestra el siguiente día de lunes a viernes a
 partir de `fechaReunion`, omitiendo sábados y domingos, con mes en español.
-Un acuerdo con responsable se presenta
+Una tarea con responsable se presenta
 como `Responsable: descripción`; cuando el responsable está vacío se presenta
-como `Sin responsable descripción`, sin dos puntos. La tabla genérica de
-tareas y la sección de observaciones dejan de representarse en el documento.
+solo la descripción, sin prefijo ni dos puntos. La sección de observaciones no
+se representa en el documento. Tanto el encabezado `Acuerdos` como su lista de
+tareas fusionan las dos columnas y fijan el ancho total institucional para
+ocupar toda la tabla.
 
 ### 11.3 Decisiones técnicas inferidas
 
@@ -506,9 +508,10 @@ Docs como del DOCX. No se crean carpetas ni se infieren identificadores.
 exportarDocumentoWord(idDocumentoGoogle, datosExportacion, contexto)
 ```
 
-La exportación usa `GET /drive/v3/files/{fileId}/export`, autenticado con el
-token temporal de Apps Script. El contenido se crea en Drive con MIME DOCX y
-se verifica por identificador, nombre, MIME, papelera y carpeta padre.
+La exportación usa `DriveApp.File.getAs(MimeType.MICROSOFT_WORD)`, sin construir
+solicitudes HTTP ni administrar manualmente el token OAuth. El contenido se
+crea en Drive con MIME DOCX y se verifica por identificador, nombre, MIME,
+papelera y carpeta padre.
 
 La fecha del nombre acepta exclusivamente `AAAA-MM-DD`, `DD/MM/AAAA` o
 `DD.MM.AAAA`, con validación de calendario. Una fecha distinta produce
