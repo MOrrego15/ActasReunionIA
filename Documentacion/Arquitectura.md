@@ -416,12 +416,13 @@ valor fijo `Dayli – reunión de seguimiento`; no consume la lista variable
 producida por OpenAI. Las etapas visuales restantes se incorporan de forma
 incremental.
 
-La cabecera usa una tabla exterior con una columna izquierda de 103 puntos
-para el logotipo institucional. Esa celda acompaña verticalmente las tres filas
-de la tabla interior derecha: Título/Código, Versión y Metodología/Fecha. La
-celda del logotipo no tiene relleno y centra una imagen de 100 por 32 puntos.
-Proyecto y Director de Proyecto permanecen como filas inferiores de dos
-columnas con anchos 103/322.
+La cabecera usa una tabla única de cinco filas por cuatro columnas, equivalente
+al rango `B2:E6` del modelo institucional en Excel. Después de cerrar el
+documento, el módulo localiza dinámicamente la primera tabla mediante Google
+Docs API y combina `B2:B4` para el logotipo, `C2:C3` para el título, `C5:E5`
+para Proyecto y `C6:E6` para Director. La celda del logotipo no tiene relleno y
+centra una imagen de 100 por 32 puntos. Las columnas conservan anchos
+103/190/56/76.
 
 La sección `Siglas y Acrónimos` se ubica inmediatamente después de Agenda.
 Usa una celda lateral ploma y una tabla interior sin bordes con numeración del

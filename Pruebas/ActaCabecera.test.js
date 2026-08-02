@@ -91,11 +91,27 @@ const cuerpo = {
   }
 };
 
+const llamadasHttp = [];
 const sandbox = {
   DocumentApp: {
     HorizontalAlignment: { LEFT: 'LEFT', CENTER: 'CENTER' },
     VerticalAlignment: { TOP: 'TOP', CENTER: 'CENTER' },
     ElementType: { PARAGRAPH: 'PARAGRAPH' }
+  },
+  ScriptApp: { getOAuthToken: () => 'token-prueba' },
+  UrlFetchApp: {
+    fetch(url, opciones) {
+      llamadasHttp.push({ url, opciones });
+      if (opciones.method === 'get') {
+        return {
+          getResponseCode: () => 200,
+          getContentText: () => JSON.stringify({
+            body: { content: [{ endIndex: 1 }, { startIndex: 7, table: {} }] }
+          })
+        };
+      }
+      return { getResponseCode: () => 200 };
+    }
   }
 };
 vm.createContext(sandbox);
@@ -103,11 +119,9 @@ vm.runInContext(fs.readFileSync('AppsScript/Acta.gs', 'utf8'), sandbox);
 
 sandbox._actaAgregarCabecera(cuerpo, '02/07/2026', { imagen: true });
 
-assert.strictEqual(tablaExterior.filas.length, 3);
+assert.strictEqual(tablaExterior.filas.length, 5);
 const celdaLogo = tablaExterior.filas[0].celdas[0];
-const celdaControles = tablaExterior.filas[0].celdas[1];
 assert.strictEqual(celdaLogo.estado.ancho, 103);
-assert.strictEqual(celdaControles.estado.ancho, 322);
 assert.strictEqual(celdaLogo.estado.paddingTop, 0);
 assert.strictEqual(celdaLogo.estado.paddingBottom, 0);
 assert.strictEqual(celdaLogo.estado.paddingLeft, 0);
@@ -116,23 +130,51 @@ assert.strictEqual(celdaLogo.estado.vertical, 'CENTER');
 assert.strictEqual(celdaLogo.hijos[0].estado.logo.ancho, 100);
 assert.strictEqual(celdaLogo.hijos[0].estado.logo.alto, 32);
 
-const controles = celdaControles.estado.tabla;
-assert.strictEqual(controles.filas.length, 3);
-assert.strictEqual(controles.filas[0].celdas[0].estado.texto, 'Acta de Reunión');
-assert.strictEqual(controles.filas[0].celdas[1].estado.texto, 'Código:');
-assert.strictEqual(controles.filas[1].celdas[1].estado.texto, 'Versión:');
-assert.strictEqual(controles.filas[2].celdas[1].estado.texto, 'Fecha:');
-assert.strictEqual(controles.filas[2].celdas[2].estado.texto, '02.07.2026');
-controles.filas.forEach((fila) => {
-  assert.strictEqual(fila.celdas[0].estado.ancho, 190);
-  assert.strictEqual(fila.celdas[1].estado.ancho, 56);
-  assert.strictEqual(fila.celdas[2].estado.ancho, 76);
+assert.strictEqual(tablaExterior.filas[0].celdas[1].estado.texto, 'Acta de Reunión');
+assert.strictEqual(tablaExterior.filas[0].celdas[2].estado.texto, 'Código:');
+assert.strictEqual(tablaExterior.filas[1].celdas[2].estado.texto, 'Versión:');
+assert.strictEqual(tablaExterior.filas[2].celdas[2].estado.texto, 'Fecha:');
+assert.strictEqual(tablaExterior.filas[2].celdas[3].estado.texto, '02.07.2026');
+tablaExterior.filas.forEach((fila) => {
+  assert.strictEqual(fila.celdas[0].estado.ancho, 103);
+  assert.strictEqual(fila.celdas[1].estado.ancho, 190);
+  assert.strictEqual(fila.celdas[2].estado.ancho, 56);
+  assert.strictEqual(fila.celdas[3].estado.ancho, 76);
 });
-assert.strictEqual(celdaControles.hijos.length, 1);
-assert.strictEqual(tablaExterior.filas[1].celdas[0].estado.texto, 'Proyecto:');
 assert.strictEqual(
-  tablaExterior.filas[2].celdas[0].estado.texto,
+  tablaExterior.filas[3].celdas[0].estado.texto,
+  'Proyecto:'
+);
+assert.strictEqual(
+  tablaExterior.filas[4].celdas[0].estado.texto,
   'Director de Proyecto:'
 );
 
-console.log('ActaCabecera.test.js: estructura institucional correcta.');
+sandbox._actaCombinarCabecera('documento-123');
+assert.strictEqual(llamadasHttp.length, 2);
+assert.strictEqual(
+  llamadasHttp[0].url,
+  'https://docs.googleapis.com/v1/documents/documento-123'
+);
+const lote = JSON.parse(llamadasHttp[1].opciones.payload);
+assert.strictEqual(lote.requests.length, 4);
+const rangos = lote.requests.map((solicitud) =>
+  solicitud.mergeTableCells.tableRange
+);
+assert.deepStrictEqual(
+  rangos.map((rango) => [
+    rango.tableCellLocation.tableStartLocation.index,
+    rango.tableCellLocation.rowIndex,
+    rango.tableCellLocation.columnIndex,
+    rango.rowSpan,
+    rango.columnSpan
+  ]),
+  [
+    [7, 0, 0, 3, 1],
+    [7, 0, 1, 2, 1],
+    [7, 3, 1, 1, 3],
+    [7, 4, 1, 1, 3]
+  ]
+);
+
+console.log('ActaCabecera.test.js: matriz y combinaciones correctas.');

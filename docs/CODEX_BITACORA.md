@@ -2935,3 +2935,69 @@ el archivo remoto coincide exactamente con la versión local y versionada.
 ## Pendientes
 
 - Confirmar visualmente la cabecera en un documento generado.
+
+# Cambio 0036
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Mantener el logotipo institucional, eliminar el espacio de la cabecera y
+> realizar las combinaciones de celdas como en `cabecera_.xlsx`.
+
+## Respuesta de Codex
+
+La cabecera se reconstruyó como una tabla única de cinco filas por cuatro
+columnas. Se conservará `LogoMEF.jpg` y se aplicarán mediante Google Docs API
+las combinaciones reales del Excel: `B2:B4`, `C2:C3`, `C5:E5` y `C6:E6`.
+
+## Registro de progreso
+
+1. Se leyó la documentación obligatoria y la bitácora completa.
+2. Se inspeccionaron las celdas, combinaciones, dimensiones, textos y estilos
+   internos del Excel de referencia.
+3. Se confirmó que el archivo no contiene una imagen física incrustada, pero
+   reserva `B2:B4` para el logotipo que el aplicativo obtiene de Drive.
+4. Se verificó en la documentación oficial que `DocumentApp.TableCell.merge()`
+   solo une celdas hermanas de una misma fila.
+5. Se reemplazó la tabla anidada por una matriz única `5 × 4`.
+6. Se agregó una operación que localiza dinámicamente la primera tabla y aplica
+   cuatro solicitudes `mergeTableCells` mediante Google Docs API.
+7. Se conservó el logotipo centrado, sin relleno y con tamaño 100 por 32.
+8. Se actualizó la prueba de cabecera y las decisiones técnicas.
+9. Todas las pruebas y regresiones finalizaron correctamente.
+
+## Archivos modificados
+
+- AppsScript/Acta.gs
+- Pruebas/ActaCabecera.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- Matriz de cinco filas por cuatro columnas.
+- Anchos 103/190/56/76 en todas las filas.
+- Combinaciones `B2:B4`, `C2:C3`, `C5:E5` y `C6:E6`.
+- Localización dinámica de la tabla con índice no fijo.
+- Conservación y tamaño del logotipo.
+- Regresiones de Word, Siglas, Cierre, Temas, Agenda, Validador y
+  Participantes.
+- `git diff --check`.
+
+## Pendientes
+
+- Confirmar visualmente la cabecera en un documento generado.
+
+## Despliegue y verificación
+
+1. El usuario autorizó expresamente desplegar el Cambio 0036.
+2. Se descargaron y preservaron los 17 archivos remotos, incluido
+   `Inicializar.js`.
+3. Se incorporó exclusivamente `Acta.js` desde el módulo local probado.
+4. `clasp push --force` publicó correctamente los 17 archivos a las
+   18:19:35, hora de Lima.
+5. Una descarga independiente confirmó 17 archivos, `Inicializar.js` y la
+   coincidencia exacta del SHA-256 local y remoto de `Acta`:
+   `BDBD63E536CDDBBDF3C9C1B826C3D283885564E165EA2599858D07B22925E2C1`.

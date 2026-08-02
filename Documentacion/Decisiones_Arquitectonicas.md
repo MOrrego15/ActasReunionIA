@@ -159,6 +159,13 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Motivo:** Reproducir el diseño institucional autorizado y evitar una franja vacía antes del título.
 - **Consecuencia:** La agrupación vertical se representa mediante una tabla interior porque `DocumentApp` no expone una operación directa para establecer un `rowSpan` vertical en una celda.
 
+## DA-023: Combinaciones reales de la cabecera según el modelo Excel
+
+- **Estado:** Aceptada; reemplaza la representación mediante tabla interior definida en DA-022.
+- **Decisión:** La cabecera se construirá como una matriz única de cinco filas por cuatro columnas. Google Docs API aplicará las combinaciones verticales del logotipo y el título, y las combinaciones horizontales de Proyecto y Director.
+- **Motivo:** Reproducir las combinaciones `B2:B4`, `C2:C3`, `C5:E5` y `C6:E6` del archivo de referencia, evitando espacios producidos por una tabla anidada.
+- **Consecuencia:** La generación requiere localizar la tabla por su estructura documental y ejecutar `mergeTableCells` antes de verificar y exportar el documento. Si la consulta o la combinación falla, la generación termina en error y no continúa con un documento visualmente incompleto.
+
 ## Decisiones pendientes
 
 1. Criterio para identificar documentos como notas válidas de Gemini.

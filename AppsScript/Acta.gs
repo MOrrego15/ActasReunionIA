@@ -1,6 +1,7 @@
 /** Módulo generador del Google Docs de acta con formato funcional mínimo. */
 
 const ACTA_MIME_DOCUMENTO_GOOGLE = 'application/vnd.google-apps.document';
+const ACTA_DOCS_API = 'https://docs.googleapis.com/v1/documents/';
 const ACTA_LOGO_NOMBRE_ARCHIVO = 'LogoMEF.jpg';
 const ACTA_DIRECTOR_PROYECTO = 'Damaso Carlos Tay';
 const ACTA_REUNION = Object.freeze({
@@ -173,6 +174,7 @@ function generarDocumentoActa(
       participantesActa
     );
     documento.saveAndClose();
+    _actaCombinarCabecera(idDocumentoGoogle);
   } catch (errorEscritura) {
     return _actaFinalizarError(ACTA_CODIGOS_ERROR.ESCRITURA_ERROR,
       'No fue posible escribir el documento del acta.', contexto, 'escritura');
@@ -355,35 +357,102 @@ function _actaConfigurarPagina(cuerpo) {
 
 function _actaAgregarCabecera(cuerpo, fechaReunion, logoInstitucional) {
   const tabla = cuerpo.appendTable([
-    ['', ''],
-    ['Proyecto:', ACTA_CABECERA.PROYECTO],
-    ['Director de Proyecto:', ACTA_DIRECTOR_PROYECTO]
+    ['', ACTA_CABECERA.TITULO, 'Código:', ACTA_CABECERA.CODIGO],
+    ['', '', 'Versión:', ACTA_CABECERA.VERSION],
+    ['', ACTA_CABECERA.METODOLOGIA, 'Fecha:',
+      _actaFormatearFechaCabecera(fechaReunion)],
+    ['Proyecto:', ACTA_CABECERA.PROYECTO, '', ''],
+    ['Director de Proyecto:', ACTA_DIRECTOR_PROYECTO, '', '']
   ]);
   tabla.setBorderWidth(0.75);
 
   const celdaLogo = tabla.getRow(0).getCell(0);
-  const celdaCabecera = tabla.getRow(0).getCell(1);
-  _actaConfigurarAnchosFila(
-    tabla.getRow(0),
-    ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA,
-    ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO
-  );
   _actaAgregarLogo(celdaLogo, logoInstitucional);
-  _actaAgregarControlesCabecera(
-    celdaCabecera,
-    _actaFormatearFechaCabecera(fechaReunion)
-  );
+  for (let indice = 0; indice < tabla.getNumRows(); indice += 1) {
+    _actaConfigurarAnchosCabeceraExcel(tabla.getRow(indice));
+  }
 
-  _actaConfigurarFilaInstitucional(
-    tabla.getRow(1),
-    'Proyecto:',
-    ACTA_CABECERA.PROYECTO
+  _actaFormatearCelda(tabla.getRow(0).getCell(1), true, 16,
+    DocumentApp.HorizontalAlignment.CENTER);
+  _actaFormatearCelda(tabla.getRow(1).getCell(1), false, 9,
+    DocumentApp.HorizontalAlignment.CENTER);
+  _actaFormatearCelda(tabla.getRow(2).getCell(1), true, 9,
+    DocumentApp.HorizontalAlignment.LEFT);
+  for (let indice = 0; indice < 3; indice += 1) {
+    _actaFormatearCelda(tabla.getRow(indice).getCell(2), true, 9,
+      DocumentApp.HorizontalAlignment.LEFT);
+    _actaFormatearCelda(tabla.getRow(indice).getCell(3), indice !== 2, 9,
+      DocumentApp.HorizontalAlignment.CENTER);
+  }
+  _actaConfigurarFilaInstitucionalExcel(tabla.getRow(3));
+  _actaConfigurarFilaInstitucionalExcel(tabla.getRow(4));
+}
+
+function _actaConfigurarAnchosCabeceraExcel(fila) {
+  fila.getCell(0).setWidth(ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA);
+  fila.getCell(1).setWidth(ACTA_FORMATO.ANCHO_COLUMNA_TITULO);
+  fila.getCell(2).setWidth(ACTA_FORMATO.ANCHO_COLUMNA_CONTROL);
+  fila.getCell(3).setWidth(ACTA_FORMATO.ANCHO_COLUMNA_VALOR);
+}
+
+function _actaConfigurarFilaInstitucionalExcel(fila) {
+  _actaFormatearCelda(fila.getCell(0), true, 9,
+    DocumentApp.HorizontalAlignment.LEFT);
+  _actaFormatearCelda(fila.getCell(1), true, 9,
+    DocumentApp.HorizontalAlignment.LEFT);
+}
+
+function _actaCombinarCabecera(idDocumento) {
+  const token = ScriptApp.getOAuthToken();
+  const url = ACTA_DOCS_API + encodeURIComponent(idDocumento);
+  const respuestaDocumento = UrlFetchApp.fetch(url, {
+    method: 'get',
+    headers: { Authorization: 'Bearer ' + token },
+    muteHttpExceptions: true
+  });
+  if (respuestaDocumento.getResponseCode() !== 200) {
+    throw new Error('No fue posible localizar la tabla de cabecera.');
+  }
+  const documento = JSON.parse(respuestaDocumento.getContentText());
+  const contenido = documento.body && documento.body.content;
+  const elementoTabla = Array.isArray(contenido) && contenido.find(
+    function (elemento) {
+      return elemento.table && Number.isInteger(elemento.startIndex);
+    }
   );
-  _actaConfigurarFilaInstitucional(
-    tabla.getRow(2),
-    'Director de Proyecto:',
-    ACTA_DIRECTOR_PROYECTO
-  );
+  if (!elementoTabla) throw new Error('La tabla de cabecera no existe.');
+
+  const rangos = [
+    [0, 3, 0, 1],
+    [0, 2, 1, 2],
+    [3, 4, 1, 4],
+    [4, 5, 1, 4]
+  ];
+  const solicitudes = rangos.map(function (rango) {
+    return {
+      mergeTableCells: {
+        tableRange: {
+          tableCellLocation: {
+            tableStartLocation: { index: elementoTabla.startIndex },
+            rowIndex: rango[0],
+            columnIndex: rango[2]
+          },
+          rowSpan: rango[1] - rango[0],
+          columnSpan: rango[3] - rango[2]
+        }
+      }
+    };
+  });
+  const respuestaCombinacion = UrlFetchApp.fetch(url + ':batchUpdate', {
+    method: 'post',
+    contentType: 'application/json',
+    headers: { Authorization: 'Bearer ' + token },
+    payload: JSON.stringify({ requests: solicitudes }),
+    muteHttpExceptions: true
+  });
+  if (respuestaCombinacion.getResponseCode() !== 200) {
+    throw new Error('No fue posible combinar las celdas de cabecera.');
+  }
 }
 
 function _actaConfigurarAnchosFila(fila, anchoEtiqueta, anchoContenido) {
@@ -407,40 +476,6 @@ function _actaAgregarLogo(celda, logoInstitucional) {
   imagen.setHeight(ACTA_FORMATO.ALTO_LOGO);
 }
 
-function _actaAgregarControlesCabecera(celda, fechaCabecera) {
-  celda.clear();
-  celda.setPaddingTop(0);
-  celda.setPaddingBottom(0);
-  celda.setPaddingLeft(0);
-  celda.setPaddingRight(0);
-  celda.setVerticalAlignment(DocumentApp.VerticalAlignment.TOP);
-  const tabla = celda.appendTable([
-    [ACTA_CABECERA.TITULO, 'Código:', ACTA_CABECERA.CODIGO],
-    ['', 'Versión:', ACTA_CABECERA.VERSION],
-    [ACTA_CABECERA.METODOLOGIA, 'Fecha:', fechaCabecera]
-  ]);
-  tabla.setBorderWidth(0.75);
-  _actaCompactarCeldaConTabla(celda, tabla);
-
-  for (let indice = 0; indice < tabla.getNumRows(); indice += 1) {
-    const fila = tabla.getRow(indice);
-    fila.getCell(0).setWidth(ACTA_FORMATO.ANCHO_COLUMNA_TITULO);
-    fila.getCell(1).setWidth(ACTA_FORMATO.ANCHO_COLUMNA_CONTROL);
-    fila.getCell(2).setWidth(ACTA_FORMATO.ANCHO_COLUMNA_VALOR);
-    _actaFormatearCelda(fila.getCell(1), true, 9,
-      DocumentApp.HorizontalAlignment.LEFT);
-    _actaFormatearCelda(fila.getCell(2), indice !== 2, 9,
-      DocumentApp.HorizontalAlignment.CENTER);
-  }
-
-  _actaFormatearCelda(tabla.getRow(0).getCell(0), true, 16,
-    DocumentApp.HorizontalAlignment.CENTER);
-  _actaFormatearCelda(tabla.getRow(1).getCell(0), false, 9,
-    DocumentApp.HorizontalAlignment.CENTER);
-  _actaFormatearCelda(tabla.getRow(2).getCell(0), true, 9,
-    DocumentApp.HorizontalAlignment.LEFT);
-}
-
 function _actaCompactarCeldaConTabla(celda, tabla) {
   for (let indice = celda.getNumChildren() - 1; indice >= 0; indice -= 1) {
     const elemento = celda.getChild(indice);
@@ -458,20 +493,6 @@ function _actaCompactarCeldaConTabla(celda, tabla) {
       parrafo.setLineSpacing(0.06);
     }
   }
-}
-
-function _actaConfigurarFilaInstitucional(fila, etiqueta, valor) {
-  _actaConfigurarAnchosFila(
-    fila,
-    ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA,
-    ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO
-  );
-  fila.getCell(0).setText(etiqueta);
-  fila.getCell(1).setText(valor);
-  _actaFormatearCelda(fila.getCell(0), true, 9,
-    DocumentApp.HorizontalAlignment.LEFT);
-  _actaFormatearCelda(fila.getCell(1), true, 9,
-    DocumentApp.HorizontalAlignment.LEFT);
 }
 
 function _actaFormatearCelda(celda, negrita, tamano, alineacion) {
