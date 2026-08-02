@@ -2320,3 +2320,79 @@ se implementó el cálculo del día calendario siguiente.
 2. Una descarga independiente confirmó la coincidencia SHA-256 de
    `Acta.gs`, `Prompt.gs`, `OpenAI.gs` y `ValidadorRespuesta.gs`.
 3. Se confirmó la permanencia de los 17 archivos y de `Inicializar.js`.
+
+# Cambio 0026
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Corregir y desplegar la próxima reunión para que corresponda al siguiente
+> día laborable de lunes a viernes, manteniendo los acuerdos sin espacios en
+> blanco entre ellos.
+
+## Respuesta de Codex
+
+Se sustituyó el cálculo del día calendario siguiente por el siguiente día de
+lunes a viernes. Cuando la fecha base es viernes, sábado o domingo, la próxima
+reunión se presenta el lunes. No se modificó el formato compacto de acuerdos.
+Los feriados permanecen fuera del alcance mientras no exista una fuente de
+calendario oficial autorizada.
+
+## Registro de progreso
+
+1. Se confirmó que la implementación anterior sumaba un día calendario.
+2. El entorno aislado de Windows presentó repetidamente un error de
+   inicialización en la unidad de Google Drive.
+3. Se configuró el modo oficial alternativo `unelevated` y se recuperaron la
+   lectura, la escritura controlada y la ejecución de Git.
+4. Google Drive mantuvo bloqueado solo un archivo temporal vacío de validación;
+   se excluyó del cambio y del versionado.
+5. Se implementó el avance de fecha hasta encontrar lunes, martes, miércoles,
+   jueves o viernes.
+6. Se conservaron las viñetas de acuerdos con espaciado anterior, posterior y
+   relleno vertical en cero.
+7. Se ampliaron las pruebas con casos de viernes, sábado, domingo, cambio de
+   año y año bisiesto.
+8. La primera prueba detectó una expectativa antigua dentro de la tabla final;
+   se actualizó y toda la suite se repitió satisfactoriamente.
+9. El primer intento de despliegue se detuvo sin publicar por un conflicto de
+   extensiones entre `Acta.gs` local y `Acta.js` remoto.
+10. Se corrigió el nombre solo en la copia temporal, se desplegaron los 17
+    archivos y una descarga independiente verificó el resultado.
+
+## Archivos modificados
+
+- AppsScript/Acta.gs
+- Pruebas/ActaCierre.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- `ActaCierre.test.js`: cálculo laboral y cierre correctos.
+- `ValidadorAcuerdos.test.js`: responsable normalizado.
+- `ActaTemas.test.js`: acuerdos y espaciado compacto correctos.
+- `ActaSiglas.test.js`: once elementos y formato correctos.
+- `ActaAgenda.test.js`: contenido y formato correctos.
+- `Participantes.test.js`: seis casos correctos.
+- Validación sintáctica de `Acta.gs`.
+- `git diff --check` sin errores.
+
+## Pendientes
+
+- Confirmar visualmente la fecha y el espaciado en un acta generada.
+
+## Despliegue y verificación
+
+1. Se descargaron los 17 archivos remotos a una copia temporal y se confirmó
+   la presencia de `Inicializar.js`.
+2. El primer intento de publicación se detuvo sin modificar el remoto porque
+   la copia local se incorporó como `Acta.gs` y el remoto utiliza `Acta.js`.
+3. Se corrigió exclusivamente la extensión dentro de la carpeta temporal y se
+   desplegaron los 17 archivos correctamente.
+4. Una descarga independiente confirmó 17 archivos, la permanencia de
+   `Inicializar.js` y coincidencia SHA-256 entre `AppsScript/Acta.gs` y
+   `Acta.js` remoto.

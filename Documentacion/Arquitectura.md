@@ -430,8 +430,9 @@ La sección sustituye la presentación independiente de `Resumen Ejecutivo`.
 
 El cierre documental combina las Fases 7 y 8 en una tabla institucional:
 `Riesgos o problemas` permanece vacío; `Acuerdos` usa un encabezado plomo
-y viñetas; y `Próxima reunión` muestra el día calendario siguiente a
-`fechaReunion` con mes en español. Un acuerdo con responsable se presenta
+y viñetas; y `Próxima reunión` muestra el siguiente día de lunes a viernes a
+partir de `fechaReunion`, omitiendo sábados y domingos, con mes en español.
+Un acuerdo con responsable se presenta
 como `Responsable: descripción`; cuando el responsable está vacío se presenta
 como `Sin responsable descripción`, sin dos puntos. La tabla genérica de
 tareas y la sección de observaciones dejan de representarse en el documento.

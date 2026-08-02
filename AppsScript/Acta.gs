@@ -746,7 +746,9 @@ function _actaCalcularProximaReunion(fechaReunion) {
     Number(coincidencia[2]) - 1,
     Number(coincidencia[1])
   );
-  fecha.setDate(fecha.getDate() + 1);
+  do {
+    fecha.setDate(fecha.getDate() + 1);
+  } while (fecha.getDay() === 0 || fecha.getDay() === 6);
   const meses = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'

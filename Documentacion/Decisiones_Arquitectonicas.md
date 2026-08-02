@@ -127,9 +127,9 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 ## DA-018: Cierre con acuerdos responsables y próxima reunión
 
 - **Estado:** Aceptada.
-- **Decisión:** La Fase 7 mostrará una fila vacía de `Riesgos o problemas`, un encabezado plomo `Acuerdos` y una lista con viñetas. Cada acuerdo incorporará un responsable opcional en el contrato. Con responsable se usará `Nombre: descripción`; sin responsable se usará `Sin responsable descripción`, sin dos puntos. La Fase 8 calculará `Próxima reunión` como el día calendario siguiente a la fecha del acta y mostrará el mes en español.
+- **Decisión:** La Fase 7 mostrará una fila vacía de `Riesgos o problemas`, un encabezado plomo `Acuerdos` y una lista con viñetas. Cada acuerdo incorporará un responsable opcional en el contrato. Con responsable se usará `Nombre: descripción`; sin responsable se usará `Sin responsable descripción`, sin dos puntos. La Fase 8 calculará `Próxima reunión` como el siguiente día de lunes a viernes a partir de la fecha del acta, omitiendo sábados y domingos, y mostrará el mes en español.
 - **Motivo:** Reproducir el modelo institucional y evitar inventar responsables ausentes.
-- **Consecuencia:** Prompt, esquema JSON de OpenAI, validador y generador comparten el nuevo campo `responsable` en acuerdos. El cálculo incluye fines de semana y cambios de mes o año porque la regla autorizada indica día calendario siguiente.
+- **Consecuencia:** Prompt, esquema JSON de OpenAI, validador y generador comparten el nuevo campo `responsable` en acuerdos. El cálculo conserva los cambios de mes y año, y si el día siguiente cae sábado o domingo avanza hasta el lunes. Los feriados no se excluyen mientras no exista un calendario autorizado.
 
 ## Decisiones pendientes
 

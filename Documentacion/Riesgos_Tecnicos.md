@@ -40,7 +40,7 @@ La valoración es inicial y deberá revisarse con datos de uso, volumen y polít
 | El catálogo fijo de siglas queda desactualizado | Media | Medio | Mantener una única constante versionada y modificarla solo mediante una lista institucional autorizada. |
 | Temas tratados y acuerdos requieren significados distintos en el futuro | Media | Medio | Mantener documentada su equivalencia actual y separar los contratos solo mediante autorización explícita. |
 | OpenAI inventa un responsable no explícito | Media | Alto | Instruir que no invente responsables, aceptar cadena vacía y mostrar `Sin responsable` sin alterar la descripción. |
-| La próxima reunión cae en fin de semana o feriado | Media | Medio | Aplicar el día calendario siguiente autorizado; cambiar a día hábil solo mediante una nueva regla de negocio. |
+| La próxima reunión cae en feriado | Media | Medio | Aplicar el siguiente día de lunes a viernes; incorporar feriados únicamente cuando se autorice una fuente de calendario oficial. |
 
 ## 3. Riesgos de consistencia
 

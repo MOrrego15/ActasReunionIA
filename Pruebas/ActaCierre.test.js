@@ -110,7 +110,7 @@ assert.strictEqual(
 );
 assert.strictEqual(
   sandbox._actaCalcularProximaReunion('31/07/2026'),
-  '1 de Agosto de 2026'
+  '3 de Agosto de 2026'
 );
 assert.strictEqual(
   sandbox._actaCalcularProximaReunion('31/12/2026'),
@@ -119,6 +119,14 @@ assert.strictEqual(
 assert.strictEqual(
   sandbox._actaCalcularProximaReunion('28/02/2028'),
   '29 de Febrero de 2028'
+);
+assert.strictEqual(
+  sandbox._actaCalcularProximaReunion('01/08/2026'),
+  '3 de Agosto de 2026'
+);
+assert.strictEqual(
+  sandbox._actaCalcularProximaReunion('02/08/2026'),
+  '3 de Agosto de 2026'
 );
 
 sandbox._actaAgregarCierre(
@@ -165,7 +173,7 @@ tabla.filas[2].celdas[0].estado.listas.forEach((item) => {
 });
 assert.strictEqual(
   tabla.filas[3].celdas[1].estado.texto.contenido,
-  '1 de Agosto de 2026'
+  '3 de Agosto de 2026'
 );
 assert.strictEqual(tabla.filas[3].celdas[0].estado.fondo, '#d9d9d9');
 
