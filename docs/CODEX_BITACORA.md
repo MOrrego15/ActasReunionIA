@@ -2243,3 +2243,80 @@ separación vertical introducida por la tabla entre un acuerdo y el siguiente.
 
 El ajuste de relleno vertical forma parte del mismo `Acta.gs` desplegado y
 verificado en el Cambio 0023.
+
+# Cambio 0025
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Implementar y desplegar el cierre del acta. `Riesgos o problemas` debe
+> quedar vacío. Los acuerdos usan la opción A: con responsable,
+> `Nombre: descripción`; sin responsable, `Sin responsable descripción`,
+> sin dos puntos. La próxima reunión corresponde al día siguiente de la fecha
+> del acta.
+
+## Respuesta de Codex
+
+Se reemplazaron las secciones genéricas finales por la estructura institucional
+de las Fases 7 y 8. Se amplió el contrato de acuerdos con responsable opcional y
+se implementó el cálculo del día calendario siguiente.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora y la documentación obligatoria.
+2. Se confirmó el formato exacto mediante la opción A.
+3. Se revisaron Prompt, esquema estructurado de OpenAI, Validador y Acta.
+4. Se añadió `responsable` a los acuerdos en los cuatro contratos.
+5. Prompt exige cadena vacía cuando no exista responsable explícito y prohíbe
+   inventarlo.
+6. Se implementó la fila vacía de riesgos y problemas.
+7. Se implementó el encabezado plomo de acuerdos y las viñetas compactas.
+8. Se implementaron ambos formatos de texto con y sin responsable.
+9. Se calculó la próxima reunión sumando un día calendario a `DD/MM/AAAA`.
+10. Se reemplazaron las tablas genéricas de Acuerdos, Tareas y Observaciones.
+11. Se agregaron pruebas para formato, normalización y esquema de OpenAI.
+12. Se probaron cambio de mes, cambio de año y año bisiesto.
+13. Las pruebas nuevas y todas las regresiones finalizaron correctamente.
+14. Las validaciones sintácticas de los cuatro módulos y `git diff --check`
+    no mostraron errores.
+
+## Archivos modificados
+
+- AppsScript/Acta.gs
+- AppsScript/Prompt.gs
+- AppsScript/OpenAI.gs
+- AppsScript/ValidadorRespuesta.gs
+- Pruebas/ActaCierre.test.js
+- Pruebas/ValidadorAcuerdos.test.js
+- Pruebas/ActaTemas.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- Responsable real con dos puntos.
+- Ausencia de responsable sin dos puntos.
+- Riesgos o problemas vacío.
+- Encabezado plomo y viñetas sin espacios.
+- Día siguiente ordinario.
+- Cambio de mes y de año.
+- Año bisiesto.
+- Normalización del responsable ausente.
+- Esquema estructurado de OpenAI sincronizado.
+- Regresiones de Temas, Siglas, Agenda y Participantes.
+- Validación sintáctica y `git diff --check`.
+
+## Pendientes
+
+- Confirmar visualmente las Fases 7 y 8 en un documento generado.
+
+## Despliegue y verificación
+
+1. Se desplegaron los 17 archivos desde una copia temporal que preservó el
+   proyecto remoto completo.
+2. Una descarga independiente confirmó la coincidencia SHA-256 de
+   `Acta.gs`, `Prompt.gs`, `OpenAI.gs` y `ValidadorRespuesta.gs`.
+3. Se confirmó la permanencia de los 17 archivos y de `Inicializar.js`.

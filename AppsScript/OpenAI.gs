@@ -222,10 +222,11 @@ function _openAIConstruirEsquemaActa() {
       acuerdos: {
         type: 'array', items: {
           type: 'object', additionalProperties: false,
-          required: ['numero','descripcion'],
+          required: ['numero','descripcion','responsable'],
           properties: {
             numero: { type: 'integer', minimum: 1 },
-            descripcion: texto
+            descripcion: texto,
+            responsable: texto
           }
         }
       },

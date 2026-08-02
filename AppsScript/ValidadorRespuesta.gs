@@ -25,7 +25,7 @@ const VALIDADOR_CAMPOS_ACTA = Object.freeze([
  * @property {{nombre: string, cargo: string}[]} participantes
  * @property {string[]} agenda
  * @property {string} resumenEjecutivo
- * @property {{numero: number, descripcion: string}[]} acuerdos
+ * @property {{numero: number, descripcion: string, responsable: string}[]} acuerdos
  * @property {{numero: number, descripcion: string, responsable: string, fechaCompromiso: string}[]} tareas
  * @property {string} observaciones
  */
@@ -207,7 +207,7 @@ function _validadorNormalizarNumerados(valor, esTarea) {
   const salida = [];
   const claves = esTarea
     ? ['numero','descripcion','responsable','fechaCompromiso']
-    : ['numero','descripcion'];
+    : ['numero','descripcion','responsable'];
   for (let i = 0; i < valor.length; i += 1) {
     const item = valor[i];
     if (!_validadorClavesPermitidas(item, claves) ||
@@ -221,7 +221,16 @@ function _validadorNormalizarNumerados(valor, esTarea) {
       salida.push({ numero: item.numero, descripcion: descripcion,
         responsable: responsable, fechaCompromiso: fecha });
     } else {
-      salida.push({ numero: item.numero, descripcion: descripcion });
+      const responsable = _validadorNormalizarTexto(
+        item.responsable,
+        false
+      );
+      if (responsable === null) return null;
+      salida.push({
+        numero: item.numero,
+        descripcion: descripcion,
+        responsable: responsable
+      });
     }
   }
   return salida;

@@ -94,7 +94,7 @@ const ACTA_CODIGOS_ERROR = Object.freeze({
  * @property {{nombre: string, cargo: string}[]} participantes
  * @property {string[]} agenda
  * @property {string} resumenEjecutivo
- * @property {{numero: number, descripcion: string}[]} acuerdos
+ * @property {{numero: number, descripcion: string, responsable: string}[]} acuerdos
  * @property {{numero: number, descripcion: string, responsable: string, fechaCompromiso: string}[]} tareas
  * @property {string} observaciones
  */
@@ -226,8 +226,9 @@ function _actaValidarRespuesta(acta) {
     return false;
   }
   if (!acta.acuerdos.every(function (item, indice) {
-    return _actaClavesExactas(item, ['numero','descripcion']) &&
-      item.numero === indice + 1 && esCadenaNoVacia(item.descripcion);
+    return _actaClavesExactas(item, ['numero','descripcion','responsable']) &&
+      item.numero === indice + 1 && esCadenaNoVacia(item.descripcion) &&
+      typeof item.responsable === 'string';
   })) return false;
   return acta.tareas.every(function (item, indice) {
     return _actaClavesExactas(item,
@@ -294,23 +295,7 @@ function _actaEscribirDocumento(
 
   _actaAgregarTemasTratados(cuerpo, acta.acuerdos);
 
-  _actaAgregarSeccion(cuerpo, 'Acuerdos');
-  const acuerdos = [['N.º', 'Descripción']];
-  acta.acuerdos.forEach(function (item) {
-    acuerdos.push([String(item.numero), item.descripcion]);
-  });
-  cuerpo.appendTable(acuerdos);
-
-  _actaAgregarSeccion(cuerpo, 'Tareas');
-  const tareas = [['N.º', 'Descripción', 'Responsable', 'Fecha compromiso']];
-  acta.tareas.forEach(function (item) {
-    tareas.push([String(item.numero), item.descripcion,
-      item.responsable, item.fechaCompromiso]);
-  });
-  cuerpo.appendTable(tareas);
-
-  _actaAgregarSeccion(cuerpo, 'Observaciones');
-  cuerpo.appendParagraph(acta.observaciones);
+  _actaAgregarCierre(cuerpo, acta.acuerdos, acta.fechaReunion);
 }
 
 function _actaObtenerLogoInstitucional(carpetaRecursosId, contexto) {
@@ -668,6 +653,106 @@ function _actaAgregarTemasTratados(cuerpo, acuerdos) {
     celdaNumero.setVerticalAlignment(DocumentApp.VerticalAlignment.TOP);
     celdaDescripcion.setVerticalAlignment(DocumentApp.VerticalAlignment.TOP);
   }
+}
+
+function _actaAgregarCierre(cuerpo, acuerdos, fechaReunion) {
+  const tabla = cuerpo.appendTable([
+    ['Riesgos o problemas', ''],
+    ['Acuerdos', ''],
+    ['', ''],
+    ['Próxima reunión', _actaCalcularProximaReunion(fechaReunion)]
+  ]);
+  tabla.setBorderWidth(0.75);
+
+  const filaRiesgos = tabla.getRow(0);
+  _actaConfigurarAnchosFila(
+    filaRiesgos,
+    ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA,
+    ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO
+  );
+  _actaFormatearCelda(
+    filaRiesgos.getCell(0),
+    true,
+    9,
+    DocumentApp.HorizontalAlignment.LEFT
+  );
+
+  const filaTitulo = tabla.getRow(1);
+  const celdaTitulo = filaTitulo.getCell(1).merge();
+  celdaTitulo.setText('Acuerdos');
+  celdaTitulo.setBackgroundColor('#d9d9d9');
+  _actaFormatearCelda(
+    celdaTitulo,
+    true,
+    9,
+    DocumentApp.HorizontalAlignment.LEFT
+  );
+
+  const filaContenido = tabla.getRow(2);
+  const celdaContenido = filaContenido.getCell(1).merge();
+  celdaContenido.clear();
+  celdaContenido.setPaddingTop(0);
+  celdaContenido.setPaddingBottom(0);
+  for (let indice = 0; indice < acuerdos.length; indice += 1) {
+    const item = celdaContenido.appendListItem(
+      _actaConstruirTextoAcuerdo(acuerdos[indice])
+    );
+    item.setGlyphType(DocumentApp.GlyphType.BULLET);
+    item.setSpacingBefore(0);
+    item.setSpacingAfter(0);
+    item.setIndentStart(14);
+    item.setIndentFirstLine(0);
+    const texto = item.editAsText();
+    texto.setFontFamily('Arial');
+    texto.setFontSize(9);
+    texto.setBold(false);
+  }
+
+  const filaProxima = tabla.getRow(3);
+  _actaConfigurarAnchosFila(
+    filaProxima,
+    ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA,
+    ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO
+  );
+  const celdaProximaEtiqueta = filaProxima.getCell(0);
+  const celdaProximaValor = filaProxima.getCell(1);
+  celdaProximaEtiqueta.setBackgroundColor('#d9d9d9');
+  _actaFormatearCelda(
+    celdaProximaEtiqueta,
+    true,
+    9,
+    DocumentApp.HorizontalAlignment.LEFT
+  );
+  _actaFormatearCelda(
+    celdaProximaValor,
+    false,
+    9,
+    DocumentApp.HorizontalAlignment.LEFT
+  );
+}
+
+function _actaConstruirTextoAcuerdo(acuerdo) {
+  const responsable = acuerdo.responsable.trim();
+  return responsable
+    ? responsable + ': ' + acuerdo.descripcion
+    : 'Sin responsable ' + acuerdo.descripcion;
+}
+
+function _actaCalcularProximaReunion(fechaReunion) {
+  const coincidencia = fechaReunion.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (!coincidencia) throw new Error('fecha_reunion');
+  const fecha = new Date(
+    Number(coincidencia[3]),
+    Number(coincidencia[2]) - 1,
+    Number(coincidencia[1])
+  );
+  fecha.setDate(fecha.getDate() + 1);
+  const meses = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+  return fecha.getDate() + ' de ' + meses[fecha.getMonth()] +
+    ' de ' + fecha.getFullYear();
 }
 
 function _actaAgregarAsistentes(cuerpo, participantes) {

@@ -133,10 +133,10 @@ vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync('AppsScript/Acta.gs', 'utf8'), sandbox);
 
 const acuerdos = [
-  { numero: 1, descripcion: 'Primer asunto tratado.' },
-  { numero: 2, descripcion: 'Segundo asunto tratado.' },
-  { numero: 3, descripcion: 'Tercer asunto tratado.' },
-  { numero: 4, descripcion: 'Cuarto asunto tratado.' }
+  { numero: 1, descripcion: 'Primer asunto tratado.', responsable: '' },
+  { numero: 2, descripcion: 'Segundo asunto tratado.', responsable: '' },
+  { numero: 3, descripcion: 'Tercer asunto tratado.', responsable: '' },
+  { numero: 4, descripcion: 'Cuarto asunto tratado.', responsable: '' }
 ];
 sandbox._actaAgregarTemasTratados(cuerpo, acuerdos);
 

@@ -349,7 +349,11 @@ comunicación técnica mediante Chat Completions y Structured Outputs;
   participantes: [{ nombre: string, cargo: string }],
   agenda: [string],
   resumenEjecutivo: string,
-  acuerdos: [{ numero: number, descripcion: string }],
+  acuerdos: [{
+    numero: number,
+    descripcion: string,
+    responsable: string
+  }],
   tareas: [{
     numero: number,
     descripcion: string,
@@ -423,6 +427,14 @@ descripción en una tabla interior sin bordes. Los párrafos usan espaciado
 anterior y posterior en cero, y las celdas usan relleno vertical en cero, para
 evitar líneas o espacios vacíos entre temas.
 La sección sustituye la presentación independiente de `Resumen Ejecutivo`.
+
+El cierre documental combina las Fases 7 y 8 en una tabla institucional:
+`Riesgos o problemas` permanece vacío; `Acuerdos` usa un encabezado plomo
+y viñetas; y `Próxima reunión` muestra el día calendario siguiente a
+`fechaReunion` con mes en español. Un acuerdo con responsable se presenta
+como `Responsable: descripción`; cuando el responsable está vacío se presenta
+como `Sin responsable descripción`, sin dos puntos. La tabla genérica de
+tareas y la sección de observaciones dejan de representarse en el documento.
 
 ### 11.3 Decisiones técnicas inferidas
 

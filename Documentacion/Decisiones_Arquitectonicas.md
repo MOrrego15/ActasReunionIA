@@ -124,6 +124,13 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Motivo:** Para este proyecto los temas tratados son equivalentes a los acuerdos y no requieren un segundo campo ni una inferencia adicional.
 - **Consecuencia:** Temas tratados y la futura Fase 7 comparten la misma fuente de datos. Cualquier diferenciación posterior requerirá modificar explícitamente el contrato.
 
+## DA-018: Cierre con acuerdos responsables y próxima reunión
+
+- **Estado:** Aceptada.
+- **Decisión:** La Fase 7 mostrará una fila vacía de `Riesgos o problemas`, un encabezado plomo `Acuerdos` y una lista con viñetas. Cada acuerdo incorporará un responsable opcional en el contrato. Con responsable se usará `Nombre: descripción`; sin responsable se usará `Sin responsable descripción`, sin dos puntos. La Fase 8 calculará `Próxima reunión` como el día calendario siguiente a la fecha del acta y mostrará el mes en español.
+- **Motivo:** Reproducir el modelo institucional y evitar inventar responsables ausentes.
+- **Consecuencia:** Prompt, esquema JSON de OpenAI, validador y generador comparten el nuevo campo `responsable` en acuerdos. El cálculo incluye fines de semana y cambios de mes o año porque la regla autorizada indica día calendario siguiente.
+
 ## Decisiones pendientes
 
 1. Criterio para identificar documentos como notas válidas de Gemini.

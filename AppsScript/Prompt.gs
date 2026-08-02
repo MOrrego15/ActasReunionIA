@@ -47,7 +47,8 @@ function construirPromptActa(contenidoFuente, contexto) {
       '  participantes: [{nombre:string no vacía,cargo:string}],',
       '  agenda: [string no vacía],',
       '  resumenEjecutivo: string no vacía,',
-      '  acuerdos: [{numero:integer,descripcion:string no vacía}],',
+      '  acuerdos: [{numero:integer,descripcion:string no vacía,',
+      '    responsable:string}],',
       '  tareas: [{numero:integer,descripcion:string no vacía,',
       '    responsable:string,fechaCompromiso:string}],',
       '  observaciones: string',
@@ -78,6 +79,8 @@ function construirPromptActa(contenidoFuente, contexto) {
       'Cada participante confirmado requiere nombre no vacío.',
       'Cada elemento de agenda requiere texto no vacío.',
       'Cada acuerdo y tarea requiere descripcion no vacía.',
+      'Cada acuerdo debe incluir responsable; usa cadena vacía si no existe ' +
+        'un responsable explícito en las notas.',
       'Numera acuerdos y tareas secuencialmente desde 1.',
       'No incluyas HTML, Markdown, bloques de código ni JSON en textos.',
       'Esquema obligatorio:',
