@@ -8,6 +8,35 @@ const ACTA_REUNION = Object.freeze({
   HORA: '09:00 am a 09:20 am'
 });
 const ACTA_AGENDA = 'Dayli – reunión de seguimiento';
+const ACTA_SIGLAS_ACRONIMOS = Object.freeze([
+  ['AFSP', 'Administración Financiera del Sector Público'],
+  [
+    'AP Inversiones',
+    'Analista de prototipos de la Célula de Inversiones.'
+  ],
+  ['BI', 'Banco de Inversiones'],
+  [
+    'CAF Inversiones',
+    'Coordinador de Aspectos Funcionales de Inversiones para la Definición e ' +
+      'Implementación del Modelo Funcional Detallado del SIAF-RP.'
+  ],
+  ['CUI', 'Código Único de Inversiones'],
+  ['EF Inversiones', 'Especialista Funcional de Inversiones'],
+  [
+    'EGR Inversiones',
+    'Especialista de Gestión de Requerimientos de la Célula de Inversiones.'
+  ],
+  ['MFD', 'Modelo Funcional Detallado del SIAF RP.'],
+  ['PMI', 'Programa Multianual de Inversiones.'],
+  [
+    'SIAF-RP',
+    'Sistema Integrado Administración Financiera de Recursos Públicos.'
+  ],
+  [
+    'SNPMGI',
+    'Sistema Nacional de Programación Multianual y Gestión de Inversiones.'
+  ]
+]);
 const ACTA_CABECERA = Object.freeze({
   TITULO: 'Acta de Reunión',
   CODIGO: 'FR 37',
@@ -34,6 +63,8 @@ const ACTA_FORMATO = Object.freeze({
   ANCHO_ASISTENTE_NOMBRE: 165,
   ANCHO_ASISTENTE_CARGO: 100,
   ANCHO_ASISTENTE_UNIDAD: 57,
+  ANCHO_SIGLA_NUMERO: 28,
+  ANCHO_SIGLA_DESCRIPCION: 294,
   ANCHO_LOGO: 100,
   ALTO_LOGO: 32
 });
@@ -256,6 +287,8 @@ function _actaEscribirDocumento(
   _actaAgregarAsistentes(cuerpo, participantesActa);
 
   _actaAgregarAgenda(cuerpo);
+
+  _actaAgregarSiglasAcronimos(cuerpo);
 
   _actaAgregarSeccion(cuerpo, 'Resumen Ejecutivo');
   cuerpo.appendParagraph(acta.resumenEjecutivo);
@@ -525,6 +558,59 @@ function _actaAgregarAgenda(cuerpo) {
     .setFontFamily('Arial')
     .setFontSize(10)
     .setBold(false);
+}
+
+function _actaAgregarSiglasAcronimos(cuerpo) {
+  const tablaExterior = cuerpo.appendTable([['Siglas y Acrónimos', '']]);
+  tablaExterior.setBorderWidth(0.75);
+  const celdaTitulo = tablaExterior.getRow(0).getCell(0);
+  const celdaContenido = tablaExterior.getRow(0).getCell(1);
+  celdaTitulo.setWidth(ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA);
+  celdaContenido.setWidth(ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO);
+  celdaTitulo.setBackgroundColor('#d9d9d9');
+  _actaFormatearCelda(
+    celdaTitulo,
+    true,
+    10,
+    DocumentApp.HorizontalAlignment.LEFT
+  );
+
+  celdaContenido.clear();
+  celdaContenido.setPaddingTop(0);
+  celdaContenido.setPaddingBottom(0);
+  celdaContenido.setPaddingLeft(0);
+  celdaContenido.setPaddingRight(0);
+  const filas = ACTA_SIGLAS_ACRONIMOS.map(function (elemento, indice) {
+    return [
+      String(indice + 1) + '.',
+      elemento[0] + ': ' + elemento[1]
+    ];
+  });
+  const tablaSiglas = celdaContenido.appendTable(filas);
+  tablaSiglas.setBorderWidth(0);
+  _actaCompactarCeldaConTabla(celdaContenido, tablaSiglas);
+
+  for (let indice = 0; indice < tablaSiglas.getNumRows(); indice += 1) {
+    const fila = tablaSiglas.getRow(indice);
+    const celdaNumero = fila.getCell(0);
+    const celdaDescripcion = fila.getCell(1);
+    celdaNumero.setWidth(ACTA_FORMATO.ANCHO_SIGLA_NUMERO);
+    celdaDescripcion.setWidth(ACTA_FORMATO.ANCHO_SIGLA_DESCRIPCION);
+    _actaFormatearCelda(
+      celdaNumero,
+      false,
+      9,
+      DocumentApp.HorizontalAlignment.LEFT
+    );
+    _actaFormatearCelda(
+      celdaDescripcion,
+      false,
+      9,
+      DocumentApp.HorizontalAlignment.LEFT
+    );
+    celdaNumero.setVerticalAlignment(DocumentApp.VerticalAlignment.TOP);
+    celdaDescripcion.setVerticalAlignment(DocumentApp.VerticalAlignment.TOP);
+  }
 }
 
 function _actaAgregarAsistentes(cuerpo, participantes) {

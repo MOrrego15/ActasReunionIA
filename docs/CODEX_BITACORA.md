@@ -1101,6 +1101,68 @@ funcional de selección de participantes.
 
 - Ejecutar nuevamente `probarExtraccionParticipantes()`.
 
+# Cambio 0022
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Implementar la Fase 5 con 11 siglas y acrónimos fijos y reproducir el formato
+> mostrado: celda lateral ploma, numeración y contenido sin bordes internos.
+
+## Respuesta de Codex
+
+Se agregó la sección fija `Siglas y Acrónimos` inmediatamente después de
+Agenda. El catálogo conserva el orden y el texto proporcionados por el usuario.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora y la documentación obligatoria.
+2. Se revisó el orden actual de secciones en `Acta.gs`.
+3. Se incorporó un catálogo constante con los 11 elementos autorizados.
+4. Se creó una tabla exterior con etiqueta ploma y borde institucional.
+5. Se creó una tabla interior sin bordes, con columnas separadas para número y
+   descripción.
+6. Se aplicaron anchos 28 y 294, Arial 9 y alineación vertical superior.
+7. Se añadió una prueba automatizada que verifica cantidad, orden, extremos del
+   catálogo y formato.
+8. La prueba de Siglas, la prueba de Agenda y las seis regresiones de
+   participantes finalizaron correctamente.
+9. La validación sintáctica de Acta y `git diff --check` no mostraron errores.
+
+## Archivos modificados
+
+- AppsScript/Acta.gs
+- Pruebas/ActaSiglas.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- Los 11 elementos existen en el orden autorizado.
+- Numeración del 1 al 11.
+- Verificación de AFSP y SNPMGI.
+- Fondo plomo y anchos de la tabla exterior.
+- Tabla interior sin bordes.
+- Fuente, tamaño y alineación.
+- Regresiones de Agenda y Participantes.
+- Validación sintáctica de Acta.
+- `git diff --check`.
+
+## Pendientes
+
+- Confirmar visualmente la Fase 5 en un documento generado.
+
+## Despliegue y verificación
+
+1. El usuario autorizó crear y desplegar la Fase 5.
+2. Se desplegaron los 17 archivos desde una copia temporal que preservó el
+   proyecto remoto completo.
+3. Una descarga independiente confirmó la coincidencia SHA-256 de `Acta.gs`.
+4. Se confirmó la permanencia de los 17 archivos y de `Inicializar.js`.
+
 # Cambio 0021
 Fecha: 2026-08-02
 Autor: Codex

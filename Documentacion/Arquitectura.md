@@ -412,6 +412,11 @@ valor fijo `Dayli – reunión de seguimiento`; no consume la lista variable
 producida por OpenAI. Las etapas visuales restantes se incorporan de forma
 incremental.
 
+La sección `Siglas y Acrónimos` se ubica inmediatamente después de Agenda.
+Usa una celda lateral ploma y una tabla interior sin bordes con numeración del
+1 al 11. Su catálogo es fijo y no se extrae de OpenAI ni del contenido de la
+reunión.
+
 ### 11.3 Decisiones técnicas inferidas
 
 - Se usa `https://api.openai.com/v1/chat/completions` porque el contrato entre

@@ -110,6 +110,13 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Motivo:** El formato institucional aprobado para estas reuniones Daily requiere una descripción uniforme y no una lista variable.
 - **Consecuencia:** Todas las actas generadas por este proyecto mostrarán el mismo texto de agenda hasta que una decisión posterior autorice parametrizarlo.
 
+## DA-016: Catálogo fijo de siglas y acrónimos
+
+- **Estado:** Aceptada.
+- **Decisión:** La Fase 5 mostrará siempre el catálogo autorizado de 11 siglas y acrónimos, numerado en orden fijo. La sección usará una celda lateral ploma `Siglas y Acrónimos` y una tabla interior de número y descripción sin bordes visibles.
+- **Motivo:** El contenido corresponde al vocabulario institucional estable de las reuniones Daily de Inversiones y debe conservar una presentación uniforme.
+- **Consecuencia:** La sección no depende de OpenAI ni del texto de la reunión. Cualquier alta, baja o modificación del catálogo requerirá una decisión y un cambio de código explícitos.
+
 ## Decisiones pendientes
 
 1. Criterio para identificar documentos como notas válidas de Gemini.

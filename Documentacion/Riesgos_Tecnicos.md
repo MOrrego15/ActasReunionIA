@@ -37,6 +37,7 @@ La valoración es inicial y deberá revisarse con datos de uso, volumen y polít
 | Un vínculo interno a otra pestaña repite el ID del documento fuente | Alta | Alto | Descartar autorreferencias y deduplicar todos los candidatos por ID antes de seleccionar la transcripción. |
 | Encabezados del resumen con dos puntos se interpretan como hablantes | Alta | Alto | Limitar la extracción al bloque posterior al título de transcripción y a su primera marca de tiempo. |
 | La agenda fija no corresponde a un tipo futuro de reunión distinto | Baja | Medio | Mantener la decisión documentada y parametrizar el texto únicamente cuando se autoricen otros tipos de acta. |
+| El catálogo fijo de siglas queda desactualizado | Media | Medio | Mantener una única constante versionada y modificarla solo mediante una lista institucional autorizada. |
 
 ## 3. Riesgos de consistencia
 
