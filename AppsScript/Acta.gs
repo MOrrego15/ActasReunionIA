@@ -7,6 +7,7 @@ const ACTA_REUNION = Object.freeze({
   CODIGO: 'CEL002',
   HORA: '09:00 am a 09:20 am'
 });
+const ACTA_AGENDA = 'Dayli – reunión de seguimiento';
 const ACTA_CABECERA = Object.freeze({
   TITULO: 'Acta de Reunión',
   CODIGO: 'FR 37',
@@ -254,10 +255,7 @@ function _actaEscribirDocumento(
 
   _actaAgregarAsistentes(cuerpo, participantesActa);
 
-  _actaAgregarSeccion(cuerpo, 'Agenda');
-  acta.agenda.forEach(function (item) {
-    cuerpo.appendListItem(item).setGlyphType(DocumentApp.GlyphType.NUMBER);
-  });
+  _actaAgregarAgenda(cuerpo);
 
   _actaAgregarSeccion(cuerpo, 'Resumen Ejecutivo');
   cuerpo.appendParagraph(acta.resumenEjecutivo);
@@ -509,6 +507,24 @@ function _actaConstruirNumeroReunion(correlativo, fechaFormateada) {
   }
   const anio = coincidencia[1] || coincidencia[2];
   return String(correlativo) + '-' + anio + '-' + ACTA_REUNION.CODIGO;
+}
+
+function _actaAgregarAgenda(cuerpo) {
+  const tabla = cuerpo.appendTable([['Agenda', ACTA_AGENDA]]);
+  tabla.setBorderWidth(0.75);
+  const celdaEtiqueta = tabla.getRow(0).getCell(0);
+  const celdaValor = tabla.getRow(0).getCell(1);
+  celdaEtiqueta.setWidth(ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA);
+  celdaValor.setWidth(ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO);
+  celdaEtiqueta.setBackgroundColor('#d9d9d9');
+  celdaEtiqueta.editAsText()
+    .setFontFamily('Arial')
+    .setFontSize(10)
+    .setBold(true);
+  celdaValor.editAsText()
+    .setFontFamily('Arial')
+    .setFontSize(10)
+    .setBold(false);
 }
 
 function _actaAgregarAsistentes(cuerpo, participantes) {

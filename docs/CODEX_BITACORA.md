@@ -1101,6 +1101,65 @@ funcional de selección de participantes.
 
 - Ejecutar nuevamente `probarExtraccionParticipantes()`.
 
+# Cambio 0021
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Cerrar la Fase 3 e implementar la Fase 4 con la agenda fija
+> `Dayli – reunión de seguimiento`, manteniendo el color mostrado, y
+> desplegar el cambio.
+
+## Respuesta de Codex
+
+Se reemplazó la sección de lista numerada por una fila institucional de dos
+columnas. La etiqueta `Agenda` conserva el fondo plomo y el valor usa el texto
+fijo autorizado.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora y la documentación obligatoria.
+2. Se revisó el generador actual y se comprobó que Agenda aún era una lista
+   numerada procedente de OpenAI.
+3. Se confirmó la regla fija para todas las actas de este proyecto.
+4. Se añadió la constante `Dayli – reunión de seguimiento`.
+5. Se implementó una tabla de una fila con anchos 103 y 322, borde 0.75,
+   tipografía Arial 10 y fondo `#d9d9d9` en la etiqueta.
+6. Se creó una prueba automatizada específica para contenido y formato.
+7. La prueba de Agenda y las seis regresiones de participantes finalizaron
+   correctamente.
+8. La validación sintáctica de Acta y `git diff --check` no mostraron errores.
+
+## Archivos modificados
+
+- AppsScript/Acta.gs
+- Pruebas/ActaAgenda.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- Valor exacto de Agenda.
+- Fondo plomo de la etiqueta.
+- Bordes, anchos, fuente, tamaño y negrita.
+- Seis regresiones de participantes.
+- Validación sintáctica de Acta.
+- `git diff --check`.
+
+## Pendientes
+
+- Confirmar visualmente la Fase 4 en un documento generado.
+
+## Despliegue y verificación
+
+1. Se desplegaron los 17 archivos desde una copia temporal que preservó el
+   proyecto remoto completo.
+2. Una descarga independiente confirmó la coincidencia SHA-256 de `Acta.gs`.
+3. Se confirmó la permanencia de los 17 archivos y de `Inicializar.js`.
+
 # Cambio 0020
 Fecha: 2026-08-02
 Autor: Codex

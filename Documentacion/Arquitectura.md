@@ -406,8 +406,11 @@ DatosEmisionActa = {
 El nombre del Google Docs será `ACTA-` seguido por seis dígitos. Para conservar
 exactamente esta convención sin truncar, `Acta.gs` admite correlativos entre 1
 y 999999. El formato inicial es funcional: título centrado y en negrita,
-encabezados en negrita, tablas para datos generales, participantes, acuerdos y
-tareas, y lista numerada para la agenda. No incorpora identidad visual.
+encabezados en negrita y tablas para datos generales, participantes, agenda,
+acuerdos y tareas. La Agenda usa una fila institucional con etiqueta ploma y el
+valor fijo `Dayli – reunión de seguimiento`; no consume la lista variable
+producida por OpenAI. Las etapas visuales restantes se incorporan de forma
+incremental.
 
 ### 11.3 Decisiones técnicas inferidas
 

@@ -103,6 +103,13 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Motivo:** Una etiqueta de hablante acredita intervención directa y permite distinguirla de nombres solamente mencionados, evitando falsos positivos como terceros citados durante la conversación.
 - **Consecuencia:** Los asistentes silenciosos no pueden confirmarse y se omitirán. Los nombres mencionados dentro de intervenciones no se incorporarán. La extracción será determinista, deduplicada y no dependerá de correos ni de la interpretación del modelo. El aislamiento por documento fuente impide seleccionar transcripciones de otras reuniones. Los documentos vinculados se deduplicarán por ID y las autorreferencias al mismo Google Docs se descartarán porque la lectura ya incluye todas sus pestañas. No se registrarán URLs, IDs, títulos ni contenido. La ausencia o multiplicidad de contenidos con estructura de transcripción dentro de ese alcance producirá un error controlado.
 
+## DA-015: Agenda institucional fija
+
+- **Estado:** Aceptada.
+- **Decisión:** La Fase 4 mostrará una única fila de dos columnas con la etiqueta `Agenda` y el valor fijo `Dayli – reunión de seguimiento`. La celda de etiqueta conservará el fondo plomo `#d9d9d9`, los anchos institucionales y el borde de 0.75 puntos. La lista `agenda` de la respuesta validada no se representará en esta sección.
+- **Motivo:** El formato institucional aprobado para estas reuniones Daily requiere una descripción uniforme y no una lista variable.
+- **Consecuencia:** Todas las actas generadas por este proyecto mostrarán el mismo texto de agenda hasta que una decisión posterior autorice parametrizarlo.
+
 ## Decisiones pendientes
 
 1. Criterio para identificar documentos como notas válidas de Gemini.
