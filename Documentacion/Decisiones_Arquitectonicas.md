@@ -117,6 +117,13 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Motivo:** El contenido corresponde al vocabulario institucional estable de las reuniones Daily de Inversiones y debe conservar una presentación uniforme.
 - **Consecuencia:** La sección no depende de OpenAI ni del texto de la reunión. Cualquier alta, baja o modificación del catálogo requerirá una decisión y un cambio de código explícitos.
 
+## DA-017: Temas tratados equivalentes a acuerdos
+
+- **Estado:** Aceptada.
+- **Decisión:** La Fase 6 representará `Temas tratados` usando directamente los objetos de la lista validada `acuerdos`. Mantendrá la numeración recibida y mostrará cada descripción en una tabla interior sin bordes, con espaciado anterior y posterior en cero y relleno vertical de celda en cero.
+- **Motivo:** Para este proyecto los temas tratados son equivalentes a los acuerdos y no requieren un segundo campo ni una inferencia adicional.
+- **Consecuencia:** Temas tratados y la futura Fase 7 comparten la misma fuente de datos. Cualquier diferenciación posterior requerirá modificar explícitamente el contrato.
+
 ## Decisiones pendientes
 
 1. Criterio para identificar documentos como notas válidas de Gemini.

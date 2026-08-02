@@ -2133,3 +2133,113 @@ técnica de candidatos antes de ejecutar el selector existente.
 ## Pendientes
 
 - Ejecutar nuevamente `probarExtraccionParticipantes()`.
+
+# Cambio 0023
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Implementar la Fase 6 con temas variables, confirmar que
+> `Temas tratados = acuerdos` y evitar espacios en blanco entre cada elemento.
+
+## Respuesta de Codex
+
+Se sustituyó la sección independiente de Resumen Ejecutivo por una tabla
+institucional `TEMAS TRATADOS:`. Su contenido usa directamente los acuerdos
+validados, conserva su numeración y elimina el espaciado entre párrafos.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora y la documentación obligatoria.
+2. Se confirmó que `acuerdos` ya forma parte del contrato validado y contiene
+   número y descripción.
+3. Se implementó una tabla exterior con etiqueta lateral ploma.
+4. Se implementó una tabla interior sin bordes con columnas de número y texto.
+5. Los textos usan alineación justificada, Arial 9 y alineación vertical
+   superior.
+6. El espaciado anterior y posterior de cada elemento se estableció en cero.
+7. Cuando no existen acuerdos, se conserva la sección con contenido vacío y no
+   se crea una tabla inválida.
+8. Se añadió una prueba automatizada con cuatro acuerdos.
+9. La prueba de Temas, Siglas, Agenda y las seis regresiones de participantes
+   finalizaron correctamente.
+10. La validación sintáctica de Acta y `git diff --check` no mostraron errores.
+
+## Archivos modificados
+
+- AppsScript/Acta.gs
+- Pruebas/ActaTemas.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- Cuatro acuerdos convertidos en cuatro temas numerados.
+- Conservación de número y descripción.
+- Fondo plomo, bordes y anchos institucionales.
+- Espaciado anterior y posterior en cero.
+- Alineación justificada y vertical superior.
+- Regresiones de Siglas, Agenda y Participantes.
+- Validación sintáctica de Acta.
+- `git diff --check`.
+
+## Pendientes
+
+- Confirmar visualmente la Fase 6 en un documento generado.
+
+## Despliegue y verificación
+
+1. El primer intento se detuvo antes de publicar porque Google devolvió
+   `invalid_grant / invalid_rapt` y exigió reautenticación.
+2. Se ejecutó `clasp login` y la cuenta autorizada quedó autenticada.
+3. Se reintentó el proceso desde una copia temporal nueva.
+4. Se desplegaron los 17 archivos preservando el proyecto remoto completo.
+5. Una descarga independiente confirmó la coincidencia SHA-256 de `Acta.gs`.
+6. Se confirmó la permanencia de los 17 archivos y de `Inicializar.js`.
+
+# Cambio 0024
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> No dejar espacio entre los acuerdos mostrados como temas tratados.
+
+## Respuesta de Codex
+
+Además del espaciado de párrafo ya configurado en cero, se eliminó el relleno
+superior e inferior de cada celda de número y descripción. De este modo no queda
+separación vertical introducida por la tabla entre un acuerdo y el siguiente.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora antes de modificar archivos.
+2. Se comprobó que los párrafos ya tenían espaciado anterior y posterior cero.
+3. Se identificó el relleno vertical de las celdas como posible separación
+   adicional de Google Docs.
+4. Se estableció relleno superior e inferior en cero para ambas columnas.
+5. Se amplió la prueba para verificar ocho propiedades de relleno en las cuatro
+   filas simuladas.
+6. Las pruebas de Temas, Siglas, Agenda y Participantes finalizaron
+   correctamente.
+7. La validación sintáctica y `git diff --check` no mostraron errores.
+
+## Archivos modificados
+
+- AppsScript/Acta.gs
+- Pruebas/ActaTemas.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- docs/CODEX_BITACORA.md
+
+## Pendientes
+
+- Confirmar visualmente que no exista separación entre acuerdos.
+
+## Despliegue y verificación
+
+El ajuste de relleno vertical forma parte del mismo `Acta.gs` desplegado y
+verificado en el Cambio 0023.

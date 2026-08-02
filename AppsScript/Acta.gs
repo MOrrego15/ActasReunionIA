@@ -65,6 +65,8 @@ const ACTA_FORMATO = Object.freeze({
   ANCHO_ASISTENTE_UNIDAD: 57,
   ANCHO_SIGLA_NUMERO: 28,
   ANCHO_SIGLA_DESCRIPCION: 294,
+  ANCHO_TEMA_NUMERO: 28,
+  ANCHO_TEMA_DESCRIPCION: 294,
   ANCHO_LOGO: 100,
   ALTO_LOGO: 32
 });
@@ -290,8 +292,7 @@ function _actaEscribirDocumento(
 
   _actaAgregarSiglasAcronimos(cuerpo);
 
-  _actaAgregarSeccion(cuerpo, 'Resumen Ejecutivo');
-  cuerpo.appendParagraph(acta.resumenEjecutivo);
+  _actaAgregarTemasTratados(cuerpo, acta.acuerdos);
 
   _actaAgregarSeccion(cuerpo, 'Acuerdos');
   const acuerdos = [['N.º', 'Descripción']];
@@ -607,6 +608,62 @@ function _actaAgregarSiglasAcronimos(cuerpo) {
       false,
       9,
       DocumentApp.HorizontalAlignment.LEFT
+    );
+    celdaNumero.setVerticalAlignment(DocumentApp.VerticalAlignment.TOP);
+    celdaDescripcion.setVerticalAlignment(DocumentApp.VerticalAlignment.TOP);
+  }
+}
+
+function _actaAgregarTemasTratados(cuerpo, acuerdos) {
+  const tablaExterior = cuerpo.appendTable([['TEMAS TRATADOS:', '']]);
+  tablaExterior.setBorderWidth(0.75);
+  const celdaTitulo = tablaExterior.getRow(0).getCell(0);
+  const celdaContenido = tablaExterior.getRow(0).getCell(1);
+  celdaTitulo.setWidth(ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA);
+  celdaContenido.setWidth(ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO);
+  celdaTitulo.setBackgroundColor('#d9d9d9');
+  _actaFormatearCelda(
+    celdaTitulo,
+    true,
+    10,
+    DocumentApp.HorizontalAlignment.LEFT
+  );
+
+  celdaContenido.clear();
+  celdaContenido.setPaddingTop(0);
+  celdaContenido.setPaddingBottom(0);
+  celdaContenido.setPaddingLeft(0);
+  celdaContenido.setPaddingRight(0);
+  if (acuerdos.length === 0) return;
+
+  const filas = acuerdos.map(function (acuerdo) {
+    return [String(acuerdo.numero) + '.', acuerdo.descripcion];
+  });
+  const tablaTemas = celdaContenido.appendTable(filas);
+  tablaTemas.setBorderWidth(0);
+  _actaCompactarCeldaConTabla(celdaContenido, tablaTemas);
+
+  for (let indice = 0; indice < tablaTemas.getNumRows(); indice += 1) {
+    const fila = tablaTemas.getRow(indice);
+    const celdaNumero = fila.getCell(0);
+    const celdaDescripcion = fila.getCell(1);
+    celdaNumero.setWidth(ACTA_FORMATO.ANCHO_TEMA_NUMERO);
+    celdaDescripcion.setWidth(ACTA_FORMATO.ANCHO_TEMA_DESCRIPCION);
+    celdaNumero.setPaddingTop(0);
+    celdaNumero.setPaddingBottom(0);
+    celdaDescripcion.setPaddingTop(0);
+    celdaDescripcion.setPaddingBottom(0);
+    _actaFormatearCelda(
+      celdaNumero,
+      false,
+      9,
+      DocumentApp.HorizontalAlignment.LEFT
+    );
+    _actaFormatearCelda(
+      celdaDescripcion,
+      false,
+      9,
+      DocumentApp.HorizontalAlignment.JUSTIFY
     );
     celdaNumero.setVerticalAlignment(DocumentApp.VerticalAlignment.TOP);
     celdaDescripcion.setVerticalAlignment(DocumentApp.VerticalAlignment.TOP);

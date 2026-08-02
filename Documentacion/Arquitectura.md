@@ -417,6 +417,13 @@ Usa una celda lateral ploma y una tabla interior sin bordes con numeración del
 1 al 11. Su catálogo es fijo y no se extrae de OpenAI ni del contenido de la
 reunión.
 
+La sección `TEMAS TRATADOS:` se ubica después de Siglas y Acrónimos y usa
+directamente la lista validada `acuerdos`. Cada acuerdo conserva su número y
+descripción en una tabla interior sin bordes. Los párrafos usan espaciado
+anterior y posterior en cero, y las celdas usan relleno vertical en cero, para
+evitar líneas o espacios vacíos entre temas.
+La sección sustituye la presentación independiente de `Resumen Ejecutivo`.
+
 ### 11.3 Decisiones técnicas inferidas
 
 - Se usa `https://api.openai.com/v1/chat/completions` porque el contrato entre
