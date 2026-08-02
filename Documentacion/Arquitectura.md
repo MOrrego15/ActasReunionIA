@@ -508,10 +508,11 @@ Docs como del DOCX. No se crean carpetas ni se infieren identificadores.
 exportarDocumentoWord(idDocumentoGoogle, datosExportacion, contexto)
 ```
 
-La exportación usa `DriveApp.File.getAs(MimeType.MICROSOFT_WORD)`, sin construir
-solicitudes HTTP ni administrar manualmente el token OAuth. El contenido se
-crea en Drive con MIME DOCX y se verifica por identificador, nombre, MIME,
-papelera y carpeta padre.
+La exportación usa `GET /drive/v3/files/{fileId}/export` con el MIME DOCX
+oficial y el token temporal de Apps Script. El manifiesto declara explícitamente
+los alcances de Drive, Docs, Sheets y solicitudes externas para garantizar que
+el token incluya Drive. El contenido se crea en Drive y se verifica por
+identificador, nombre, MIME, papelera y carpeta padre.
 
 La fecha del nombre acepta exclusivamente `AAAA-MM-DD`, `DD/MM/AAAA` o
 `DD.MM.AAAA`, con validación de calendario. Una fecha distinta produce

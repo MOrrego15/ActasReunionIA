@@ -6,6 +6,8 @@
  * administra estados de procesamiento.
  */
 
+const WORD_ENDPOINT_EXPORTACION =
+  'https://www.googleapis.com/drive/v3/files/';
 const WORD_MIME_DOCUMENTO_GOOGLE =
   'application/vnd.google-apps.document';
 const WORD_MIME_DOCX =
@@ -119,20 +121,65 @@ function exportarDocumentoWord(
     );
   }
 
-  let blob;
+  let token;
   try {
-    blob = documento.getAs(MimeType.MICROSOFT_WORD);
-    if (!blob || blob.getBytes().length === 0) {
-      throw new Error('respuesta');
-    }
-    blob.setContentType(WORD_MIME_DOCX);
-    blob.setName(nombreArchivo);
+    token = ScriptApp.getOAuthToken();
+    if (!esCadenaNoVacia(token)) throw new Error('token');
+  } catch (errorAutenticacion) {
+    return _wordFinalizarError(
+      WORD_CODIGOS_ERROR.AUTENTICACION_ERROR,
+      'No fue posible autenticar la exportación.',
+      contexto,
+      'autenticacion'
+    );
+  }
+
+  let respuestaHttp;
+  try {
+    const url = WORD_ENDPOINT_EXPORTACION +
+      encodeURIComponent(idDocumentoGoogle) + '/export?mimeType=' +
+      encodeURIComponent(WORD_MIME_DOCX);
+    respuestaHttp = UrlFetchApp.fetch(url, {
+      method: 'get',
+      headers: { Authorization: 'Bearer ' + token },
+      muteHttpExceptions: true
+    });
   } catch (errorExportacion) {
     return _wordFinalizarError(
       WORD_CODIGOS_ERROR.EXPORTACION_ERROR,
       'No fue posible exportar el documento a Word.',
       contexto,
       'exportacion'
+    );
+  }
+
+  let blob;
+  try {
+    const estadoHttp = respuestaHttp.getResponseCode();
+    if (estadoHttp < 200 || estadoHttp >= 300) {
+      return _wordFinalizarError(
+        estadoHttp === 401 || estadoHttp === 403
+          ? WORD_CODIGOS_ERROR.AUTENTICACION_ERROR
+          : WORD_CODIGOS_ERROR.EXPORTACION_ERROR,
+        estadoHttp === 401 || estadoHttp === 403
+          ? 'No fue posible autenticar la exportación.'
+          : 'No fue posible exportar el documento a Word.',
+        contexto,
+        'http'
+      );
+    }
+    blob = respuestaHttp.getBlob();
+    if (!blob || blob.getBytes().length === 0) {
+      throw new Error('respuesta');
+    }
+    blob.setContentType(WORD_MIME_DOCX);
+    blob.setName(nombreArchivo);
+  } catch (errorRespuesta) {
+    return _wordFinalizarError(
+      WORD_CODIGOS_ERROR.RESPUESTA_INVALIDA,
+      'La exportación no devolvió contenido Word válido.',
+      contexto,
+      'respuesta'
     );
   }
 

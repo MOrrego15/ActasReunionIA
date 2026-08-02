@@ -133,10 +133,17 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 
 ## DA-019: Conversión Word mediante el servicio nativo de Drive
 
-- **Estado:** Aceptada.
+- **Estado:** Sustituida por DA-020.
 - **Decisión:** `Word.gs` convertirá el Google Docs mediante `File.getAs(MimeType.MICROSOFT_WORD)` y no llamará manualmente a `GET /drive/v3/files/{fileId}/export` con `ScriptApp.getOAuthToken()`.
 - **Motivo:** La ejecución real generó correctamente el acta, pero el endpoint HTTP rechazó el token temporal con `WORD_AUTENTICACION_ERROR`. El servicio nativo encapsula la conversión y utiliza los permisos de Drive detectados por Apps Script.
 - **Consecuencia:** Se elimina la administración manual del token y la dependencia de `UrlFetchApp` para la conversión. Se mantienen el nombre, la carpeta de destino y la verificación posterior del DOCX.
+
+## DA-020: Exportación DOCX por Drive API con alcances explícitos
+
+- **Estado:** Aceptada.
+- **Decisión:** `Word.gs` usará `GET /drive/v3/files/{fileId}/export` con el MIME DOCX oficial. `appsscript.json` declarará explícitamente los alcances de Drive, Docs, Sheets y solicitudes externas usados por el proyecto.
+- **Motivo:** La ejecución real demostró que `File.getAs()` no convierte Google Docs a DOCX. La referencia oficial limita esa conversión y Drive API sí publica DOCX como formato de exportación. El 403 anterior ocurrió sin garantizar el alcance Drive dentro del token temporal.
+- **Consecuencia:** La siguiente ejecución requiere reautorización del usuario. El proyecto no solicita alcances adicionales a los servicios que ya utiliza funcionalmente.
 
 ## Decisiones pendientes
 

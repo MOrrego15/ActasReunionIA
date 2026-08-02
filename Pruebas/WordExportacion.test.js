@@ -3,8 +3,9 @@ const fs = require('fs');
 const vm = require('vm');
 
 const estado = {
-  tipoSolicitado: null,
-  blobCreado: null
+  blobCreado: null,
+  urlExportacion: null,
+  opcionesExportacion: null
 };
 
 function crearBlob() {
@@ -45,11 +46,7 @@ const archivoSalida = {
 
 const archivoOrigen = {
   getMimeType: () => 'application/vnd.google-apps.document',
-  isTrashed: () => false,
-  getAs(tipo) {
-    estado.tipoSolicitado = tipo;
-    return crearBlob();
-  }
+  isTrashed: () => false
 };
 
 const sandbox = {
@@ -58,7 +55,19 @@ const sandbox = {
   Object,
   Number,
   String,
-  MimeType: { MICROSOFT_WORD: 'MIME_MICROSOFT_WORD' },
+  ScriptApp: {
+    getOAuthToken: () => 'token-prueba'
+  },
+  UrlFetchApp: {
+    fetch(url, opciones) {
+      estado.urlExportacion = url;
+      estado.opcionesExportacion = opciones;
+      return {
+        getResponseCode: () => 200,
+        getBlob: () => crearBlob()
+      };
+    }
+  },
   DriveApp: {
     getFileById(id) {
       return id === 'origen-1' ? archivoOrigen : archivoSalida;
@@ -98,19 +107,28 @@ const resultado = sandbox.exportarDocumentoWord(
 
 assert.strictEqual(resultado.exito, true);
 assert.strictEqual(resultado.datos.idArchivoDocx, 'docx-1');
-assert.strictEqual(estado.tipoSolicitado, 'MIME_MICROSOFT_WORD');
+assert.match(
+  estado.urlExportacion,
+  /^https:\/\/www\.googleapis\.com\/drive\/v3\/files\/origen-1\/export\?/
+);
+assert.match(estado.urlExportacion, /mimeType=application%2Fvnd\.openxmlformats/);
+assert.strictEqual(
+  estado.opcionesExportacion.headers.Authorization,
+  'Bearer token-prueba'
+);
 assert.strictEqual(
   estado.blobCreado.tipo,
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 );
 assert.strictEqual(estado.blobCreado.nombre, '31.07.2026-025-Daily.docx');
-assert.strictEqual(
-  fs.readFileSync('AppsScript/Word.gs', 'utf8').includes('getOAuthToken'),
-  false
+const manifiesto = JSON.parse(
+  fs.readFileSync('AppsScript/appsscript.json', 'utf8')
 );
-assert.strictEqual(
-  fs.readFileSync('AppsScript/Word.gs', 'utf8').includes('UrlFetchApp.fetch'),
-  false
-);
+assert.deepStrictEqual(manifiesto.oauthScopes, [
+  'https://www.googleapis.com/auth/drive',
+  'https://www.googleapis.com/auth/documents',
+  'https://www.googleapis.com/auth/spreadsheets',
+  'https://www.googleapis.com/auth/script.external_request'
+]);
 
-console.log('WordExportacion.test.js: conversión nativa correcta.');
+console.log('WordExportacion.test.js: Drive API y alcances correctos.');

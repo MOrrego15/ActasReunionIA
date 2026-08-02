@@ -2641,3 +2641,75 @@ de contenido y la fusión de celdas.
 4. `clasp push --force` publicó correctamente los 17 archivos.
 5. Una descarga independiente confirmó 17 archivos, `Inicializar.js` y
    coincidencia SHA-256 de `Acta.js`.
+
+# Cambio 0031
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Autorizar la incorporación de alcances OAuth explícitos, restaurar la
+> exportación DOCX oficial de Drive API y desplegar la solución después de que
+> la conversión nativa terminara con `WORD_EXPORTACION_ERROR`.
+
+## Respuesta de Codex
+
+Se restauró `GET /drive/v3/files/{fileId}/export` con el MIME DOCX oficial y
+se declararon en `appsscript.json` los alcances de Drive, Docs, Sheets y
+solicitudes externas que el proyecto ya utiliza. La siguiente ejecución
+requiere que la cuenta ejecutora acepte nuevamente los permisos de Google.
+
+## Registro de progreso
+
+1. Se leyó el segundo registro de ejecución y se confirmó que el fallo seguía
+   limitado a la etapa Word.
+2. La documentación oficial confirmó que `File.getAs()` no ofrece DOCX para un
+   Google Docs y que Drive API sí publica DOCX como formato de exportación.
+3. Se determinó que el primer 403 ocurrió sin garantizar el alcance Drive en
+   el token temporal.
+4. La plataforma detuvo inicialmente el cambio de permisos y solicitó una
+   autorización específica del usuario.
+5. El usuario autorizó expresamente los cuatro alcances y el despliegue.
+6. Se restauraron token, endpoint, clasificación HTTP y validación del blob.
+7. Se agregaron los cuatro `oauthScopes` al manifiesto.
+8. La prueba verifica endpoint, encabezado Bearer, MIME, nombre del archivo y
+   lista exacta de alcances.
+9. Todas las pruebas y regresiones finalizaron correctamente.
+10. Durante la actualización documental, una sustitución amplia marcó
+    transitoriamente DA-001 como sustituida; se detectó antes del despliegue,
+    se restauró DA-001 y se marcó correctamente solo DA-019.
+
+## Archivos modificados
+
+- AppsScript/Word.gs
+- AppsScript/appsscript.json
+- Pruebas/WordExportacion.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Prueba_E2E_Controlada.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- Drive API usa el identificador y el MIME DOCX codificados.
+- Encabezado `Authorization: Bearer` correcto.
+- Respuesta HTTP 200 convertida en blob DOCX con nombre institucional.
+- Manifiesto JSON válido con cuatro alcances exactos.
+- Regresiones de Cierre, Validador, Temas, Siglas, Agenda y Participantes.
+- Validación sintáctica de `Word.gs` y `git diff --check`.
+
+## Pendientes
+
+- Reautorizar los permisos de Google en la siguiente ejecución.
+- Reintentar manualmente el documento en estado `ERROR`.
+
+## Despliegue y verificación
+
+1. Se descargaron y preservaron los 17 archivos remotos, incluido
+   `Inicializar.js`.
+2. Se incorporaron exclusivamente `Word.js` y `appsscript.json` desde los
+   archivos locales probados y autorizados.
+3. `clasp push --force` publicó correctamente los 17 archivos.
+4. Una descarga independiente confirmó 17 archivos, `Inicializar.js` y
+   coincidencia SHA-256 de Word y el manifiesto.

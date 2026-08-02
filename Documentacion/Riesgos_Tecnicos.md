@@ -41,7 +41,7 @@ La valoración es inicial y deberá revisarse con datos de uso, volumen y polít
 | Temas tratados y acuerdos requieren significados distintos en el futuro | Media | Medio | Mantener documentada su equivalencia actual y separar los contratos solo mediante autorización explícita. |
 | OpenAI inventa un responsable no explícito | Media | Alto | Instruir que no invente responsables de tareas, aceptar cadena vacía y mostrar solo la descripción sin prefijo ni dos puntos. |
 | La próxima reunión cae en feriado | Media | Medio | Aplicar el siguiente día de lunes a viernes; incorporar feriados únicamente cuando se autorice una fuente de calendario oficial. |
-| La conversión nativa a DOCX supera la cuota diaria | Baja | Alto | Registrar `WORD_EXPORTACION_ERROR`, no marcar el documento como procesado y revisar las cuotas de conversión de Drive antes de reintentar manualmente. |
+| La exportación DOCX supera la cuota o pierde autorización | Baja | Alto | Declarar los alcances efectivos en el manifiesto, distinguir errores HTTP y no marcar el documento como procesado antes de verificar el archivo. |
 
 ## 3. Riesgos de consistencia
 

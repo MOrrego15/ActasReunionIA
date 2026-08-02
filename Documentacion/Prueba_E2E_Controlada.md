@@ -69,7 +69,9 @@ Reglas:
 
 ## 5. Autorizaciones probables
 
-El manifiesto no declara `oauthScopes`; Apps Script deberá detectar automáticamente los alcances requeridos por los servicios utilizados. La primera ejecución solicitará autorización según el código efectivo y la cuenta ejecutora.
+El manifiesto declara explícitamente los cuatro alcances utilizados por el
+proyecto. La primera ejecución posterior al cambio solicitará nuevamente la
+autorización de la cuenta ejecutora.
 
 Deben revisarse, como mínimo, permisos equivalentes para:
 
@@ -81,15 +83,14 @@ Deben revisarse, como mínimo, permisos equivalentes para:
   `https://www.googleapis.com/auth/spreadsheets`;
 - llamadas a servicios externos mediante `UrlFetchApp`:
   `https://www.googleapis.com/auth/script.external_request`;
-- conversión del documento mediante `DriveApp.File.getAs()` con alcance de
-  Drive, sin administrar manualmente el token de la ejecución;
+- exportación DOCX mediante Drive API y el token temporal de la ejecución, que
+  incluye explícitamente el alcance de Drive;
 - acceso al almacenamiento de propiedades del script. La documentación de
   `PropertiesService` no identifica un consentimiento OAuth independiente para
   este uso; debe comprobarse el conjunto finalmente detectado por Apps Script.
 
-Esta lista es una previsión técnica, no una declaración de manifiesto. Antes de
-la prueba debe revisarse el resumen de autorización generado por el proyecto;
-no se agregarán `oauthScopes` explícitos en esta fase.
+Esta lista coincide con `oauthScopes` en el manifiesto. Antes de la prueba debe
+revisarse y aceptar el resumen de autorización generado por el proyecto.
 
 La cuenta ejecutora debe tener acceso efectivo a la carpeta fuente, la plantilla, la carpeta de destino y el Spreadsheet de procesados. Si se usan unidades compartidas, debe confirmarse que las operaciones implementadas mediante servicios nativos son compatibles con la ubicación y los permisos concretos.
 
