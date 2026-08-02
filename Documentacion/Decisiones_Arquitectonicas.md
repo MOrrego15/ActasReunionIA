@@ -152,6 +152,13 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Motivo:** El entregable institucional definitivo es el archivo DOCX y el usuario autorizó expresamente que el documento intermedio no permanezca en Drive.
 - **Consecuencia:** La eliminación no es recuperable. Si devuelve error, el procesamiento queda en `ERROR`; si la exportación o verificación falla, la eliminación no se intenta.
 
+## DA-022: Cabecera con logotipo lateral y tres controles agrupados
+
+- **Estado:** Aceptada.
+- **Decisión:** La cabecera usará una columna izquierda sin relleno para el logotipo, centrada frente a una tabla derecha de tres filas con Título/Código, Versión y Metodología/Fecha. Proyecto y Director se ubicarán debajo.
+- **Motivo:** Reproducir el diseño institucional autorizado y evitar una franja vacía antes del título.
+- **Consecuencia:** La agrupación vertical se representa mediante una tabla interior porque `DocumentApp` no expone una operación directa para establecer un `rowSpan` vertical en una celda.
+
 ## Decisiones pendientes
 
 1. Criterio para identificar documentos como notas válidas de Gemini.

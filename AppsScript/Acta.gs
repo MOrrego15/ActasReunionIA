@@ -392,6 +392,10 @@ function _actaConfigurarAnchosFila(fila, anchoEtiqueta, anchoContenido) {
 }
 
 function _actaAgregarLogo(celda, logoInstitucional) {
+  celda.setPaddingTop(0);
+  celda.setPaddingBottom(0);
+  celda.setPaddingLeft(0);
+  celda.setPaddingRight(0);
   celda.setVerticalAlignment(DocumentApp.VerticalAlignment.CENTER);
   const parrafo = celda.getChild(0).asParagraph();
   parrafo.setAlignment(DocumentApp.HorizontalAlignment.CENTER);

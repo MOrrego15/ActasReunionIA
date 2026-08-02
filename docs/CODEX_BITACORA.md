@@ -2829,3 +2829,68 @@ como completado.
 4. `clasp push --force` publicó correctamente los 17 archivos.
 5. Una descarga independiente confirmó 17 archivos, `Inicializar.js` y
    coincidencia SHA-256 de Acta y Word.
+
+# Cambio 0034
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Corregir y desplegar la cabecera para crear una columna izquierda, agrupar
+> visualmente las tres primeras filas y colocar allí el logotipo institucional,
+> conforme al diseño proporcionado.
+
+## Respuesta de Codex
+
+La cabecera conserva una tabla exterior con columna izquierda de 103 puntos
+para el logotipo y una tabla interior derecha con tres filas: Título/Código,
+Versión y Metodología/Fecha. Se eliminó todo relleno de la celda del logotipo,
+se mantuvo la imagen centrada en 100 por 32 puntos y se verificó que no quede
+una franja vacía antes del título. Proyecto y Director permanecen debajo.
+
+## Registro de progreso
+
+1. Se comparó el diseño deseado con la estructura existente.
+2. Se confirmó que la agrupación vertical debe representarse mediante una
+   tabla interior, porque `DocumentApp` no permite asignar `rowSpan`.
+3. Se estableció relleno cero en los cuatro lados de la celda del logotipo.
+4. Se agregó una prueba integral de cabecera con tabla exterior e interior.
+5. La prueba verifica anchos 103/322 y 190/56/76, imagen 100x32, fecha,
+   controles y filas inferiores.
+6. Todas las pruebas y regresiones finalizaron correctamente.
+
+## Archivos modificados
+
+- AppsScript/Acta.gs
+- Pruebas/ActaCabecera.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- Columna lateral del logotipo sin relleno.
+- Logotipo centrado de 100 por 32 puntos.
+- Tabla derecha con tres filas y anchos institucionales.
+- Ausencia de párrafo vacío alrededor de la tabla interna.
+- Proyecto y Director debajo de la cabecera.
+- Regresiones de Word, Siglas, Cierre, Temas, Agenda, Validador y
+  Participantes.
+- Validación sintáctica y `git diff --check`.
+
+## Pendientes
+
+- Confirmar visualmente la cabecera en un documento generado.
+
+## Despliegue y verificación
+
+1. Se preservaron los 17 archivos del proyecto remoto, incluido
+   `Inicializar.js`.
+2. Se publicó `Acta.js` mediante `clasp push --force` junto con el conjunto
+   remoto preservado.
+3. La primera comprobación independiente usó por error la opción no compatible
+   `--rootDir`; no modificó el proyecto remoto.
+4. Se repitió la descarga desde una carpeta temporal con la sintaxis compatible.
+5. La descarga confirmó 17 archivos, la presencia de `Inicializar.js` y la
+   coincidencia exacta del SHA-256 local y remoto de `Acta`:
+   `1B19C987F600A84D450DDE5C56D1FFE0776B69EC251E54204357A4CBA10F82B0`.
