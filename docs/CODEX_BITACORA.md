@@ -1101,6 +1101,81 @@ funcional de selección de participantes.
 
 - Ejecutar nuevamente `probarExtraccionParticipantes()`.
 
+# Cambio 0020
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Usar los nombres que aparecen después del título de la transcripción y de la
+> primera marca de tiempo, porque los últimos cuatro eran correctos y los cinco
+> anteriores correspondían a encabezados del resumen.
+
+## Respuesta de Codex
+
+Se adoptó el límite documental indicado: el extractor localiza una línea de
+título terminada en `Transcripción`, busca la primera marca de tiempo posterior
+y analiza únicamente las líneas siguientes. Así, los encabezados temáticos del
+resumen quedan excluidos aunque contengan dos puntos.
+
+## Registro de progreso
+
+1. Se leyó completamente la documentación obligatoria y la bitácora.
+2. Se confirmó que los nueve resultados contenían cinco encabezados temáticos
+   seguidos por cuatro hablantes reales.
+3. Se implementó la función que delimita el bloque conversacional mediante
+   título y primera marca de tiempo.
+4. La clasificación estructural y la extracción usan ahora el mismo bloque.
+5. Se mantuvo compatibilidad con transcripciones simples sin ambas marcas.
+6. Se agregó una regresión con cinco encabezados antes de la transcripción.
+7. La batería automatizada finalizó con seis casos correctos.
+8. Se concatenaron localmente los dos DOCX reales, reproduciendo la lectura de
+   pestañas de Apps Script.
+9. La prueba real combinada devolvió exactamente cuatro participantes y ningún
+   encabezado del resumen.
+10. La validación sintáctica de Gemini y `git diff --check` finalizaron
+    correctamente.
+11. Se constató que entradas anteriores 0018 y 0019 estaban ubicadas antes de
+    0017; no se reorganizaron para respetar la prohibición de alterar entradas
+    históricas y este cambio se añadió al final real del archivo.
+
+## Archivos modificados
+
+- AppsScript/Gemini.gs
+- Pruebas/Participantes.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Resultado real verificado
+
+- Cantidad: 4.
+- Miguel O.
+- Marisol Lozano Pulla.
+- Miguel Arroyo Leandro.
+- Claudio Alvarez.
+
+## Pruebas realizadas
+
+- Resumen sintético con cinco encabezados antes de la transcripción.
+- Seis casos automatizados correctos.
+- Resumen y transcripción reales concatenados: cuatro participantes.
+- Validación sintáctica de Gemini.
+- `git diff --check`.
+
+## Pendientes
+
+- Ejecutar nuevamente `probarExtraccionParticipantes()` para confirmar el
+  resultado operativo.
+
+## Despliegue y verificación
+
+1. Se desplegaron los 17 archivos desde una copia temporal que preservó el
+   proyecto remoto completo.
+2. Una descarga independiente confirmó la coincidencia SHA-256 de `Gemini.gs`.
+3. Se confirmó la permanencia de los 17 archivos y de `Inicializar.js`.
+
 # Cambio 0018
 Fecha: 2026-08-01
 Autor: Codex

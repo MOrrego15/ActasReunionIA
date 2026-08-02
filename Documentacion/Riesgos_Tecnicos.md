@@ -35,6 +35,7 @@ La valoración es inicial y deberá revisarse con datos de uso, volumen y polít
 | Varias transcripciones de reuniones distintas comparten la carpeta | Alta | Alto | Limitar cada selección al documento fuente actual y a los documentos enlazados desde él; nunca usar toda la carpeta como conjunto de candidatos. |
 | Contenido o vínculos ubicados en pestañas secundarias de Google Docs | Media | Alto | Recorrer con `getTabs()` todas las pestañas principales y anidadas para leer texto y elementos vinculados. |
 | Un vínculo interno a otra pestaña repite el ID del documento fuente | Alta | Alto | Descartar autorreferencias y deduplicar todos los candidatos por ID antes de seleccionar la transcripción. |
+| Encabezados del resumen con dos puntos se interpretan como hablantes | Alta | Alto | Limitar la extracción al bloque posterior al título de transcripción y a su primera marca de tiempo. |
 
 ## 3. Riesgos de consistencia
 

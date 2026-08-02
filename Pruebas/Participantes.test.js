@@ -52,6 +52,16 @@ const notasTematicas = [
   'Acuerdos: continuar mañana'
 ].join('\n');
 
+const contenidoCombinado = [
+  'Resumen',
+  'Coordinación inicial y espera de integrantes: texto temático.',
+  'Estatus de la solicitud de cambio y validación: texto temático.',
+  'Inicio de la reunión y registro fotográfico: texto temático.',
+  'Objetivos de la reunión: texto temático.',
+  'Ajustes al flujo de trabajo del PMI: texto temático.',
+  transcripcionFuente
+].join('\n');
+
 const otraTranscripcion = [
   'Otra reunión - Transcripción',
   'Persona Uno: Inicio.',
@@ -110,6 +120,21 @@ const extraccion = sandbox.extraerParticipantesConfirmados(
   transcripcionFuente,
   contexto
 );
+
+const extraccionCombinada = sandbox.extraerParticipantesConfirmados(
+  contenidoCombinado,
+  contexto
+);
+assert.deepStrictEqual(
+  JSON.parse(JSON.stringify(extraccionCombinada.datos.participantes)),
+  [
+    { nombre: 'Ana Torres', cargo: '' },
+    { nombre: 'Luis Pérez', cargo: '' },
+    { nombre: 'Carlos Ruiz', cargo: '' },
+    { nombre: 'Diana Soto', cargo: '' }
+  ],
+  'Debe ignorar encabezados anteriores al título y al tiempo.'
+);
 assert.strictEqual(extraccion.exito, true);
 assert.deepStrictEqual(
   JSON.parse(JSON.stringify(extraccion.datos.participantes)),
@@ -147,4 +172,4 @@ assert.deepStrictEqual(
   'Debe recorrer pestañas principales y anidadas.'
 );
 
-console.log('Participantes.test.js: 5 casos correctos.');
+console.log('Participantes.test.js: 6 casos correctos.');

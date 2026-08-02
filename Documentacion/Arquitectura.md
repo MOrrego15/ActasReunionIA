@@ -382,8 +382,12 @@ estructura de transcripción; en caso contrario seleccionará una única referen
 cuyo nombre contenga `Transcripción` o `Transcript`, sin exigir coincidencia
 del nombre base. Si esa referencia no es única, aplicará el criterio estructural
 de hablantes distintos, etiquetas repetidas y marcas conversacionales. Luego
-extraerá sus etiquetas `Nombre: intervención`. Los
-nombres se deduplicarán y el organizador se añadirá solo si aparece identificado
+extraerá sus etiquetas `Nombre: intervención` únicamente del bloque posterior
+al título de `Transcripción` y a su primera marca de tiempo. El contenido
+anterior, incluidos encabezados temáticos con dos puntos, quedará excluido. Si
+una transcripción simple no contiene ambas referencias, se conservará el
+análisis completo como compatibilidad controlada. Los nombres se deduplicarán y
+el organizador se añadirá solo si aparece identificado
 explícitamente. Un nombre que
 solo aparezca dentro de una intervención no acreditará asistencia. Al no
 existir un informe de asistencia, los asistentes silenciosos no pueden

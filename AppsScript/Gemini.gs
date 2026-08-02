@@ -109,7 +109,8 @@ function seleccionarTranscripcionAsociada(documentoFuente, documentos, contexto)
 }
 
 function _geminiEsContenidoTranscripcion(contenido) {
-  const nombres = _geminiObtenerEtiquetasHablante(contenido);
+  const bloqueTranscripcion = _geminiObtenerBloqueTranscripcion(contenido);
+  const nombres = _geminiObtenerEtiquetasHablante(bloqueTranscripcion);
   const unicos = Object.create(null);
   nombres.forEach(function (nombre) {
     unicos[_geminiNormalizarNombrePersona(nombre)] = true;
@@ -148,7 +149,9 @@ function extraerParticipantesConfirmados(contenidoFuente, contexto) {
     const indices = Object.create(null);
     let organizador = '';
 
-    const lineas = contenidoFuente.replace(/\r\n?/g, '\n').split('\n');
+    const bloqueTranscripcion =
+      _geminiObtenerBloqueTranscripcion(contenidoFuente);
+    const lineas = bloqueTranscripcion.replace(/\r\n?/g, '\n').split('\n');
     lineas.forEach(function (lineaOriginal) {
       const linea = lineaOriginal.trim();
       if (!linea) return;
@@ -185,6 +188,37 @@ function extraerParticipantesConfirmados(contenidoFuente, contexto) {
     return _geminiResultadoError(GEMINI_CODIGOS_ERROR.ERROR,
       'No fue posible extraer los participantes confirmados.');
   }
+}
+
+/**
+ * Limita la extracción al contenido posterior al título de transcripción y a
+ * su primera marca de tiempo. Si el formato no contiene ambas referencias,
+ * conserva el contenido completo para compatibilidad con transcripciones
+ * simples.
+ *
+ * @param {string} contenido Texto del documento o de sus pestañas.
+ * @returns {string} Bloque conversacional utilizable.
+ */
+function _geminiObtenerBloqueTranscripcion(contenido) {
+  const lineas = contenido.replace(/\r\n?/g, '\n').split('\n');
+  for (let indiceTitulo = 0;
+    indiceTitulo < lineas.length;
+    indiceTitulo += 1) {
+    const titulo = lineas[indiceTitulo].trim();
+    if (!/^(?:.*?\s[-–—]\s*)?transcripci[oó]n\s*$/i.test(titulo)) {
+      continue;
+    }
+    for (let indiceTiempo = indiceTitulo + 1;
+      indiceTiempo < lineas.length;
+      indiceTiempo += 1) {
+      if (/^\d{1,2}:\d{2}(?::\d{2})?$/.test(
+        lineas[indiceTiempo].trim()
+      )) {
+        return lineas.slice(indiceTiempo + 1).join('\n');
+      }
+    }
+  }
+  return contenido;
 }
 
 function _geminiObtenerEtiquetasHablante(contenido) {
