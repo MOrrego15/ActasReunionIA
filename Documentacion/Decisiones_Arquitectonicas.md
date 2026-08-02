@@ -129,7 +129,7 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Estado:** Aceptada.
 - **Decisión:** La Fase 7 mostrará una fila vacía de `Riesgos o problemas`, un encabezado plomo `Acuerdos` y una lista con viñetas alimentada por `tareas`. Con responsable se usará `Nombre: descripción`; sin responsable se mostrará solo la descripción, sin prefijo ni dos puntos. La Fase 8 calculará `Próxima reunión` como el siguiente día de lunes a viernes a partir de la fecha del acta, omitiendo sábados y domingos, y mostrará el mes en español.
 - **Motivo:** Reproducir el modelo institucional y evitar inventar responsables ausentes.
-- **Consecuencia:** La sección `Temas tratados` continúa usando `acuerdos`, mientras la sección visual `Acuerdos` usa `tareas` y su campo `responsable`. El encabezado y el contenido de `Acuerdos` fusionan ambas columnas y usan el ancho total de la tabla. El cálculo conserva los cambios de mes y año, y si el día siguiente cae sábado o domingo avanza hasta el lunes. Los feriados no se excluyen mientras no exista un calendario autorizado.
+- **Consecuencia:** La sección `Temas tratados` continúa usando `acuerdos`, mientras la sección visual `Acuerdos` usa `tareas` y su campo `responsable`. La etiqueta permanece en la columna izquierda y las tareas ocupan la columna derecha ancha dentro de la misma fila. El cálculo conserva los cambios de mes y año, y si el día siguiente cae sábado o domingo avanza hasta el lunes. Los feriados no se excluyen mientras no exista un calendario autorizado.
 
 ## DA-019: Conversión Word mediante el servicio nativo de Drive
 

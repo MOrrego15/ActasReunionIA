@@ -435,9 +435,9 @@ partir de `fechaReunion`, omitiendo sábados y domingos, con mes en español.
 Una tarea con responsable se presenta
 como `Responsable: descripción`; cuando el responsable está vacío se presenta
 solo la descripción, sin prefijo ni dos puntos. La sección de observaciones no
-se representa en el documento. Tanto el encabezado `Acuerdos` como su lista de
-tareas fusionan las dos columnas y fijan el ancho total institucional para
-ocupar toda la tabla.
+se representa en el documento. `Acuerdos` permanece como etiqueta en la
+columna izquierda de 103 puntos y su lista de tareas ocupa la columna derecha
+de 322 puntos dentro de la misma fila.
 
 ### 11.3 Decisiones técnicas inferidas
 

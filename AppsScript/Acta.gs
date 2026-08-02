@@ -659,7 +659,6 @@ function _actaAgregarCierre(cuerpo, tareas, fechaReunion) {
   const tabla = cuerpo.appendTable([
     ['Riesgos o problemas', ''],
     ['Acuerdos', ''],
-    ['', ''],
     ['Próxima reunión', _actaCalcularProximaReunion(fechaReunion)]
   ]);
   tabla.setBorderWidth(0.75);
@@ -677,14 +676,14 @@ function _actaAgregarCierre(cuerpo, tareas, fechaReunion) {
     DocumentApp.HorizontalAlignment.LEFT
   );
 
-  const filaTitulo = tabla.getRow(1);
-  filaTitulo.getCell(1).merge();
-  const celdaTitulo = filaTitulo.getCell(0);
-  celdaTitulo.setWidth(
-    ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA +
+  const filaAcuerdos = tabla.getRow(1);
+  _actaConfigurarAnchosFila(
+    filaAcuerdos,
+    ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA,
     ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO
   );
-  celdaTitulo.setText('Acuerdos');
+  const celdaTitulo = filaAcuerdos.getCell(0);
+  const celdaContenido = filaAcuerdos.getCell(1);
   celdaTitulo.setBackgroundColor('#d9d9d9');
   _actaFormatearCelda(
     celdaTitulo,
@@ -693,13 +692,6 @@ function _actaAgregarCierre(cuerpo, tareas, fechaReunion) {
     DocumentApp.HorizontalAlignment.LEFT
   );
 
-  const filaContenido = tabla.getRow(2);
-  filaContenido.getCell(1).merge();
-  const celdaContenido = filaContenido.getCell(0);
-  celdaContenido.setWidth(
-    ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA +
-    ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO
-  );
   celdaContenido.clear();
   celdaContenido.setPaddingTop(0);
   celdaContenido.setPaddingBottom(0);
@@ -718,7 +710,7 @@ function _actaAgregarCierre(cuerpo, tareas, fechaReunion) {
     texto.setBold(false);
   }
 
-  const filaProxima = tabla.getRow(3);
+  const filaProxima = tabla.getRow(2);
   _actaConfigurarAnchosFila(
     filaProxima,
     ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA,

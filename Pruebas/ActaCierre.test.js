@@ -161,12 +161,11 @@ assert.strictEqual(
   'Acuerdos'
 );
 assert.strictEqual(tabla.filas[1].celdas[0].estado.fondo, '#d9d9d9');
-assert.strictEqual(tabla.filas[1].celdas.length, 1);
-assert.strictEqual(tabla.filas[1].celdas[0].estado.ancho, 425);
-assert.strictEqual(tabla.filas[2].celdas.length, 1);
-assert.strictEqual(tabla.filas[2].celdas[0].estado.ancho, 425);
+assert.strictEqual(tabla.filas[1].celdas.length, 2);
+assert.strictEqual(tabla.filas[1].celdas[0].estado.ancho, 103);
+assert.strictEqual(tabla.filas[1].celdas[1].estado.ancho, 322);
 assert.deepStrictEqual(
-  tabla.filas[2].celdas[0].estado.listas.map(
+  tabla.filas[1].celdas[1].estado.listas.map(
     (item) => item.estado.texto.contenido
   ),
   [
@@ -174,15 +173,15 @@ assert.deepStrictEqual(
     'Revisar el documento.'
   ]
 );
-tabla.filas[2].celdas[0].estado.listas.forEach((item) => {
+tabla.filas[1].celdas[1].estado.listas.forEach((item) => {
   assert.strictEqual(item.estado.vineta, 'BULLET');
   assert.strictEqual(item.estado.espacioAntes, 0);
   assert.strictEqual(item.estado.espacioDespues, 0);
 });
 assert.strictEqual(
-  tabla.filas[3].celdas[1].estado.texto.contenido,
+  tabla.filas[2].celdas[1].estado.texto.contenido,
   '3 de Agosto de 2026'
 );
-assert.strictEqual(tabla.filas[3].celdas[0].estado.fondo, '#d9d9d9');
+assert.strictEqual(tabla.filas[2].celdas[0].estado.fondo, '#d9d9d9');
 
 console.log('ActaCierre.test.js: acuerdos y próxima reunión correctos.');

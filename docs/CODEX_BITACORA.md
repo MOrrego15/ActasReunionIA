@@ -2582,3 +2582,62 @@ encabezado y la lista de tareas ahora ocupan las dos columnas de la tabla.
 4. `clasp push --force` publicó correctamente los 17 archivos.
 5. Una descarga independiente confirmó 17 archivos, `Inicializar.js` y
    coincidencia SHA-256 de Acta, Prompt y Word.
+
+# Cambio 0030
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Colocar las tareas de la sección `Acuerdos` a la derecha del título
+> `Acuerdos`.
+
+## Respuesta de Codex
+
+La sección se reorganizó en una sola fila de dos columnas: la etiqueta
+`Acuerdos` permanece en la columna izquierda de 103 puntos y las tareas se
+escriben en la columna derecha de 322 puntos. Se eliminaron la fila adicional
+de contenido y la fusión de celdas.
+
+## Registro de progreso
+
+1. Se confirmó que el usuario quiso decir a la derecha del título.
+2. Se revisó la estructura desplegada del cierre y su prueba simulada.
+3. Se redujo la tabla de cierre de cuatro a tres filas.
+4. Se aplicaron los anchos institucionales 103/322 a la fila `Acuerdos`.
+5. Las viñetas se trasladaron a la segunda celda de la misma fila.
+6. Se conservaron el formato `Responsable: descripción`, la descripción sin
+   dos puntos cuando falta responsable y el espaciado compacto.
+7. Todas las pruebas y regresiones finalizaron correctamente.
+
+## Archivos modificados
+
+- AppsScript/Acta.gs
+- Pruebas/ActaCierre.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- Fila `Acuerdos` con exactamente dos celdas.
+- Etiqueta izquierda de 103 puntos.
+- Contenido derecho de 322 puntos.
+- Viñetas con espaciado anterior y posterior en cero.
+- Regresiones de Word, Validador, Temas, Siglas, Agenda y Participantes.
+- Validación sintáctica de `Acta.gs`.
+- `git diff --check` sin errores.
+
+## Pendientes
+
+- Confirmar visualmente la nueva distribución en un acta generada.
+
+## Despliegue y verificación
+
+1. El usuario autorizó expresamente el despliegue del Cambio 0030.
+2. Se descargaron y preservaron los 17 archivos remotos, incluido
+   `Inicializar.js`.
+3. Se incorporó exclusivamente `Acta.js` desde el módulo local probado.
+4. `clasp push --force` publicó correctamente los 17 archivos.
+5. Una descarga independiente confirmó 17 archivos, `Inicializar.js` y
+   coincidencia SHA-256 de `Acta.js`.
