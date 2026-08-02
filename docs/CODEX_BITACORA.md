@@ -2894,3 +2894,44 @@ una franja vacía antes del título. Proyecto y Director permanecen debajo.
 5. La descarga confirmó 17 archivos, la presencia de `Inicializar.js` y la
    coincidencia exacta del SHA-256 local y remoto de `Acta`:
    `1B19C987F600A84D450DDE5C56D1FFE0776B69EC251E54204357A4CBA10F82B0`.
+
+# Cambio 0035
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Desplegar nuevamente la versión vigente.
+
+## Respuesta de Codex
+
+Se repitió el despliegue controlado de `Acta.js`. Google Apps Script informó
+que el proyecto ya estaba actualizado. Una descarga independiente confirmó que
+el archivo remoto coincide exactamente con la versión local y versionada.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora y se revisó el estado de Git.
+2. Se confirmó que no existían cambios funcionales nuevos pendientes.
+3. Se descargaron y preservaron los 17 archivos remotos, incluido
+   `Inicializar.js`.
+4. Se incorporó la versión local confirmada de `Acta` al paquete preservado.
+5. `clasp push --force` respondió `Script is already up to date`.
+6. Una descarga independiente confirmó 17 archivos, `Inicializar.js` y la
+   coincidencia exacta del SHA-256 local y remoto de `Acta`.
+
+## Archivos modificados
+
+- docs/CODEX_BITACORA.md
+
+## Verificaciones realizadas
+
+- Cantidad remota: 17 archivos.
+- Presencia de `Inicializar.js`: confirmada.
+- SHA-256 local y remoto de `Acta`:
+  `1B19C987F600A84D450DDE5C56D1FFE0776B69EC251E54204357A4CBA10F82B0`.
+- Estado del despliegue: actualizado.
+
+## Pendientes
+
+- Confirmar visualmente la cabecera en un documento generado.
