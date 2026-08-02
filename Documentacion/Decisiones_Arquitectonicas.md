@@ -166,6 +166,13 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Motivo:** Reproducir las combinaciones `B2:B4`, `C2:C3`, `C5:E5` y `C6:E6` del archivo de referencia, evitando espacios producidos por una tabla anidada.
 - **Consecuencia:** La generación requiere localizar la tabla por su estructura documental y ejecutar `mergeTableCells` antes de verificar y exportar el documento. Si la consulta o la combinación falla, la generación termina en error y no continúa con un documento visualmente incompleto.
 
+## DA-024: Continuidad ante indisponibilidad de combinaciones avanzadas
+
+- **Estado:** Aceptada; modifica la consecuencia de DA-023.
+- **Decisión:** Los errores transitorios de Google Docs API se reintentarán hasta tres veces. Si la combinación avanzada no queda disponible, el acta se reconstruirá automáticamente con la cabecera institucional compatible y el procesamiento continuará.
+- **Motivo:** La generación y exportación del acta tienen prioridad sobre una mejora exclusivamente visual de la cabecera.
+- **Consecuencia:** La auditoría registrará la etapa segura y el estado HTTP, sin contenido documental. Una indisponibilidad de la combinación no producirá `ACTA_ESCRITURA_ERROR` mientras la reconstrucción compatible finalice correctamente.
+
 ## Decisiones pendientes
 
 1. Criterio para identificar documentos como notas válidas de Gemini.

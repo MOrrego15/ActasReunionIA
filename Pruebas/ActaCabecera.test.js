@@ -92,6 +92,7 @@ const cuerpo = {
 };
 
 const llamadasHttp = [];
+const esperas = [];
 const sandbox = {
   DocumentApp: {
     HorizontalAlignment: { LEFT: 'LEFT', CENTER: 'CENTER' },
@@ -99,6 +100,7 @@ const sandbox = {
     ElementType: { PARAGRAPH: 'PARAGRAPH' }
   },
   ScriptApp: { getOAuthToken: () => 'token-prueba' },
+  Utilities: { sleep: (milisegundos) => esperas.push(milisegundos) },
   UrlFetchApp: {
     fetch(url, opciones) {
       llamadasHttp.push({ url, opciones });
@@ -177,4 +179,33 @@ assert.deepStrictEqual(
   ]
 );
 
-console.log('ActaCabecera.test.js: matriz y combinaciones correctas.');
+sandbox._actaAgregarCabeceraCompatible(
+  cuerpo,
+  '02/07/2026',
+  { imagen: true }
+);
+assert.strictEqual(tablaExterior.filas.length, 3);
+assert.strictEqual(tablaExterior.filas[0].celdas[0].estado.logo, undefined);
+assert.strictEqual(
+  tablaExterior.filas[0].celdas[0].hijos[0].estado.logo.ancho,
+  100
+);
+assert.strictEqual(
+  tablaExterior.filas[0].celdas[1].estado.tabla.filas.length,
+  3
+);
+assert.strictEqual(tablaExterior.filas[1].celdas[0].estado.texto, 'Proyecto:');
+
+let intento = 0;
+sandbox.UrlFetchApp.fetch = () => {
+  intento += 1;
+  return { getResponseCode: () => intento === 1 ? 404 : 200 };
+};
+const respuestaReintentada = sandbox._actaFetchDocsConReintento('url', {});
+assert.strictEqual(respuestaReintentada.getResponseCode(), 200);
+assert.strictEqual(intento, 2);
+assert.deepStrictEqual(esperas, [500]);
+assert.strictEqual(sandbox._actaEsEstadoTransitorioDocs(429), true);
+assert.strictEqual(sandbox._actaEsEstadoTransitorioDocs(403), false);
+
+console.log('ActaCabecera.test.js: combinaciones y contingencia correctas.');

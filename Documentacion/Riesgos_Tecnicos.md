@@ -38,6 +38,7 @@ La valoración es inicial y deberá revisarse con datos de uso, volumen y polít
 | Encabezados del resumen con dos puntos se interpretan como hablantes | Alta | Alto | Limitar la extracción al bloque posterior al título de transcripción y a su primera marca de tiempo. |
 | La agenda fija no corresponde a un tipo futuro de reunión distinto | Baja | Medio | Mantener la decisión documentada y parametrizar el texto únicamente cuando se autoricen otros tipos de acta. |
 | El catálogo fijo de siglas queda desactualizado | Media | Medio | Mantener una única constante versionada y modificarla solo mediante una lista institucional autorizada. |
+| Google Docs API rechaza o demora la combinación avanzada de la cabecera | Media | Alto | Reintentar estados transitorios y reconstruir automáticamente el documento con la cabecera institucional compatible antes de continuar con la exportación. |
 | Temas tratados y acuerdos requieren significados distintos en el futuro | Media | Medio | Mantener documentada su equivalencia actual y separar los contratos solo mediante autorización explícita. |
 | OpenAI inventa un responsable no explícito | Media | Alto | Instruir que no invente responsables de tareas, aceptar cadena vacía y mostrar solo la descripción sin prefijo ni dos puntos. |
 | La próxima reunión cae en feriado | Media | Medio | Aplicar el siguiente día de lunes a viernes; incorporar feriados únicamente cuando se autorice una fuente de calendario oficial. |

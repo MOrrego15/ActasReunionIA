@@ -176,8 +176,30 @@ function generarDocumentoActa(
     documento.saveAndClose();
     _actaCombinarCabecera(idDocumentoGoogle);
   } catch (errorEscritura) {
-    return _actaFinalizarError(ACTA_CODIGOS_ERROR.ESCRITURA_ERROR,
-      'No fue posible escribir el documento del acta.', contexto, 'escritura');
+    if (errorEscritura && errorEscritura.esCombinacionCabecera === true) {
+      try {
+        _actaReescribirConCabeceraCompatible(
+          idDocumentoGoogle,
+          respuestaActaValidada,
+          logoInstitucional,
+          datosEmisionActa.correlativo,
+          participantesActa
+        );
+        _actaRegistrarAdvertenciaCombinacion(
+          contexto,
+          errorEscritura.etapaDocs,
+          errorEscritura.httpStatus
+        );
+      } catch (errorCompatibilidad) {
+        return _actaFinalizarError(ACTA_CODIGOS_ERROR.ESCRITURA_ERROR,
+          'No fue posible escribir el documento del acta.', contexto,
+          'escritura');
+      }
+    } else {
+      return _actaFinalizarError(ACTA_CODIGOS_ERROR.ESCRITURA_ERROR,
+        'No fue posible escribir el documento del acta.', contexto,
+        'escritura');
+    }
   }
 
   try {
@@ -300,6 +322,31 @@ function _actaEscribirDocumento(
   _actaAgregarCierre(cuerpo, acta.tareas, acta.fechaReunion);
 }
 
+function _actaReescribirConCabeceraCompatible(
+  idDocumento,
+  acta,
+  logoInstitucional,
+  correlativo,
+  participantesActa
+) {
+  const documento = DocumentApp.openById(idDocumento);
+  const cuerpo = documento.getBody();
+  cuerpo.clear();
+  _actaConfigurarPagina(cuerpo);
+  _actaAgregarCabeceraCompatible(
+    cuerpo,
+    acta.fechaReunion,
+    logoInstitucional
+  );
+  _actaAgregarDatosReunion(cuerpo, correlativo, acta.fechaReunion);
+  _actaAgregarAsistentes(cuerpo, participantesActa);
+  _actaAgregarAgenda(cuerpo);
+  _actaAgregarSiglasAcronimos(cuerpo);
+  _actaAgregarTemasTratados(cuerpo, acta.acuerdos);
+  _actaAgregarCierre(cuerpo, acta.tareas, acta.fechaReunion);
+  documento.saveAndClose();
+}
+
 function _actaObtenerLogoInstitucional(carpetaRecursosId, contexto) {
   try {
     const carpetaRecursos = DriveApp.getFolderById(carpetaRecursosId);
@@ -402,16 +449,88 @@ function _actaConfigurarFilaInstitucionalExcel(fila) {
     DocumentApp.HorizontalAlignment.LEFT);
 }
 
+function _actaAgregarCabeceraCompatible(
+  cuerpo,
+  fechaReunion,
+  logoInstitucional
+) {
+  const tabla = cuerpo.appendTable([
+    ['', ''],
+    ['Proyecto:', ACTA_CABECERA.PROYECTO],
+    ['Director de Proyecto:', ACTA_DIRECTOR_PROYECTO]
+  ]);
+  tabla.setBorderWidth(0.75);
+  _actaConfigurarAnchosFila(
+    tabla.getRow(0),
+    ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA,
+    ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO
+  );
+  _actaAgregarLogo(tabla.getRow(0).getCell(0), logoInstitucional);
+  _actaAgregarControlesCabeceraCompatible(
+    tabla.getRow(0).getCell(1),
+    _actaFormatearFechaCabecera(fechaReunion)
+  );
+  _actaConfigurarFilaInstitucionalCompatible(tabla.getRow(1));
+  _actaConfigurarFilaInstitucionalCompatible(tabla.getRow(2));
+}
+
+function _actaAgregarControlesCabeceraCompatible(celda, fechaCabecera) {
+  celda.clear();
+  celda.setPaddingTop(0);
+  celda.setPaddingBottom(0);
+  celda.setPaddingLeft(0);
+  celda.setPaddingRight(0);
+  celda.setVerticalAlignment(DocumentApp.VerticalAlignment.TOP);
+  const tabla = celda.appendTable([
+    [ACTA_CABECERA.TITULO, 'Código:', ACTA_CABECERA.CODIGO],
+    ['', 'Versión:', ACTA_CABECERA.VERSION],
+    [ACTA_CABECERA.METODOLOGIA, 'Fecha:', fechaCabecera]
+  ]);
+  tabla.setBorderWidth(0.75);
+  _actaCompactarCeldaConTabla(celda, tabla);
+  for (let indice = 0; indice < tabla.getNumRows(); indice += 1) {
+    const fila = tabla.getRow(indice);
+    fila.getCell(0).setWidth(ACTA_FORMATO.ANCHO_COLUMNA_TITULO);
+    fila.getCell(1).setWidth(ACTA_FORMATO.ANCHO_COLUMNA_CONTROL);
+    fila.getCell(2).setWidth(ACTA_FORMATO.ANCHO_COLUMNA_VALOR);
+    _actaFormatearCelda(fila.getCell(1), true, 9,
+      DocumentApp.HorizontalAlignment.LEFT);
+    _actaFormatearCelda(fila.getCell(2), indice !== 2, 9,
+      DocumentApp.HorizontalAlignment.CENTER);
+  }
+  _actaFormatearCelda(tabla.getRow(0).getCell(0), true, 16,
+    DocumentApp.HorizontalAlignment.CENTER);
+  _actaFormatearCelda(tabla.getRow(1).getCell(0), false, 9,
+    DocumentApp.HorizontalAlignment.CENTER);
+  _actaFormatearCelda(tabla.getRow(2).getCell(0), true, 9,
+    DocumentApp.HorizontalAlignment.LEFT);
+}
+
+function _actaConfigurarFilaInstitucionalCompatible(fila) {
+  _actaConfigurarAnchosFila(
+    fila,
+    ACTA_FORMATO.ANCHO_COLUMNA_ETIQUETA,
+    ACTA_FORMATO.ANCHO_COLUMNA_CONTENIDO
+  );
+  _actaFormatearCelda(fila.getCell(0), true, 9,
+    DocumentApp.HorizontalAlignment.LEFT);
+  _actaFormatearCelda(fila.getCell(1), true, 9,
+    DocumentApp.HorizontalAlignment.LEFT);
+}
+
 function _actaCombinarCabecera(idDocumento) {
   const token = ScriptApp.getOAuthToken();
   const url = ACTA_DOCS_API + encodeURIComponent(idDocumento);
-  const respuestaDocumento = UrlFetchApp.fetch(url, {
+  const respuestaDocumento = _actaFetchDocsConReintento(url, {
     method: 'get',
     headers: { Authorization: 'Bearer ' + token },
     muteHttpExceptions: true
   });
   if (respuestaDocumento.getResponseCode() !== 200) {
-    throw new Error('No fue posible localizar la tabla de cabecera.');
+    throw _actaCrearErrorCombinacion(
+      'lectura',
+      respuestaDocumento.getResponseCode()
+    );
   }
   const documento = JSON.parse(respuestaDocumento.getContentText());
   const contenido = documento.body && documento.body.content;
@@ -420,7 +539,7 @@ function _actaCombinarCabecera(idDocumento) {
       return elemento.table && Number.isInteger(elemento.startIndex);
     }
   );
-  if (!elementoTabla) throw new Error('La tabla de cabecera no existe.');
+  if (!elementoTabla) throw _actaCrearErrorCombinacion('estructura', 200);
 
   const rangos = [
     [0, 3, 0, 1],
@@ -443,15 +562,68 @@ function _actaCombinarCabecera(idDocumento) {
       }
     };
   });
-  const respuestaCombinacion = UrlFetchApp.fetch(url + ':batchUpdate', {
+  const respuestaCombinacion = _actaFetchDocsConReintento(
+    url + ':batchUpdate', {
     method: 'post',
     contentType: 'application/json',
     headers: { Authorization: 'Bearer ' + token },
     payload: JSON.stringify({ requests: solicitudes }),
     muteHttpExceptions: true
-  });
+    }
+  );
   if (respuestaCombinacion.getResponseCode() !== 200) {
-    throw new Error('No fue posible combinar las celdas de cabecera.');
+    throw _actaCrearErrorCombinacion(
+      'combinacion',
+      respuestaCombinacion.getResponseCode()
+    );
+  }
+}
+
+function _actaFetchDocsConReintento(url, opciones) {
+  let respuesta;
+  for (let intento = 1; intento <= 3; intento += 1) {
+    respuesta = UrlFetchApp.fetch(url, opciones);
+    const estado = respuesta.getResponseCode();
+    if (estado === 200 || !_actaEsEstadoTransitorioDocs(estado) ||
+      intento === 3) {
+      return respuesta;
+    }
+    Utilities.sleep(intento * 500);
+  }
+  return respuesta;
+}
+
+function _actaEsEstadoTransitorioDocs(estado) {
+  return estado === 404 || estado === 408 || estado === 429 || estado >= 500;
+}
+
+function _actaCrearErrorCombinacion(etapa, estado) {
+  const error = new Error('La combinación de cabecera no está disponible.');
+  error.esCombinacionCabecera = true;
+  error.etapaDocs = etapa;
+  error.httpStatus = estado;
+  return error;
+}
+
+function _actaRegistrarAdvertenciaCombinacion(contexto, etapa, estado) {
+  try {
+    registrarAdvertencia(
+      'Acta',
+      'generarDocumentoActa',
+      'La combinación avanzada de cabecera no estuvo disponible; se aplicó ' +
+        'la cabecera institucional compatible.',
+      {
+        idEjecucion: contexto.idEjecucion,
+        datos: {
+          etapa: 'cabecera_compatible',
+          servicio: etapa,
+          estadoHttp: estado,
+          resultado: 'correcto'
+        }
+      }
+    );
+  } catch (errorRegistro) {
+    // La ausencia de auditoría no impide generar el acta.
   }
 }
 

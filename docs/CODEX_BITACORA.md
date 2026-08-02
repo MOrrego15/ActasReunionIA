@@ -3001,3 +3001,79 @@ las combinaciones reales del Excel: `B2:B4`, `C2:C3`, `C5:E5` y `C6:E6`.
 5. Una descarga independiente confirmó 17 archivos, `Inicializar.js` y la
    coincidencia exacta del SHA-256 local y remoto de `Acta`:
    `BDBD63E536CDDBBDF3C9C1B826C3D283885564E165EA2599858D07B22925E2C1`.
+
+# Cambio 0037
+Fecha: 2026-08-02
+Autor: Codex
+
+## Solicitud del usuario
+
+> Revisar y actuar sobre el registro de ejecución adjunto posterior al
+> despliegue de la cabecera combinada.
+
+## Error identificado
+
+La ejecución procesó correctamente el documento fuente, OpenAI, cuatro
+participantes y el correlativo 33. La generación falló después de crear el
+Google Docs, durante la nueva combinación avanzada de la cabecera, y devolvió
+`ACTA_ESCRITURA_ERROR`. Los registros avanzados no pudieron consultarse porque
+el proyecto no tiene configurado un ID de Google Cloud para `clasp logs`.
+
+## Solución aplicada
+
+La combinación avanzada ahora reintenta hasta tres veces los estados HTTP
+transitorios. Si Google Docs API sigue sin estar disponible o rechaza la
+estructura, el mismo documento se limpia y se reconstruye automáticamente con
+la cabecera institucional compatible, conservando el logotipo y continuando el
+flujo de generación y exportación.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora y el registro adjunto.
+2. Se aisló el fallo en la etapa de combinación posterior a `saveAndClose`.
+3. `clasp logs` no pudo consultar registros avanzados por ausencia de un ID de
+   proyecto Google Cloud configurado.
+4. Se añadieron reintentos para `404`, `408`, `429` y respuestas `5xx`.
+5. Se añadió reconstrucción integral con la cabecera compatible cuando la
+   combinación avanzada no finaliza correctamente.
+6. La contingencia conserva el logotipo, todos los datos del acta y el flujo
+   posterior hacia DOCX.
+7. Se añadió auditoría segura con etapa y estado HTTP, sin contenido sensible.
+8. Se ampliaron las pruebas para cubrir reintento y cabecera compatible.
+9. Todas las pruebas y regresiones finalizaron correctamente.
+
+## Archivos modificados
+
+- AppsScript/Acta.gs
+- Pruebas/ActaCabecera.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas realizadas
+
+- Combinación avanzada y cuatro rangos institucionales.
+- Reintento tras respuesta HTTP 404.
+- Clasificación de HTTP 429 como transitorio y HTTP 403 como definitivo.
+- Reconstrucción de cabecera compatible con logotipo.
+- Regresiones de Word, Siglas, Cierre, Temas, Agenda, Validador y
+  Participantes.
+- Sintaxis de `Acta.gs` y `git diff --check`.
+
+## Pendientes
+
+- Ejecutar nuevamente el documento en estado `ERROR` según el mecanismo de
+  reproceso autorizado para el proyecto.
+
+## Despliegue y verificación
+
+1. El usuario autorizó expresamente corregir y desplegar el Cambio 0037.
+2. Se descargaron y preservaron los 17 archivos remotos, incluido
+   `Inicializar.js`.
+3. Se incorporó exclusivamente `Acta.js` desde el módulo local probado.
+4. `clasp push --force` publicó correctamente los 17 archivos a las
+   18:32:57, hora de Lima.
+5. Una descarga independiente confirmó 17 archivos, `Inicializar.js` y la
+   coincidencia exacta del SHA-256 local y remoto de `Acta`:
+   `E3F0A3AD2F0A68C2B1406B23A0149099AA4310E79BE9F15DF67AC89E908A378C`.

@@ -424,6 +424,13 @@ para Proyecto y `C6:E6` para Director. La celda del logotipo no tiene relleno y
 centra una imagen de 100 por 32 puntos. Las columnas conservan anchos
 103/190/56/76.
 
+La combinación avanzada dispone de una ruta de continuidad. Los estados
+transitorios de Google Docs API (`404`, `408`, `429` y `5xx`) se reintentan
+hasta tres veces. Si la consulta, la estructura o la combinación continúa sin
+estar disponible, el módulo limpia el documento temporal y reconstruye todo su
+contenido con la cabecera institucional compatible de tabla anidada. Esta ruta
+conserva el logotipo y evita que una mejora visual impida producir el DOCX.
+
 La sección `Siglas y Acrónimos` se ubica inmediatamente después de Agenda.
 Usa una celda lateral ploma y una tabla interior sin bordes con numeración del
 1 al 11. Su catálogo es fijo y no se extrae de OpenAI ni del contenido de la
