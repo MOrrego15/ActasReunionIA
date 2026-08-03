@@ -3736,6 +3736,101 @@ Autor: Codex
 
 `https://script.google.com/macros/s/AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA/exec?vista=notas`
 
+# Cambio 0057
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Agregar el botón `Crear Acta SEC.` para usar el valor de `Número de
+> secuencia`; mantener `Crear Acta` con el correlativo automático y permitir la
+> descarga al finalizar cualquiera de los dos modos.
+
+## Respuesta de Codex
+
+La vista distingue dos operaciones. `Crear Acta` procesa la nota seleccionada
+reservando el siguiente correlativo automático. `Crear Acta SEC.` valida y usa
+exactamente el entero editable del campo sin modificar el correlativo global.
+Ambas operaciones generan un token temporal y habilitan `Descargar archivo`
+después de verificar el DOCX.
+
+## Archivos modificados
+
+- AppsScript/Main.gs
+- AppsScript/Web/Mantenimiento.gs
+- AppsScript/Web/NotasGemini.html
+- Pruebas/MainGeneracionManual.test.js
+- Pruebas/Mantenimiento.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Flujo_Procesamiento.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- docs/CODEX_BITACORA.md
+
+## Progreso e incidencias
+
+1. Se confirmó con el usuario que el botón original debe usar el correlativo
+   automático y el nuevo botón debe usar el valor manual.
+2. Un primer parche HTML no coincidió por la codificación de caracteres; no
+   produjo cambios parciales y se reaplicó mediante anclas estructurales.
+3. La primera prueba detectó que el flujo automático masivo oculta
+   correctamente el ID del DOCX. Se añadió una bandera privada para devolverlo
+   solo en la ejecución seleccionada autorizada y poder crear el token.
+4. Las trece pruebas Node finalizaron correctamente.
+5. La comprobación masiva por entrada estándar alteró caracteres de un archivo
+   no modificado; la sintaxis de los dos módulos servidores cambiados se validó
+   correctamente mediante copias binarias con extensión `.js`.
+
+## Pendiente
+
+- Desplegar en Apps Script, actualizar la implementación web y publicar en Git
+  cuando el usuario lo autorice expresamente.
+
+# Cambio 0058
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Desplegar.
+
+## Respuesta de Codex
+
+Se publicó la separación entre `Crear Acta` automático y `Crear Acta SEC.`
+manual en la implementación web vigente, conservando su URL. También se
+autoriza incluir la bitácora actualizada en el commit y publicar el cambio en
+`origin/main`.
+
+## Despliegue seguro
+
+1. La consulta inicial a Apps Script fue rechazada por la red aislada del
+   entorno y se repitió correctamente con acceso autorizado.
+2. Se descargaron los 21 archivos remotos antes de publicar cambios.
+3. `Inicializar.js` se verificó antes y después de la superposición con SHA-256
+   `439730DC8D25647F8E7F1E6041BCF73E1DEF4057DD44632AD13437157D062D1E`.
+4. Se superpusieron únicamente `Main`, `Web/Mantenimiento` y
+   `Web/NotasGemini`.
+5. Se publicaron 21 archivos a las 16:49:39, hora de Lima.
+6. Se creó la versión 12 y se actualizó `MantenimientoWeb` sin cambiar el ID de
+   implementación.
+7. Una descarga independiente confirmó 21 archivos, el botón
+   `Crear Acta SEC.`, ambos puntos de entrada, la descarga mediante token y la
+   misma huella de `Inicializar.js`.
+
+## URL vigente
+
+`https://script.google.com/macros/s/AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA/exec?vista=notas`
+
+## Pruebas
+
+- Trece pruebas Node: correctas.
+- Sintaxis de `Main.gs` y `Web/Mantenimiento.gs`: correcta.
+- Sintaxis del JavaScript de `Web/NotasGemini.html`: correcta.
+- `git diff --check`: correcto.
+
+## Pendiente
+
+- Prueba funcional del usuario desde el navegador con una nota no procesada.
+
 ## Pendiente operativo
 
 - Configurar las propiedades de prueba y ejecutar

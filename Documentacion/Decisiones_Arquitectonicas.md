@@ -208,6 +208,13 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Motivo:** Permitir el acceso inmediato al entregable y preparar visualmente la siguiente numeración sin alterar la propiedad del correlativo automático.
 - **Consecuencia:** El token expira en diez minutos, es de un solo uso y el DOCX no puede superar 10 MB para esta descarga web. Un fallo al calcular la siguiente propuesta no invalida el acta ni oculta su descarga. `ACTAS_ULTIMO_CORRELATIVO` permanece intacto.
 
+## DA-030: Dos modos de generación dirigida desde la web
+
+- **Estado:** Aceptada.
+- **Decisión:** `Crear Acta` usará la reserva automática y persistente del siguiente correlativo. `Crear Acta SEC.` usará exactamente el entero editable de `Número de secuencia` sin actualizar el correlativo global. Ambos modos procesarán únicamente la nota seleccionada y habilitarán la descarga segura después de verificar el DOCX.
+- **Motivo:** Distinguir claramente la generación que respeta la secuencia automática de una generación excepcional con número explícito.
+- **Consecuencia:** La generación automática consume definitivamente el correlativo reservado aunque una etapa posterior falle. La generación SEC. mantiene la validación de unicidad contra `Procesados`. Ninguno de los modos permite regenerar una nota ya registrada.
+
 ## Decisiones pendientes
 
 1. Criterio para identificar documentos como notas válidas de Gemini.

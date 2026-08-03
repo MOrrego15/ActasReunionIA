@@ -57,6 +57,9 @@ const sandbox = {
   consultarDisponibilidadGeneracion: () => exito({
     estado: 'PENDIENTE', correlativo: null
   }),
+  consultarEstadoProcesamiento: () => exito({
+    estado: 'PENDIENTE', correlativo: null
+  }),
   registrarInfo: () => {},
   registrarError: () => {},
   esObjetoPlano: (valor) => valor !== null && typeof valor === 'object' &&
@@ -97,4 +100,12 @@ assert.strictEqual(dirigido.datos.correlativo, 78);
 assert.strictEqual(dirigido.datos.idArchivoDocx, 'acta-docx');
 assert.strictEqual(reservasAutomaticas, 0);
 
-console.log('MainGeneracionManual.test.js: correlativo manual sin reserva.');
+const automatico = sandbox.ejecutarGeneracionActaSeleccionadaAutomatica({
+  idDocumentoFuente: 'nota-automatica'
+});
+assert.strictEqual(automatico.exito, true);
+assert.strictEqual(automatico.datos.correlativo, 999);
+assert.strictEqual(automatico.datos.idArchivoDocx, 'acta-docx');
+assert.strictEqual(reservasAutomaticas, 1);
+
+console.log('MainGeneracionManual.test.js: secuencias manual y automática.');

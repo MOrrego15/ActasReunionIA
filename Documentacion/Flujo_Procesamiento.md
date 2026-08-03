@@ -177,24 +177,27 @@ Es un error crítico porque puede permitir duplicidades. La salida deberá conse
 - registro confirmado como `COMPLETADO`;
 - bloqueo liberado.
 
-## 8. Flujo manual desde la aplicación web
+## 8. Flujos dirigidos desde la aplicación web
 
 1. El usuario autorizado selecciona una de las notas mostradas.
 2. La interfaz presenta el ID y propone el primer número de secuencia disponible
    a partir del siguiente correlativo configurado.
-3. El usuario confirma o edita un entero mayor que cero.
-4. El servidor valida autorización, ID y rango numérico.
+3. El usuario elige `Crear Acta` para reservar el correlativo automático o
+   `Crear Acta SEC.` para usar exactamente el entero visible en el campo.
+4. El servidor valida autorización e ID; para SEC. también valida el rango.
 5. Se recorre la carpeta y se localiza exclusivamente el ID seleccionado, sin
    aplicar la reducción automática al archivo modificado más recientemente.
-6. `HojaSeguimiento.gsheet` rechaza un ID ya registrado o un correlativo usado.
+6. `HojaSeguimiento.gsheet` rechaza un ID ya registrado y, en SEC., un
+   correlativo usado.
 7. El procesamiento funcional se ejecuta para esa única nota.
 8. La reclamación `EN_PROCESO` repite la validación bajo `ScriptLock`.
 9. El flujo genera y verifica el DOCX y registra `PROCESADO` o `ERROR`.
-10. `ACTAS_ULTIMO_CORRELATIVO` permanece sin cambios.
+10. `Crear Acta` reserva y actualiza `ACTAS_ULTIMO_CORRELATIVO`; `Crear Acta
+    SEC.` lo mantiene sin cambios.
 11. Tras `PROCESADO`, el servidor crea un token temporal asociado al DOCX.
 12. La interfaz usa el token para solicitar el contenido, crea la descarga local
     y el servidor invalida el token después de una entrega correcta.
-13. El botón de creación queda bloqueado para la nota ya procesada y el campo
+13. Ambos botones de creación quedan bloqueados para la nota ya procesada y el campo
     se actualiza con el siguiente correlativo libre de `Procesados`.
 
 La misma operación puede iniciarse desde el editor de Apps Script mediante

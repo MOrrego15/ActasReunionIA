@@ -144,6 +144,22 @@ const sandbox = {
       error: null
     };
   },
+  ejecutarGeneracionActaSeleccionadaAutomatica: (parametros) => {
+    generaciones.push({
+      idDocumentoFuente: parametros.idDocumentoFuente,
+      correlativo: 35,
+      automatico: true
+    });
+    return {
+      exito: true,
+      datos: {
+        estado: 'PROCESADO',
+        correlativo: 35,
+        idArchivoDocx: 'archivo-docx'
+      },
+      error: null
+    };
+  },
   esObjetoPlano: (valor) => valor !== null && typeof valor === 'object' &&
     !Array.isArray(valor)
 };
@@ -220,6 +236,21 @@ assert.strictEqual(
   sandbox.generarActaNotaSeleccionada('nota-12', 0).error.codigo,
   'MANTENIMIENTO_GENERACION_INVALIDA'
 );
+
+const generacionAutomatica =
+  sandbox.generarActaNotaSeleccionadaAutomatica('nota-12');
+assert.strictEqual(generacionAutomatica.exito, true);
+assert.strictEqual(generacionAutomatica.datos.correlativo, 35);
+assert.strictEqual(typeof generacionAutomatica.datos.tokenDescarga, 'string');
+assert.strictEqual(generaciones.length, 2);
+assert.strictEqual(generaciones[1].automatico, true);
+
+const paginaNotasHtml = fs.readFileSync(
+  'AppsScript/Web/NotasGemini.html', 'utf8'
+);
+assert.match(paginaNotasHtml, /id="generarSecuencia"/);
+assert.match(paginaNotasHtml, />Crear Acta SEC\.<\/button>/);
+assert.match(paginaNotasHtml, /generarActaNotaSeleccionadaAutomatica/);
 
 const estado = sandbox.obtenerEstadoMantenimiento();
 assert.strictEqual(estado.exito, true);

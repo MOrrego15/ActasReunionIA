@@ -164,28 +164,63 @@ function generarActaNotaSeleccionada(idDocumentoFuente, correlativo) {
       resultado.datos.idArchivoDocx.length === 0) {
       return resultado;
     }
-    const idArchivoDocx = resultado.datos.idArchivoDocx;
-    const tokenDescarga = Utilities.getUuid();
-    CacheService.getScriptCache().put(
-      MANTENIMIENTO_PREFIJO_DESCARGA + tokenDescarga,
-      idArchivoDocx,
-      MANTENIMIENTO_DESCARGA_SEGUNDOS
-    );
-    return {
-      exito: true,
-      datos: {
-        estado: resultado.datos.estado,
-        correlativo: resultado.datos.correlativo,
-        tokenDescarga: tokenDescarga
-      },
-      error: null
-    };
+    return _mantenimientoPrepararResultadoGeneracion(resultado);
   } catch (errorGeneracion) {
     return _mantenimientoResultadoError(
       'MANTENIMIENTO_GENERACION_ERROR',
       'No fue posible generar el acta seleccionada.'
     );
   }
+}
+
+function generarActaNotaSeleccionadaAutomatica(idDocumentoFuente) {
+  if (!_mantenimientoEsUsuarioAutorizado()) {
+    return _mantenimientoResultadoError(
+      'MANTENIMIENTO_NO_AUTORIZADO',
+      'La cuenta activa no está autorizada.'
+    );
+  }
+  if (typeof idDocumentoFuente !== 'string' ||
+    idDocumentoFuente.trim().length === 0) {
+    return _mantenimientoResultadoError(
+      'MANTENIMIENTO_GENERACION_INVALIDA',
+      'Selecciona una nota válida.'
+    );
+  }
+  try {
+    const resultado = ejecutarGeneracionActaSeleccionadaAutomatica({
+      idDocumentoFuente: idDocumentoFuente.trim()
+    });
+    if (!resultado.exito || !resultado.datos ||
+      typeof resultado.datos.idArchivoDocx !== 'string' ||
+      resultado.datos.idArchivoDocx.length === 0) {
+      return resultado;
+    }
+    return _mantenimientoPrepararResultadoGeneracion(resultado);
+  } catch (errorGeneracion) {
+    return _mantenimientoResultadoError(
+      'MANTENIMIENTO_GENERACION_ERROR',
+      'No fue posible generar automáticamente el acta seleccionada.'
+    );
+  }
+}
+
+function _mantenimientoPrepararResultadoGeneracion(resultado) {
+  const tokenDescarga = Utilities.getUuid();
+  CacheService.getScriptCache().put(
+    MANTENIMIENTO_PREFIJO_DESCARGA + tokenDescarga,
+    resultado.datos.idArchivoDocx,
+    MANTENIMIENTO_DESCARGA_SEGUNDOS
+  );
+  return {
+    exito: true,
+    datos: {
+      estado: resultado.datos.estado,
+      correlativo: resultado.datos.correlativo,
+      tokenDescarga: tokenDescarga
+    },
+    error: null
+  };
 }
 
 function obtenerArchivoActaParaDescarga(tokenDescarga) {

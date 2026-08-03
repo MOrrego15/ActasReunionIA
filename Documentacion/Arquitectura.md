@@ -596,13 +596,13 @@ autorización reutiliza `MANTENIMIENTO_CORREOS_AUTORIZADOS`; además, como la
 aplicación se ejecuta con la identidad del usuario, esa cuenta debe poder leer
 la carpeta configurada.
 
-### 12.8 Generación manual desde la vista de notas
+### 12.8 Generación dirigida desde la vista de notas
 
-La selección de una nota parte del siguiente correlativo configurado y avanza
-hasta el primer número ausente de `Procesados`; el usuario autorizado puede
-revisarlo o editarlo. La generación manual procesa exclusivamente
-el ID seleccionado y usa el valor indicado sin leer, reservar ni actualizar
-`ACTAS_ULTIMO_CORRELATIVO`.
+La selección de una nota presenta dos operaciones. `Crear Acta` procesa
+exclusivamente el ID seleccionado y reserva el siguiente correlativo mediante
+el mecanismo automático protegido por `LockService`. `Crear Acta SEC.` usa
+exactamente el entero visible en `Número de secuencia`, sin leer, reservar ni
+actualizar `ACTAS_ULTIMO_CORRELATIVO`.
 
 Antes del procesamiento, `HojaSeguimiento.gsheet` se consulta mediante el ID
 configurado del repositorio. Tanto el ID fuente como el correlativo deben estar
@@ -610,7 +610,7 @@ ausentes de la hoja `Procesados`. La misma comprobación se repite bajo
 `ScriptLock` al registrar `EN_PROCESO`, evitando duplicados concurrentes. Solo
 un entero entre 1 y 999999 es aceptado.
 
-Cuando la generación manual termina en `PROCESADO`, el resultado interno
+Cuando cualquiera de las dos generaciones termina en `PROCESADO`, el resultado interno
 conserva el ID del DOCX verificado únicamente para asociarlo a un token aleatorio
 de descarga con vigencia de diez minutos. La respuesta web devuelve solo el
 token. Al solicitar la descarga, el servidor vuelve a validar autorización,
@@ -618,7 +618,7 @@ token, MIME, papelera y tamaño máximo, entrega el contenido en Base64 y elimin
 el token. La interfaz crea localmente el archivo, impide repetir la generación
 sobre la misma nota y actualiza el campo con el primer correlativo libre posterior.
 
-El flujo manual obtiene el descriptor mediante
+Ambos flujos dirigidos obtienen el descriptor mediante
 `obtenerDocumentoFuentePorId`: recorre los archivos directos de la carpeta y
 devuelve exclusivamente el ID solicitado. No reutiliza la selección automática
 que reduce el conjunto al documento más recientemente modificado.

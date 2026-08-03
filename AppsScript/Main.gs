@@ -241,6 +241,37 @@ function ejecutarGeneracionActaSeleccionada(parametros) {
       }
     };
   }
+  return _mainEjecutarGeneracionSeleccionada(
+    parametros.idDocumentoFuente,
+    parametros.correlativo
+  );
+}
+
+/**
+ * Generates one selected source using the next automatic sequence number.
+ *
+ * @param {{idDocumentoFuente: string}} parametros Input.
+ * @returns {{exito: boolean, datos: (Object|null), error: (Object|null)}}
+ */
+function ejecutarGeneracionActaSeleccionadaAutomatica(parametros) {
+  if (!esObjetoPlano(parametros) ||
+    Object.keys(parametros).length !== 1 ||
+    !esCadenaNoVacia(parametros.idDocumentoFuente)) {
+    return {
+      exito: false, datos: null,
+      error: {
+        codigo: MAIN_CODIGOS_ERROR.PARAMETRO_INVALIDO,
+        mensaje: 'El ID de la nota seleccionada no es válido.'
+      }
+    };
+  }
+  return _mainEjecutarGeneracionSeleccionada(parametros.idDocumentoFuente);
+}
+
+function _mainEjecutarGeneracionSeleccionada(
+  idDocumentoFuente,
+  correlativoManual
+) {
   let contexto;
   let configuracion;
   try {
@@ -266,7 +297,7 @@ function ejecutarGeneracionActaSeleccionada(parametros) {
   }
   const fuente = obtenerDocumentoFuentePorId(
     configuracion.gemini.carpetaNotasId,
-    parametros.idDocumentoFuente,
+    idDocumentoFuente,
     contexto
   );
   if (!_mainResultadoExitoso(fuente) || !fuente.datos ||
@@ -291,16 +322,32 @@ function ejecutarGeneracionActaSeleccionada(parametros) {
       }
     };
   }
-  const disponibilidad = consultarDisponibilidadGeneracion(
-    configuracion.procesados.repositorioId,
-    parametros.idDocumentoFuente,
-    parametros.correlativo,
-    contexto
-  );
+  const disponibilidad = correlativoManual === undefined
+    ? consultarEstadoProcesamiento(
+        configuracion.procesados.repositorioId,
+        idDocumentoFuente,
+        contexto
+      )
+    : consultarDisponibilidadGeneracion(
+        configuracion.procesados.repositorioId,
+        idDocumentoFuente,
+        correlativoManual,
+        contexto
+      );
   if (!_mainResultadoExitoso(disponibilidad)) return disponibilidad;
+  if (correlativoManual === undefined &&
+    (!disponibilidad.datos || disponibilidad.datos.estado !== 'PENDIENTE')) {
+    return {
+      exito: false, datos: null,
+      error: {
+        codigo: MAIN_CODIGOS_ERROR.PROCESADOS_ERROR,
+        mensaje: 'La nota seleccionada ya fue registrada anteriormente.'
+      }
+    };
+  }
 
   const resultado = _mainProcesarDocumento(
-    documento, 1, configuracion, contexto, parametros.correlativo
+    documento, 1, configuracion, contexto, correlativoManual, true
   );
   return resultado.estado === 'PROCESADO'
     ? {
@@ -326,7 +373,8 @@ function _mainProcesarDocumento(
   posicion,
   configuracion,
   contexto,
-  correlativoManual
+  correlativoManual,
+  incluirIdArchivoDocx
 ) {
   let correlativo = correlativoManual === undefined ? null : correlativoManual;
   let idDocumentoGoogle;
@@ -591,7 +639,7 @@ function _mainProcesarDocumento(
       correlativo: correlativo,
       codigoError: null
     };
-    if (correlativoManual !== undefined) {
+    if (incluirIdArchivoDocx === true) {
       resultadoFinal.idArchivoDocx = idArchivoDocx;
     }
     return resultadoFinal;
