@@ -71,6 +71,12 @@ assert.strictEqual(
   26
 );
 assert.strictEqual(
+  sandbox.proponerCorrelativoDisponible(
+    'hoja-seguimiento', 25
+  ).datos.correlativo,
+  26
+);
+assert.strictEqual(
   sandbox._procesadosRegistrarInicioInterno(
     'hoja-seguimiento',
     { idDocumentoFuente: 'nota-nueva', correlativo: 25 },

@@ -94,6 +94,7 @@ const dirigido = sandbox.ejecutarGeneracionActaSeleccionada({
 });
 assert.strictEqual(dirigido.exito, true);
 assert.strictEqual(dirigido.datos.correlativo, 78);
+assert.strictEqual(dirigido.datos.idArchivoDocx, 'acta-docx');
 assert.strictEqual(reservasAutomaticas, 0);
 
 console.log('MainGeneracionManual.test.js: correlativo manual sin reserva.');

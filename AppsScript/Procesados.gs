@@ -280,6 +280,7 @@ function consultarDisponibilidadGeneracion(
   return resultado;
 }
 
+/** Returns the first unused sequence at or above the configured candidate. */
 function proponerCorrelativoGeneracion(
   repositorioProcesadosId,
   idDocumentoFuente,
@@ -300,9 +301,7 @@ function proponerCorrelativoGeneracion(
     if (!acceso.exito) {
       return _procesadosConstruirResultadoError(acceso.codigo, acceso.mensaje);
     }
-    const fuente = _procesadosBuscarRegistro(
-      acceso.hoja, idDocumentoFuente
-    );
+    const fuente = _procesadosBuscarRegistro(acceso.hoja, idDocumentoFuente);
     if (!fuente.exito) {
       return _procesadosConstruirResultadoError(fuente.codigo, fuente.mensaje);
     }
@@ -322,15 +321,14 @@ function proponerCorrelativoGeneracion(
     while (candidato <= 999999 && listado.correlativos[candidato] === true) {
       candidato += 1;
     }
-    if (candidato <= 999999) {
-      return _procesadosConstruirResultadoExitoso(
-        PROCESADOS_ESTADOS.PENDIENTE, candidato
-      );
-    }
-    return _procesadosConstruirResultadoError(
-      PROCESADOS_CODIGOS_ERROR.CORRELATIVO_YA_UTILIZADO,
-      'No existe un número de secuencia disponible.'
-    );
+    return candidato <= 999999
+      ? _procesadosConstruirResultadoExitoso(
+          PROCESADOS_ESTADOS.PENDIENTE, candidato
+        )
+      : _procesadosConstruirResultadoError(
+          PROCESADOS_CODIGOS_ERROR.CORRELATIVO_YA_UTILIZADO,
+          'No existe un número de secuencia disponible.'
+        );
   } catch (errorInterno) {
     return _procesadosConstruirResultadoError(
       PROCESADOS_CODIGOS_ERROR.ERROR,
@@ -339,18 +337,51 @@ function proponerCorrelativoGeneracion(
   }
 }
 
-/**
- * Reclama atómicamente un documento fuente para una ejecución.
- *
- * Crea una fila EN_PROCESO cuando no existe registro. Una repetición con la
- * misma ejecución y correlativo es idempotente. No habilita reintentos desde
- * ERROR y no propaga excepciones.
- *
- * @param {string} repositorioProcesadosId ID de la hoja de cálculo dedicada.
- * @param {DatosInicioProcesamiento} datosInicioProcesamiento Datos iniciales.
- * @param {ContextoProcesados} contexto Contexto con idEjecucion obligatorio.
- * @returns {ResultadoProcesados} Estado resultante o error controlado.
- */
+function proponerCorrelativoDisponible(
+  repositorioProcesadosId,
+  correlativoInicial,
+  contexto
+) {
+  if (!_procesadosValidarIdentificador(repositorioProcesadosId) ||
+    !_procesadosValidarCorrelativo(correlativoInicial) ||
+    !_procesadosValidarContexto(contexto, false)) {
+    return _procesadosConstruirResultadoError(
+      PROCESADOS_CODIGOS_ERROR.PARAMETRO_INVALIDO,
+      PROCESADOS_MENSAJES_ERROR.PARAMETRO_INVALIDO
+    );
+  }
+  try {
+    const acceso = _procesadosPrepararRepositorio(repositorioProcesadosId);
+    if (!acceso.exito) {
+      return _procesadosConstruirResultadoError(acceso.codigo, acceso.mensaje);
+    }
+    const listado = _procesadosListarCorrelativos(acceso.hoja);
+    if (!listado.exito) {
+      return _procesadosConstruirResultadoError(
+        listado.codigo, listado.mensaje
+      );
+    }
+    let candidato = correlativoInicial;
+    while (candidato <= 999999 && listado.correlativos[candidato] === true) {
+      candidato += 1;
+    }
+    return candidato <= 999999
+      ? _procesadosConstruirResultadoExitoso(
+          PROCESADOS_ESTADOS.PENDIENTE, candidato
+        )
+      : _procesadosConstruirResultadoError(
+          PROCESADOS_CODIGOS_ERROR.CORRELATIVO_YA_UTILIZADO,
+          'No existe un número de secuencia disponible.'
+        );
+  } catch (errorInterno) {
+    return _procesadosConstruirResultadoError(
+      PROCESADOS_CODIGOS_ERROR.ERROR,
+      PROCESADOS_MENSAJES_ERROR.ERROR
+    );
+  }
+}
+
+/** Atomically claims one source and sequence for an execution. */
 function registrarInicioProcesamiento(
   repositorioProcesadosId,
   datosInicioProcesamiento,

@@ -6,6 +6,11 @@ const MANTENIMIENTO_LIMITE_CORRELATIVO = 999999;
 const MANTENIMIENTO_MIME_GOOGLE_DOCS =
   'application/vnd.google-apps.document';
 const MANTENIMIENTO_LIMITE_NOTAS = 10;
+const MANTENIMIENTO_PREFIJO_DESCARGA = 'descarga_acta_';
+const MANTENIMIENTO_DESCARGA_SEGUNDOS = 600;
+const MANTENIMIENTO_DESCARGA_MAX_BYTES = 10 * 1024 * 1024;
+const MANTENIMIENTO_MIME_DOCX =
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
 /**
  * Serves the maintenance web page only to authorized Google accounts.
@@ -150,14 +155,114 @@ function generarActaNotaSeleccionada(idDocumentoFuente, correlativo) {
     );
   }
   try {
-    return ejecutarGeneracionActaSeleccionada({
+    const resultado = ejecutarGeneracionActaSeleccionada({
       idDocumentoFuente: idDocumentoFuente.trim(),
       correlativo: correlativo
     });
+    if (!resultado.exito || !resultado.datos ||
+      typeof resultado.datos.idArchivoDocx !== 'string' ||
+      resultado.datos.idArchivoDocx.length === 0) {
+      return resultado;
+    }
+    const idArchivoDocx = resultado.datos.idArchivoDocx;
+    const tokenDescarga = Utilities.getUuid();
+    CacheService.getScriptCache().put(
+      MANTENIMIENTO_PREFIJO_DESCARGA + tokenDescarga,
+      idArchivoDocx,
+      MANTENIMIENTO_DESCARGA_SEGUNDOS
+    );
+    return {
+      exito: true,
+      datos: {
+        estado: resultado.datos.estado,
+        correlativo: resultado.datos.correlativo,
+        tokenDescarga: tokenDescarga
+      },
+      error: null
+    };
   } catch (errorGeneracion) {
     return _mantenimientoResultadoError(
       'MANTENIMIENTO_GENERACION_ERROR',
       'No fue posible generar el acta seleccionada.'
+    );
+  }
+}
+
+function obtenerArchivoActaParaDescarga(tokenDescarga) {
+  if (!_mantenimientoEsUsuarioAutorizado() ||
+    typeof tokenDescarga !== 'string' ||
+    !/^[A-Za-z0-9_-]{10,}$/.test(tokenDescarga)) {
+    return _mantenimientoResultadoError(
+      'MANTENIMIENTO_DESCARGA_INVALIDA',
+      'La descarga solicitada no es válida.'
+    );
+  }
+  const cache = CacheService.getScriptCache();
+  const clave = MANTENIMIENTO_PREFIJO_DESCARGA + tokenDescarga;
+  const idArchivoDocx = cache.get(clave);
+  if (typeof idArchivoDocx !== 'string' || idArchivoDocx.length === 0) {
+    return _mantenimientoResultadoError(
+      'MANTENIMIENTO_DESCARGA_EXPIRADA',
+      'La descarga expiró. Genera nuevamente el acta.'
+    );
+  }
+  try {
+    const archivo = DriveApp.getFileById(idArchivoDocx);
+    if (archivo.isTrashed() ||
+      archivo.getMimeType() !== MANTENIMIENTO_MIME_DOCX ||
+      archivo.getSize() > MANTENIMIENTO_DESCARGA_MAX_BYTES) {
+      return _mantenimientoResultadoError(
+        'MANTENIMIENTO_DESCARGA_NO_DISPONIBLE',
+        'El archivo generado no está disponible para descarga.'
+      );
+    }
+    const contenidoBase64 = Utilities.base64Encode(
+      archivo.getBlob().getBytes()
+    );
+    cache.remove(clave);
+    return {
+      exito: true,
+      datos: {
+        nombre: archivo.getName(),
+        mimeType: MANTENIMIENTO_MIME_DOCX,
+        contenidoBase64: contenidoBase64
+      },
+      error: null
+    };
+  } catch (errorDescarga) {
+    return _mantenimientoResultadoError(
+      'MANTENIMIENTO_DESCARGA_ERROR',
+      'No fue posible descargar el archivo generado.'
+    );
+  }
+}
+
+function obtenerSiguienteSecuenciaActa(correlativoActual) {
+  if (!_mantenimientoEsUsuarioAutorizado() ||
+    !Number.isSafeInteger(correlativoActual) || correlativoActual <= 0 ||
+    correlativoActual >= MANTENIMIENTO_LIMITE_CORRELATIVO) {
+    return _mantenimientoResultadoError(
+      'MANTENIMIENTO_SECUENCIA_INVALIDA',
+      'No fue posible calcular la siguiente secuencia.'
+    );
+  }
+  try {
+    const configuracion = obtenerConfiguracion();
+    const propuesta = proponerCorrelativoDisponible(
+      configuracion.procesados.repositorioId,
+      correlativoActual + 1
+    );
+    return propuesta.exito
+      ? {
+          exito: true,
+          datos: { correlativoPropuesto: propuesta.datos.correlativo },
+          error: null
+        }
+      : propuesta;
+  } catch (errorPropuesta) {
+    return _mantenimientoResultadoError(
+      'MANTENIMIENTO_PROPUESTA_ERROR',
+      'No fue posible calcular la siguiente secuencia.'
     );
   }
 }

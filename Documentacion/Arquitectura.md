@@ -591,7 +591,7 @@ papelera, los ordena por fecha de creación descendente y devuelve como máximo
 los diez primeros.
 
 La interfaz muestra nombre y fecha/hora en la zona `America/Lima`. La selección
-de una fila expone el identificador estable de Drive y permite copiarlo. La
+de una fila expone el identificador estable de Drive. La
 autorización reutiliza `MANTENIMIENTO_CORREOS_AUTORIZADOS`; además, como la
 aplicación se ejecuta con la identidad del usuario, esa cuenta debe poder leer
 la carpeta configurada.
@@ -600,7 +600,7 @@ la carpeta configurada.
 
 La selección de una nota parte del siguiente correlativo configurado y avanza
 hasta el primer número ausente de `Procesados`; el usuario autorizado puede
-editarlo. La generación manual procesa exclusivamente
+revisarlo o editarlo. La generación manual procesa exclusivamente
 el ID seleccionado y usa el valor indicado sin leer, reservar ni actualizar
 `ACTAS_ULTIMO_CORRELATIVO`.
 
@@ -609,6 +609,14 @@ configurado del repositorio. Tanto el ID fuente como el correlativo deben estar
 ausentes de la hoja `Procesados`. La misma comprobación se repite bajo
 `ScriptLock` al registrar `EN_PROCESO`, evitando duplicados concurrentes. Solo
 un entero entre 1 y 999999 es aceptado.
+
+Cuando la generación manual termina en `PROCESADO`, el resultado interno
+conserva el ID del DOCX verificado únicamente para asociarlo a un token aleatorio
+de descarga con vigencia de diez minutos. La respuesta web devuelve solo el
+token. Al solicitar la descarga, el servidor vuelve a validar autorización,
+token, MIME, papelera y tamaño máximo, entrega el contenido en Base64 y elimina
+el token. La interfaz crea localmente el archivo, impide repetir la generación
+sobre la misma nota y actualiza el campo con el primer correlativo libre posterior.
 
 El flujo manual obtiene el descriptor mediante
 `obtenerDocumentoFuentePorId`: recorre los archivos directos de la carpeta y

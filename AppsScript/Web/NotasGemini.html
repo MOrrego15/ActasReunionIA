@@ -31,6 +31,10 @@
       .campo label { display: block; margin-bottom: 6px; font-weight: 700; }
       .campo input { width: 180px; padding: 10px; border: 1px solid #9cacbf;
         border-radius: 6px; font-size: 16px; }
+      .crear-acta { display: flex; align-items: center; gap: 12px;
+        margin: 12px 0; }
+      .aviso-secuencia { color: #536178; font-weight: 700; }
+      [hidden] { display: none !important; }
       #mensaje { min-height: 22px; font-weight: 700; }
       .error { color: #a32121; } .correcto { color: #16733d; }
       @media (max-width: 680px) {
@@ -60,13 +64,16 @@
         <div class="seleccion" id="seleccion" hidden>
           <strong>ID seleccionado</strong>
           <code id="idSeleccionado"></code>
-          <button id="copiar" type="button">Copiar ID</button>
+          <div class="crear-acta">
+            <button id="generar" type="button">Crear Acta</button>
+            <span class="aviso-secuencia">Respetando la secuencia</span>
+          </div>
           <div class="campo">
-            <label for="correlativo">Número de secuencia propuesto</label>
+            <label for="correlativo">Número de secuencia</label>
             <input id="correlativo" type="number" min="1" max="999999"
               step="1" inputmode="numeric">
           </div>
-          <button id="generar" type="button">Generar acta</button>
+          <button id="descargar" type="button" hidden>Descargar archivo</button>
         </div>
       </section>
     </main>
@@ -78,6 +85,7 @@
       const idSeleccionado = document.getElementById('idSeleccionado');
       const correlativo = document.getElementById('correlativo');
       const generar = document.getElementById('generar');
+      const descargar = document.getElementById('descargar');
 
       function formatearFecha(fechaIso) {
         return new Intl.DateTimeFormat('es-PE', {
@@ -89,9 +97,11 @@
         idSeleccionado.textContent = id;
         seleccion.hidden = false;
         correlativo.value = '';
+        descargar.hidden = true;
+        descargar.dataset.token = '';
         generar.disabled = true;
         mensaje.className = '';
-        mensaje.textContent = 'Obteniendo propuesta de secuencia…';
+        mensaje.textContent = 'Obteniendo número de secuencia…';
         google.script.run.withSuccessHandler(function (respuesta) {
           generar.disabled = false;
           if (!respuesta || !respuesta.exito) {
@@ -100,7 +110,8 @@
           }
           correlativo.value = respuesta.datos.correlativoPropuesto;
           mensaje.className = 'correcto';
-          mensaje.textContent = 'Nota seleccionada. Revisa la secuencia propuesta.';
+          mensaje.textContent =
+            'Nota seleccionada. Revisa el número de secuencia.';
         }).withFailureHandler(mostrarError).obtenerPropuestaSecuenciaNota(id);
       }
 
@@ -162,26 +173,6 @@
           .withFailureHandler(mostrarError).obtenerNotasGeminiDisponibles();
       }
 
-      document.getElementById('copiar').addEventListener('click', function () {
-        const id = idSeleccionado.textContent;
-        const copiar = navigator.clipboard && navigator.clipboard.writeText
-          ? navigator.clipboard.writeText(id)
-          : new Promise(function (resolve, reject) {
-            const auxiliar = document.createElement('textarea');
-            auxiliar.value = id;
-            auxiliar.style.position = 'fixed';
-            auxiliar.style.opacity = '0';
-            document.body.appendChild(auxiliar);
-            auxiliar.select();
-            const copiado = document.execCommand('copy');
-            auxiliar.remove();
-            copiado ? resolve() : reject();
-          });
-        copiar.then(function () {
-          mensaje.className = 'correcto';
-          mensaje.textContent = 'ID copiado al portapapeles.';
-        }, mostrarError);
-      });
       actualizar.addEventListener('click', cargarNotas);
       generar.addEventListener('click', function () {
         const valorTexto = correlativo.value.trim();
@@ -199,18 +190,62 @@
         mensaje.textContent = 'Generando el acta…';
         google.script.run.withSuccessHandler(function (respuesta) {
           actualizar.disabled = false;
-          generar.disabled = false;
           if (!respuesta || !respuesta.exito) {
+            generar.disabled = false;
             mostrarRespuestaError(respuesta);
             return;
           }
+          generar.disabled = true;
+          descargar.dataset.token = respuesta.datos.tokenDescarga;
+          descargar.hidden = false;
           mensaje.className = 'correcto';
           mensaje.textContent = 'Acta generada correctamente con la secuencia ' +
             respuesta.datos.correlativo + '.';
+          google.script.run.withSuccessHandler(function (propuesta) {
+            if (propuesta && propuesta.exito) {
+              correlativo.value = propuesta.datos.correlativoPropuesto;
+            }
+          }).withFailureHandler(function () {
+            // La descarga confirmada prevalece sobre el fallo de propuesta.
+          }).obtenerSiguienteSecuenciaActa(respuesta.datos.correlativo);
         }).withFailureHandler(function () {
           actualizar.disabled = false;
           mostrarError();
         }).generarActaNotaSeleccionada(idSeleccionado.textContent, valor);
+      });
+      descargar.addEventListener('click', function () {
+        const token = descargar.dataset.token;
+        descargar.disabled = true;
+        mensaje.className = '';
+        mensaje.textContent = 'Preparando descarga…';
+        google.script.run.withSuccessHandler(function (respuesta) {
+          descargar.disabled = false;
+          if (!respuesta || !respuesta.exito) {
+            mostrarRespuestaError(respuesta);
+            return;
+          }
+          const binario = atob(respuesta.datos.contenidoBase64);
+          const bytes = new Uint8Array(binario.length);
+          for (let indice = 0; indice < binario.length; indice += 1) {
+            bytes[indice] = binario.charCodeAt(indice);
+          }
+          const url = URL.createObjectURL(new Blob([bytes], {
+            type: respuesta.datos.mimeType
+          }));
+          const enlace = document.createElement('a');
+          enlace.href = url;
+          enlace.download = respuesta.datos.nombre;
+          document.body.appendChild(enlace);
+          enlace.click();
+          enlace.remove();
+          URL.revokeObjectURL(url);
+          descargar.hidden = true;
+          mensaje.className = 'correcto';
+          mensaje.textContent = 'Archivo descargado correctamente.';
+        }).withFailureHandler(function () {
+          descargar.disabled = false;
+          mostrarError();
+        }).obtenerArchivoActaParaDescarga(token);
       });
       cargarNotas();
     </script>

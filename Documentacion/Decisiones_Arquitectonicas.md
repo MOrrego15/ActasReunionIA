@@ -190,7 +190,7 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 ## DA-027: Generación manual dirigida sin actualizar el correlativo global
 
 - **Estado:** Aceptada.
-- **Decisión:** La vista de notas permitirá generar únicamente la nota seleccionada con un correlativo editable, entero y mayor que cero. El valor propuesto será informativo y la operación manual no modificará `ACTAS_ULTIMO_CORRELATIVO`. Antes de generar se comprobarán en la hoja `Procesados` de `HojaSeguimiento.gsheet` tanto el ID fuente como el correlativo; la reclamación repetirá ambas comprobaciones bajo bloqueo.
+- **Decisión:** La vista de notas permitirá generar únicamente la nota seleccionada con un correlativo propuesto y editable, entero y mayor que cero. La propuesta avanzará al primer valor ausente de `Procesados` y la operación manual no modificará `ACTAS_ULTIMO_CORRELATIVO`. Antes de generar se comprobarán en la hoja `Procesados` de `HojaSeguimiento.gsheet` tanto el ID fuente como el correlativo; la reclamación repetirá ambas comprobaciones bajo bloqueo.
 - **Motivo:** Permitir una generación explícita desde la interfaz sin alterar la numeración automática y sin crear actas duplicadas.
 - **Consecuencia:** Una nota con cualquier registro previo o un correlativo asociado a otra fila se rechazan con un mensaje controlado. El flujo automático mantiene su reserva habitual; ambos flujos comparten la restricción atómica de unicidad del repositorio.
 
@@ -200,6 +200,13 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Decisión:** La generación manual localizará directamente el ID seleccionado entre los archivos inmediatos de la carpeta configurada. No usará `obtenerDocumentosFuente`, cuya regla automática devuelve solo el documento más recientemente modificado. Una función de prueba ejecutable desde Apps Script recibirá ID y correlativo mediante Propiedades del script.
 - **Motivo:** Una nota visible en la página puede no ser el archivo modificado más recientemente y, por tanto, quedar fuera del selector automático aunque pertenezca a la carpeta.
 - **Consecuencia:** El flujo manual conserva la selección explícita del usuario, valida carpeta, MIME y papelera, y no incrusta IDs reales en el repositorio. Ejecutar la función de prueba genera un acta real y requiere valores controlados.
+
+## DA-029: Descarga posterior y avance visual de secuencia
+
+- **Estado:** Aceptada.
+- **Decisión:** Después de completar y verificar el DOCX, la generación manual devolverá un token aleatorio temporal, no el ID ni una URL directa de Drive. El servidor resolverá el token una sola vez, validará el archivo y entregará su contenido en Base64. La interfaz mostrará `Descargar archivo`, impedirá repetir la creación sobre la misma nota y actualizará el campo con el primer correlativo libre posterior al usado.
+- **Motivo:** Permitir el acceso inmediato al entregable y preparar visualmente la siguiente numeración sin alterar la propiedad del correlativo automático.
+- **Consecuencia:** El token expira en diez minutos, es de un solo uso y el DOCX no puede superar 10 MB para esta descarga web. Un fallo al calcular la siguiente propuesta no invalida el acta ni oculta su descarga. `ACTAS_ULTIMO_CORRELATIVO` permanece intacto.
 
 ## Decisiones pendientes
 

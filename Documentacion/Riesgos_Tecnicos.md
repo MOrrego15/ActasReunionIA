@@ -145,3 +145,11 @@ prueba son válidas. Debe configurarse únicamente con una nota controlada y un
 correlativo libre. Después de la prueba se recomienda eliminar
 `PRUEBA_GENERACION_NOTA_ID` y `PRUEBA_GENERACION_CORRELATIVO` para impedir una
 ejecución accidental posterior.
+
+## 11. Descarga web del DOCX
+
+Los enlaces directos de Drive pueden seleccionar una cuenta distinta cuando el
+navegador mantiene varias sesiones y devolver HTTP 403. La descarga usa por ello
+un token aleatorio de diez minutos y un solo uso; el servidor autorizado entrega
+el DOCX en Base64 sin exponer correo ni ID en la URL. Para limitar memoria y
+tiempo de ejecución, se rechazan archivos mayores de 10 MB.

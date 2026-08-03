@@ -3602,6 +3602,102 @@ correctos.
 - Regresión completa: trece pruebas correctas.
 - `git diff --check`: correcto.
 
+# Cambio 0053
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> El campo `Número de secuencia` no debe quedar vacío y debe proponer una
+> numeración.
+
+## Respuesta de Codex
+
+Se mantuvieron el botón `Crear Acta` y el mensaje `Respetando la secuencia` en
+la ubicación solicitada. Al seleccionar una nota, el botón se deshabilita
+temporalmente y el servidor propone el primer número libre en
+`HojaSeguimiento.gsheet`, partiendo del siguiente correlativo configurado. El
+campo se completa automáticamente y continúa siendo editable.
+
+La propuesta no reserva ni modifica `ACTAS_ULTIMO_CORRELATIVO`. Al crear el
+acta se vuelven a validar el ID y el número bajo bloqueo.
+
+## Archivos modificados
+
+- AppsScript/Procesados.gs
+- AppsScript/Web/Mantenimiento.gs
+- AppsScript/Web/NotasGemini.html
+- Pruebas/Mantenimiento.test.js
+- Pruebas/ProcesadosDisponibilidad.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Flujo_Procesamiento.md
+- docs/CODEX_BITACORA.md
+
+## Pendiente
+
+- Desplegar cuando el usuario lo autorice.
+
+## Pruebas
+
+- Trece pruebas Node: correctas.
+- Propuesta que omite el correlativo ocupado: confirmada.
+- Diseño `Crear Acta` y `Respetando la secuencia`: confirmado.
+- Sintaxis de todos los archivos `.gs` y `git diff --check`: correctas.
+
+# Cambio 0054
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Después de crear el acta correctamente, mostrar un botón para descargar el
+> archivo creado y actualizar el campo `Número de secuencia`.
+
+## Respuesta de Codex
+
+La generación manual conserva temporalmente el ID del DOCX ya verificado. La
+capa web lo transforma en una URL autenticada y no devuelve el ID aislado. Tras
+el éxito aparece `Descargar archivo`, `Crear Acta` queda deshabilitado para la
+nota ya procesada y el campo se actualiza con el primer número libre posterior
+al utilizado en `HojaSeguimiento.gsheet`.
+
+La actualización visual no reserva ni modifica
+`ACTAS_ULTIMO_CORRELATIVO`. Si falla únicamente el cálculo de la siguiente
+secuencia, el acta creada y su descarga permanecen válidas.
+
+## Archivos modificados
+
+- AppsScript/Main.gs
+- AppsScript/Procesados.gs
+- AppsScript/Web/Mantenimiento.gs
+- AppsScript/Web/NotasGemini.html
+- Pruebas/MainGeneracionManual.test.js
+- Pruebas/Mantenimiento.test.js
+- Pruebas/ProcesadosDisponibilidad.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Flujo_Procesamiento.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas iniciales
+
+- Resultado manual con ID del DOCX verificado: correcto.
+- URL de descarga sin ID aislado en la respuesta: correcta.
+- Siguiente correlativo libre posterior: correcto.
+
+## Pendiente
+
+- Desplegar cuando el usuario lo autorice.
+
+## Verificación completa
+
+- Trece pruebas Node: correctas.
+- Sintaxis de todos los archivos `.gs`: correcta.
+- Presencia de descarga y actualización posterior: confirmada.
+- `git diff --check`: correcto.
+
 ## Pendientes
 
 - Desplegar y publicar cuando el usuario lo autorice.
@@ -3683,3 +3779,150 @@ forzadas anteriores.
 `Inicializar.js` debe conservarse en cada despliegue mediante el flujo seguro de
 descargar el proyecto remoto vigente, superponer los cambios autorizados y
 publicar el conjunto completo. Nunca debe incorporarse al repositorio Git.
+
+# Cambio 0051
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Eliminar el botón `Copiar ID` de la vista de notas.
+
+## Respuesta de Codex
+
+Se eliminó únicamente el botón y toda su lógica de acceso al portapapeles. El ID
+seleccionado continúa visible y no se modificaron la propuesta de secuencia, la
+validación ni el botón `Generar acta`.
+
+## Archivos modificados
+
+- AppsScript/Web/NotasGemini.html
+- docs/CODEX_BITACORA.md
+
+## Pendiente
+
+- Desplegar y publicar cuando el usuario lo autorice.
+
+# Cambio 0052
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Crear el botón `Crear Acta` en la ubicación anterior de `Copiar ID`, mostrar
+> a su costado `Respetando la secuencia` y dejar de proponer el número.
+
+## Respuesta de Codex
+
+La selección muestra el ID y deja vacío el campo `Número de secuencia`. En la
+ubicación solicitada se presenta el botón `Crear Acta` junto al mensaje
+`Respetando la secuencia`. El usuario debe ingresar el número y la generación
+usa exactamente ese valor, sin modificar `ACTAS_ULTIMO_CORRELATIVO`.
+
+Se eliminaron del servidor y de las pruebas las funciones de propuesta que
+quedaron sin uso. Se mantienen la validación de entero mayor que cero, la
+consulta de duplicados en `HojaSeguimiento.gsheet` y el bloqueo atómico.
+
+## Archivos modificados
+
+- AppsScript/Procesados.gs
+- AppsScript/Web/Mantenimiento.gs
+- AppsScript/Web/NotasGemini.html
+- Pruebas/Mantenimiento.test.js
+- Pruebas/ProcesadosDisponibilidad.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Flujo_Procesamiento.md
+- docs/CODEX_BITACORA.md
+
+## Pendiente
+
+- Desplegar cuando el usuario lo autorice.
+
+## Pruebas
+
+- Trece pruebas Node: correctas.
+- Sintaxis de todos los archivos `.gs`: correcta.
+- Ausencia de código de propuesta y portapapeles: confirmada.
+- `git diff --check`: correcto.
+
+# Cambio 0055
+Fecha: 2026-08-03
+Autor: Codex
+
+## Despliegue de descarga y avance de secuencia
+
+1. Se ejecutaron trece pruebas y las validaciones sintácticas correctamente.
+2. Se descargaron primero los 21 archivos remotos.
+3. Se confirmó `Inicializar.js` con SHA-256
+   `439730DC8D25647F8E7F1E6041BCF73E1DEF4057DD44632AD13437157D062D1E`.
+4. Se superpusieron únicamente `Main`, `Procesados`, `Web/Mantenimiento` y
+   `Web/NotasGemini`, conservando los demás archivos remotos.
+5. Se publicaron 21 archivos a las 15:59:55, hora de Lima.
+6. `MantenimientoWeb` se actualizó a la versión 10.
+7. Una descarga independiente confirmó `Descargar archivo`,
+   `obtenerSiguienteSecuenciaActa`, `urlDescarga`, 21 archivos y el mismo hash
+   de `Inicializar.js`.
+8. El límite de herramientas impidió temporalmente registrar el despliegue y
+   crear el commit; los cambios locales se conservaron.
+
+# Cambio 0056
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud y diagnóstico
+
+> Corregir el HTTP 403 al usar `Descargar archivo`.
+
+El enlace directo de Drive fue redirigido con `authuser=0`, correspondiente a
+otra sesión de Google sin acceso al DOCX. Se descartó incluir el correo activo
+en la URL porque lo expondría en historial y referencias.
+
+## Solución
+
+1. Después de generar, el servidor guarda durante diez minutos una asociación
+   entre un UUID aleatorio y el ID del DOCX mediante `CacheService`.
+2. La respuesta web devuelve únicamente `tokenDescarga`.
+3. El botón envía el token a `obtenerArchivoActaParaDescarga`.
+4. El servidor vuelve a validar autorización, token, papelera, MIME DOCX y un
+   tamaño máximo de 10 MB.
+5. El contenido se devuelve en Base64 y el navegador crea la descarga local.
+6. Después de una entrega correcta, el token se elimina y no puede reutilizarse.
+
+## Archivos modificados
+
+- AppsScript/Main.gs
+- AppsScript/Procesados.gs
+- AppsScript/Web/Mantenimiento.gs
+- AppsScript/Web/NotasGemini.html
+- Pruebas/MainGeneracionManual.test.js
+- Pruebas/Mantenimiento.test.js
+- Pruebas/ProcesadosDisponibilidad.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Flujo_Procesamiento.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pendientes
+
+- Probar desde el navegador una descarga real del DOCX mediante la versión 11.
+
+## Pruebas y despliegue
+
+1. Las trece pruebas Node, la sintaxis de todos los `.gs` y
+   `git diff --check` finalizaron correctamente.
+2. Se confirmó la ausencia local de `drive.google.com/uc`, `authuser` y
+   `urlDescarga`.
+3. Se descargaron los 21 archivos remotos y se verificó `Inicializar.js` antes
+   de superponer cambios.
+4. Se superpusieron solo `Main`, `Procesados`, `Web/Mantenimiento` y
+   `Web/NotasGemini`; sus hashes coincidieron con las fuentes locales probadas.
+5. Se publicaron 21 archivos a las 16:14:48, hora de Lima.
+6. `MantenimientoWeb` se actualizó a la versión 11.
+7. Una descarga independiente confirmó la descarga por token, ausencia del
+   enlace directo, 21 archivos y el SHA-256 histórico de `Inicializar.js`.
+
+## URL vigente
+
+`https://script.google.com/macros/s/AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA/exec?vista=notas`

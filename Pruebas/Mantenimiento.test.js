@@ -13,6 +13,7 @@ let bloqueoDisponible = true;
 let bloqueoLiberado = false;
 const auditoria = [];
 const generaciones = [];
+const cacheDescargas = new Map();
 const archivosNotas = [];
 for (let indice = 1; indice <= 12; indice += 1) {
   archivosNotas.push({
@@ -62,7 +63,29 @@ const sandbox = {
           }
         })
       };
+    },
+    getFileById: (id) => {
+      assert.strictEqual(id, 'archivo-docx');
+      return {
+        isTrashed: () => false,
+        getMimeType: () =>
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        getSize: () => 9,
+        getName: () => '03.08.2026-035-Daily.docx',
+        getBlob: () => ({ getBytes: () => [99, 111, 110, 116] })
+      };
     }
+  },
+  CacheService: {
+    getScriptCache: () => ({
+      put: (clave, valor) => cacheDescargas.set(clave, valor),
+      get: (clave) => cacheDescargas.get(clave) || null,
+      remove: (clave) => cacheDescargas.delete(clave)
+    })
+  },
+  Utilities: {
+    getUuid: () => 'token-descarga-12345',
+    base64Encode: () => 'Y29udA=='
   },
   LockService: {
     getScriptLock: () => ({
@@ -104,11 +127,20 @@ const sandbox = {
       error: null
     };
   },
+  proponerCorrelativoDisponible: (repositorio, correlativo) => ({
+    exito: true,
+    datos: { estado: 'PENDIENTE', correlativo: correlativo },
+    error: null
+  }),
   ejecutarGeneracionActaSeleccionada: (parametros) => {
     generaciones.push(parametros);
     return {
       exito: true,
-      datos: { estado: 'PROCESADO', correlativo: parametros.correlativo },
+      datos: {
+        estado: 'PROCESADO',
+        correlativo: parametros.correlativo,
+        idArchivoDocx: 'archivo-docx'
+      },
       error: null
     };
   },
@@ -162,9 +194,23 @@ assert.strictEqual(
 const propuesta = sandbox.obtenerPropuestaSecuenciaNota('nota-12');
 assert.strictEqual(propuesta.exito, true);
 assert.strictEqual(propuesta.datos.correlativoPropuesto, 35);
+
+const generacion = sandbox.generarActaNotaSeleccionada('nota-12', 35);
+assert.strictEqual(generacion.exito, true);
 assert.strictEqual(
-  sandbox.generarActaNotaSeleccionada('nota-12', 35).exito,
-  true
+  generacion.datos.tokenDescarga,
+  'token-descarga-12345'
+);
+const descarga = sandbox.obtenerArchivoActaParaDescarga(
+  generacion.datos.tokenDescarga
+);
+assert.strictEqual(descarga.exito, true);
+assert.strictEqual(descarga.datos.nombre, '03.08.2026-035-Daily.docx');
+assert.strictEqual(descarga.datos.contenidoBase64, 'Y29udA==');
+assert.strictEqual(cacheDescargas.size, 0);
+assert.strictEqual(
+  sandbox.obtenerSiguienteSecuenciaActa(35).datos.correlativoPropuesto,
+  36
 );
 assert.strictEqual(generaciones.length, 1);
 assert.strictEqual(generaciones[0].idDocumentoFuente, 'nota-12');

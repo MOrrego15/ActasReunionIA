@@ -307,7 +307,8 @@ function ejecutarGeneracionActaSeleccionada(parametros) {
         exito: true,
         datos: {
           estado: resultado.estado,
-          correlativo: resultado.correlativo
+          correlativo: resultado.correlativo,
+          idArchivoDocx: resultado.idArchivoDocx
         },
         error: null
       }
@@ -583,13 +584,17 @@ function _mainProcesarDocumento(
         posicion: posicion, correlativo: correlativo },
       false
     );
-    return {
+    const resultadoFinal = {
       posicion: posicion,
       estado: 'PROCESADO',
       etapaFinal: MAIN_ETAPAS.FINALIZADO,
       correlativo: correlativo,
       codigoError: null
     };
+    if (correlativoManual !== undefined) {
+      resultadoFinal.idArchivoDocx = idArchivoDocx;
+    }
+    return resultadoFinal;
   } catch (errorInterno) {
     if (inicioRegistrado && correlativo !== null) {
       _mainPersistirErrorDocumento(
