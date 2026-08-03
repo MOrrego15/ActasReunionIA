@@ -50,6 +50,7 @@ const PROCESADOS_CODIGOS_ERROR = Object.freeze({
   REGISTRO_NO_ENCONTRADO: 'PROCESADOS_REGISTRO_NO_ENCONTRADO',
   DOCUMENTO_EN_PROCESO: 'PROCESADOS_DOCUMENTO_EN_PROCESO',
   DOCUMENTO_YA_PROCESADO: 'PROCESADOS_DOCUMENTO_YA_PROCESADO',
+  CORRELATIVO_YA_UTILIZADO: 'PROCESADOS_CORRELATIVO_YA_UTILIZADO',
   ESTADO_INVALIDO: 'PROCESADOS_ESTADO_INVALIDO',
   EJECUCION_NO_COINCIDE: 'PROCESADOS_EJECUCION_NO_COINCIDE',
   REGISTRO_DUPLICADO: 'PROCESADOS_REGISTRO_DUPLICADO',
@@ -73,6 +74,8 @@ const PROCESADOS_MENSAJES_ERROR = Object.freeze({
     'El documento ya se encuentra en proceso.',
   DOCUMENTO_YA_PROCESADO:
     'El documento ya fue procesado.',
+  CORRELATIVO_YA_UTILIZADO:
+    'El número de secuencia ya fue utilizado por otra acta.',
   ESTADO_INVALIDO:
     'La transición de estado solicitada no es válida.',
   EJECUCION_NO_COINCIDE:
@@ -95,6 +98,7 @@ const PROCESADOS_CAUSAS_REGISTRO = Object.freeze({
   PROCESADOS_REGISTRO_NO_ENCONTRADO: 'sin_registro',
   PROCESADOS_DOCUMENTO_EN_PROCESO: 'en_proceso',
   PROCESADOS_DOCUMENTO_YA_PROCESADO: 'ya_procesado',
+  PROCESADOS_CORRELATIVO_YA_UTILIZADO: 'correlativo_utilizado',
   PROCESADOS_ESTADO_INVALIDO: 'estado',
   PROCESADOS_EJECUCION_NO_COINCIDE: 'ejecucion',
   PROCESADOS_REGISTRO_DUPLICADO: 'duplicado',
@@ -226,6 +230,113 @@ function consultarEstadoProcesamiento(
 
   _procesadosRegistrarResultado(operacion, resultado, contextoRegistro);
   return resultado;
+}
+
+/**
+ * Checks whether a source ID and sequence number are both unused.
+ *
+ * @param {string} repositorioProcesadosId Tracking spreadsheet ID.
+ * @param {string} idDocumentoFuente Selected source document ID.
+ * @param {number} correlativo Proposed act sequence number.
+ * @param {ContextoProcesados=} contexto Optional technical context.
+ * @returns {ResultadoProcesados} Availability or controlled duplicate error.
+ */
+function consultarDisponibilidadGeneracion(
+  repositorioProcesadosId,
+  idDocumentoFuente,
+  correlativo,
+  contexto
+) {
+  const operacion = 'consultarDisponibilidadGeneracion';
+  if (
+    !_procesadosValidarIdentificador(repositorioProcesadosId) ||
+    !_procesadosValidarIdentificador(idDocumentoFuente) ||
+    !_procesadosValidarCorrelativo(correlativo) ||
+    !_procesadosValidarContexto(contexto, false)
+  ) {
+    return _procesadosConstruirResultadoError(
+      PROCESADOS_CODIGOS_ERROR.PARAMETRO_INVALIDO,
+      PROCESADOS_MENSAJES_ERROR.PARAMETRO_INVALIDO
+    );
+  }
+
+  let resultado;
+  try {
+    const acceso = _procesadosPrepararRepositorio(repositorioProcesadosId);
+    resultado = acceso.exito
+      ? _procesadosComprobarDisponibilidad(
+          acceso.hoja, idDocumentoFuente, correlativo
+        )
+      : _procesadosConstruirResultadoError(acceso.codigo, acceso.mensaje);
+  } catch (errorInterno) {
+    resultado = _procesadosConstruirResultadoError(
+      PROCESADOS_CODIGOS_ERROR.ERROR,
+      PROCESADOS_MENSAJES_ERROR.ERROR
+    );
+  }
+  _procesadosRegistrarResultado(
+    operacion, resultado, _procesadosObtenerContextoRegistro(contexto)
+  );
+  return resultado;
+}
+
+function proponerCorrelativoGeneracion(
+  repositorioProcesadosId,
+  idDocumentoFuente,
+  correlativoInicial,
+  contexto
+) {
+  if (!_procesadosValidarIdentificador(repositorioProcesadosId) ||
+    !_procesadosValidarIdentificador(idDocumentoFuente) ||
+    !_procesadosValidarCorrelativo(correlativoInicial) ||
+    !_procesadosValidarContexto(contexto, false)) {
+    return _procesadosConstruirResultadoError(
+      PROCESADOS_CODIGOS_ERROR.PARAMETRO_INVALIDO,
+      PROCESADOS_MENSAJES_ERROR.PARAMETRO_INVALIDO
+    );
+  }
+  try {
+    const acceso = _procesadosPrepararRepositorio(repositorioProcesadosId);
+    if (!acceso.exito) {
+      return _procesadosConstruirResultadoError(acceso.codigo, acceso.mensaje);
+    }
+    const fuente = _procesadosBuscarRegistro(
+      acceso.hoja, idDocumentoFuente
+    );
+    if (!fuente.exito) {
+      return _procesadosConstruirResultadoError(fuente.codigo, fuente.mensaje);
+    }
+    if (fuente.registro !== null) {
+      return _procesadosConstruirResultadoError(
+        PROCESADOS_CODIGOS_ERROR.DOCUMENTO_YA_PROCESADO,
+        'La nota seleccionada ya fue registrada anteriormente.'
+      );
+    }
+    const listado = _procesadosListarCorrelativos(acceso.hoja);
+    if (!listado.exito) {
+      return _procesadosConstruirResultadoError(
+        listado.codigo, listado.mensaje
+      );
+    }
+    let candidato = correlativoInicial;
+    while (candidato <= 999999 && listado.correlativos[candidato] === true) {
+      candidato += 1;
+    }
+    if (candidato <= 999999) {
+      return _procesadosConstruirResultadoExitoso(
+        PROCESADOS_ESTADOS.PENDIENTE, candidato
+      );
+    }
+    return _procesadosConstruirResultadoError(
+      PROCESADOS_CODIGOS_ERROR.CORRELATIVO_YA_UTILIZADO,
+      'No existe un número de secuencia disponible.'
+    );
+  } catch (errorInterno) {
+    return _procesadosConstruirResultadoError(
+      PROCESADOS_CODIGOS_ERROR.ERROR,
+      PROCESADOS_MENSAJES_ERROR.ERROR
+    );
+  }
 }
 
 /**
@@ -708,6 +819,112 @@ function _procesadosBuscarRegistro(hoja, idDocumentoFuente) {
   };
 }
 
+function _procesadosBuscarRegistroPorCorrelativo(hoja, correlativo) {
+  let filas;
+  try {
+    const ultimaFila = hoja.getLastRow();
+    filas = ultimaFila <= 1
+      ? []
+      : hoja.getRange(
+          2, 1, ultimaFila - 1, PROCESADOS_COLUMNAS.length
+        ).getValues();
+  } catch (errorLectura) {
+    return {
+      exito: false, registro: null,
+      codigo: PROCESADOS_CODIGOS_ERROR.PERSISTENCIA_ERROR,
+      mensaje: PROCESADOS_MENSAJES_ERROR.PERSISTENCIA_ERROR
+    };
+  }
+  const coincidencias = filas.filter(function (fila) {
+    return fila[3] === correlativo;
+  });
+  if (coincidencias.length > 1) {
+    return {
+      exito: false, registro: null,
+      codigo: PROCESADOS_CODIGOS_ERROR.REGISTRO_DUPLICADO,
+      mensaje: PROCESADOS_MENSAJES_ERROR.REGISTRO_DUPLICADO
+    };
+  }
+  if (coincidencias.length === 0) {
+    return { exito: true, registro: null, codigo: null, mensaje: null };
+  }
+  const registro = _procesadosConstruirRegistroDesdeFila(coincidencias[0]);
+  return _procesadosValidarRegistro(registro)
+    ? { exito: true, registro: registro, codigo: null, mensaje: null }
+    : {
+        exito: false, registro: null,
+        codigo: PROCESADOS_CODIGOS_ERROR.REGISTRO_CORRUPTO,
+        mensaje: PROCESADOS_MENSAJES_ERROR.REGISTRO_CORRUPTO
+      };
+}
+
+function _procesadosListarCorrelativos(hoja) {
+  try {
+    const ultimaFila = hoja.getLastRow();
+    const filas = ultimaFila <= 1
+      ? []
+      : hoja.getRange(
+          2, 1, ultimaFila - 1, PROCESADOS_COLUMNAS.length
+        ).getValues();
+    const correlativos = {};
+    for (let indice = 0; indice < filas.length; indice += 1) {
+      const registro = _procesadosConstruirRegistroDesdeFila(filas[indice]);
+      if (!_procesadosValidarRegistro(registro) ||
+        correlativos[registro.correlativo] === true) {
+        return {
+          exito: false, correlativos: null,
+          codigo: PROCESADOS_CODIGOS_ERROR.REGISTRO_CORRUPTO,
+          mensaje: PROCESADOS_MENSAJES_ERROR.REGISTRO_CORRUPTO
+        };
+      }
+      correlativos[registro.correlativo] = true;
+    }
+    return {
+      exito: true, correlativos: correlativos,
+      codigo: null, mensaje: null
+    };
+  } catch (errorLectura) {
+    return {
+      exito: false, correlativos: null,
+      codigo: PROCESADOS_CODIGOS_ERROR.PERSISTENCIA_ERROR,
+      mensaje: PROCESADOS_MENSAJES_ERROR.PERSISTENCIA_ERROR
+    };
+  }
+}
+
+function _procesadosComprobarDisponibilidad(
+  hoja,
+  idDocumentoFuente,
+  correlativo
+) {
+  const fuente = _procesadosBuscarRegistro(hoja, idDocumentoFuente);
+  if (!fuente.exito) {
+    return _procesadosConstruirResultadoError(fuente.codigo, fuente.mensaje);
+  }
+  if (fuente.registro !== null) {
+    return _procesadosConstruirResultadoError(
+      PROCESADOS_CODIGOS_ERROR.DOCUMENTO_YA_PROCESADO,
+      'La nota seleccionada ya fue registrada anteriormente.'
+    );
+  }
+  const secuencia = _procesadosBuscarRegistroPorCorrelativo(
+    hoja, correlativo
+  );
+  if (!secuencia.exito) {
+    return _procesadosConstruirResultadoError(
+      secuencia.codigo, secuencia.mensaje
+    );
+  }
+  return secuencia.registro === null
+    ? _procesadosConstruirResultadoExitoso(
+        PROCESADOS_ESTADOS.PENDIENTE, null
+      )
+    : _procesadosConstruirResultadoError(
+        PROCESADOS_CODIGOS_ERROR.CORRELATIVO_YA_UTILIZADO,
+        PROCESADOS_MENSAJES_ERROR.CORRELATIVO_YA_UTILIZADO
+      );
+}
+
 /**
  * Convierte una fila de diez columnas a un registro interno.
  *
@@ -886,6 +1103,15 @@ function _procesadosRegistrarInicioInterno(
           PROCESADOS_CODIGOS_ERROR.ESTADO_INVALIDO,
           PROCESADOS_MENSAJES_ERROR.ESTADO_INVALIDO
         );
+  }
+
+  const disponibilidad = _procesadosComprobarDisponibilidad(
+    acceso.hoja,
+    datos.idDocumentoFuente,
+    datos.correlativo
+  );
+  if (!disponibilidad.exito) {
+    return disponibilidad;
   }
 
   const fecha = new Date().toISOString();

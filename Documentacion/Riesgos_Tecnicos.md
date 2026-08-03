@@ -129,3 +129,11 @@ metadatos institucionales si el control de acceso fallara. La mitigación es
 denegar por defecto, reutilizar `MANTENIMIENTO_CORREOS_AUTORIZADOS`, ejecutar
 con la identidad del usuario y devolver únicamente diez resultados. La vista no
 lee ni muestra el contenido de las reuniones.
+
+## 9. Concurrencia entre correlativos automáticos y manuales
+
+Una generación manual podría coincidir con un correlativo reservado por el
+flujo automático entre su reserva y su registro. La hoja `Procesados` aplica una
+restricción de unicidad bajo `ScriptLock`: solo una ejecución puede reclamar el
+número. La otra finaliza con error controlado. El correlativo automático ya
+reservado no se revierte, conforme a la política vigente de no reutilización.

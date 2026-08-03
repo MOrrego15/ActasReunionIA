@@ -187,6 +187,13 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Motivo:** Permitir que el usuario identifique una nota disponible por su fecha y hora sin inspeccionar manualmente la carpeta ni depender del registro de procesados.
 - **Consecuencia:** Se excluyen carpetas anidadas, archivos no Google Docs y elementos en la papelera. Los empates se ordenan determinísticamente por nombre e identificador. La consulta conserva la lista de correos autorizados y exige acceso de lectura a la carpeta para la cuenta ejecutora.
 
+## DA-027: Generación manual dirigida sin actualizar el correlativo global
+
+- **Estado:** Aceptada.
+- **Decisión:** La vista de notas permitirá generar únicamente la nota seleccionada con un correlativo editable, entero y mayor que cero. El valor propuesto será informativo y la operación manual no modificará `ACTAS_ULTIMO_CORRELATIVO`. Antes de generar se comprobarán en la hoja `Procesados` de `HojaSeguimiento.gsheet` tanto el ID fuente como el correlativo; la reclamación repetirá ambas comprobaciones bajo bloqueo.
+- **Motivo:** Permitir una generación explícita desde la interfaz sin alterar la numeración automática y sin crear actas duplicadas.
+- **Consecuencia:** Una nota con cualquier registro previo o un correlativo asociado a otra fila se rechazan con un mensaje controlado. El flujo automático mantiene su reserva habitual; ambos flujos comparten la restricción atómica de unicidad del repositorio.
+
 ## Decisiones pendientes
 
 1. Criterio para identificar documentos como notas válidas de Gemini.

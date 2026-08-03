@@ -220,8 +220,112 @@ function ejecutarGeneracionActas(parametros) {
   return resultado;
 }
 
-function _mainProcesarDocumento(documento, posicion, configuracion, contexto) {
-  let correlativo = null;
+/**
+ * Generates exactly one selected source using a manual sequence number.
+ * The persistent automatic sequence property is not read or updated.
+ *
+ * @param {{idDocumentoFuente: string, correlativo: number}} parametros Input.
+ * @returns {{exito: boolean, datos: (Object|null), error: (Object|null)}}
+ */
+function ejecutarGeneracionActaSeleccionada(parametros) {
+  if (!esObjetoPlano(parametros) ||
+    Object.keys(parametros).length !== 2 ||
+    !esCadenaNoVacia(parametros.idDocumentoFuente) ||
+    !Number.isSafeInteger(parametros.correlativo) ||
+    parametros.correlativo <= 0 || parametros.correlativo > 999999) {
+    return {
+      exito: false, datos: null,
+      error: {
+        codigo: MAIN_CODIGOS_ERROR.PARAMETRO_INVALIDO,
+        mensaje: 'El ID y el número de secuencia no son válidos.'
+      }
+    };
+  }
+  let contexto;
+  let configuracion;
+  try {
+    contexto = Object.freeze({ idEjecucion: Utilities.getUuid() });
+    configuracion = obtenerConfiguracion();
+  } catch (errorInicializacion) {
+    return {
+      exito: false, datos: null,
+      error: {
+        codigo: MAIN_CODIGOS_ERROR.CONFIGURACION_INVALIDA,
+        mensaje: MAIN_MENSAJES_ERROR.CONFIGURACION_INVALIDA
+      }
+    };
+  }
+  if (!_mainValidarConfiguracion(configuracion)) {
+    return {
+      exito: false, datos: null,
+      error: {
+        codigo: MAIN_CODIGOS_ERROR.CONFIGURACION_INVALIDA,
+        mensaje: MAIN_MENSAJES_ERROR.CONFIGURACION_INVALIDA
+      }
+    };
+  }
+  const fuentes = obtenerDocumentosFuente(
+    configuracion.gemini.carpetaNotasId, contexto
+  );
+  if (!_mainResultadoExitoso(fuentes) || !fuentes.datos ||
+    !Array.isArray(fuentes.datos.documentos)) {
+    return {
+      exito: false, datos: null,
+      error: {
+        codigo: MAIN_CODIGOS_ERROR.FUENTES_ERROR,
+        mensaje: MAIN_MENSAJES_ERROR.FUENTES_ERROR
+      }
+    };
+  }
+  const documento = fuentes.datos.documentos.find(function (elemento) {
+    return elemento.idDocumentoFuente === parametros.idDocumentoFuente;
+  });
+  if (!documento || !_mainValidarDescriptor(documento)) {
+    return {
+      exito: false, datos: null,
+      error: {
+        codigo: MAIN_CODIGOS_ERROR.FUENTES_ERROR,
+        mensaje: 'La nota seleccionada no está disponible en la carpeta.'
+      }
+    };
+  }
+  const disponibilidad = consultarDisponibilidadGeneracion(
+    configuracion.procesados.repositorioId,
+    parametros.idDocumentoFuente,
+    parametros.correlativo,
+    contexto
+  );
+  if (!_mainResultadoExitoso(disponibilidad)) return disponibilidad;
+
+  const resultado = _mainProcesarDocumento(
+    documento, 1, configuracion, contexto, parametros.correlativo
+  );
+  return resultado.estado === 'PROCESADO'
+    ? {
+        exito: true,
+        datos: {
+          estado: resultado.estado,
+          correlativo: resultado.correlativo
+        },
+        error: null
+      }
+    : {
+        exito: false, datos: null,
+        error: {
+          codigo: resultado.codigoError || MAIN_CODIGOS_ERROR.ERROR,
+          mensaje: 'No fue posible generar el acta seleccionada.'
+        }
+      };
+}
+
+function _mainProcesarDocumento(
+  documento,
+  posicion,
+  configuracion,
+  contexto,
+  correlativoManual
+) {
+  let correlativo = correlativoManual === undefined ? null : correlativoManual;
   let idDocumentoGoogle;
   let idArchivoDocx;
   let inicioRegistrado = false;
@@ -364,16 +468,18 @@ function _mainProcesarDocumento(documento, posicion, configuracion, contexto) {
       );
     }
 
-    const reserva = reservarSiguienteCorrelativo(contexto);
-    if (!_mainResultadoExitoso(reserva) || !reserva.datos ||
-      !Number.isSafeInteger(reserva.datos.correlativo) ||
-      reserva.datos.correlativo <= 0) {
-      return _mainResultadoDesdeModulo(
-        posicion, MAIN_ETAPAS.CORRELATIVO, correlativo, reserva,
-        MAIN_CODIGOS_ERROR.CORRELATIVO_ERROR
-      );
+    if (correlativoManual === undefined) {
+      const reserva = reservarSiguienteCorrelativo(contexto);
+      if (!_mainResultadoExitoso(reserva) || !reserva.datos ||
+        !Number.isSafeInteger(reserva.datos.correlativo) ||
+        reserva.datos.correlativo <= 0) {
+        return _mainResultadoDesdeModulo(
+          posicion, MAIN_ETAPAS.CORRELATIVO, correlativo, reserva,
+          MAIN_CODIGOS_ERROR.CORRELATIVO_ERROR
+        );
+      }
+      correlativo = reserva.datos.correlativo;
     }
-    correlativo = reserva.datos.correlativo;
 
     const inicio = registrarInicioProcesamiento(
       configuracion.procesados.repositorioId,

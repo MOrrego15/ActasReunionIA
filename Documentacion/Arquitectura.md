@@ -595,3 +595,17 @@ de una fila expone el identificador estable de Drive y permite copiarlo. La
 autorización reutiliza `MANTENIMIENTO_CORREOS_AUTORIZADOS`; además, como la
 aplicación se ejecuta con la identidad del usuario, esa cuenta debe poder leer
 la carpeta configurada.
+
+### 12.8 Generación manual desde la vista de notas
+
+La selección de una nota parte del siguiente correlativo configurado y avanza
+hasta el primer número ausente de `Procesados`; el usuario autorizado puede
+editarlo. La generación manual procesa exclusivamente
+el ID seleccionado y usa el valor indicado sin leer, reservar ni actualizar
+`ACTAS_ULTIMO_CORRELATIVO`.
+
+Antes del procesamiento, `HojaSeguimiento.gsheet` se consulta mediante el ID
+configurado del repositorio. Tanto el ID fuente como el correlativo deben estar
+ausentes de la hoja `Procesados`. La misma comprobación se repite bajo
+`ScriptLock` al registrar `EN_PROCESO`, evitando duplicados concurrentes. Solo
+un entero entre 1 y 999999 es aceptado.

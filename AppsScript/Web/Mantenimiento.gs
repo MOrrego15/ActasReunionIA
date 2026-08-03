@@ -94,6 +94,74 @@ function obtenerNotasGeminiDisponibles() {
   }
 }
 
+function obtenerPropuestaSecuenciaNota(idDocumentoFuente) {
+  if (typeof idDocumentoFuente !== 'string' ||
+    idDocumentoFuente.trim().length === 0) {
+    return _mantenimientoResultadoError(
+      'MANTENIMIENTO_NOTA_INVALIDA',
+      'Selecciona una nota válida.'
+    );
+  }
+  const estado = obtenerEstadoMantenimiento();
+  if (!estado.exito) return estado;
+  if (!Number.isSafeInteger(estado.datos.siguienteCorrelativo) ||
+    estado.datos.siguienteCorrelativo <= 0) {
+    return _mantenimientoResultadoError(
+      'MANTENIMIENTO_SECUENCIA_NO_DISPONIBLE',
+      'No existe un número de secuencia disponible.'
+    );
+  }
+  try {
+    const configuracion = obtenerConfiguracion();
+    const propuesta = proponerCorrelativoGeneracion(
+      configuracion.procesados.repositorioId,
+      idDocumentoFuente.trim(),
+      estado.datos.siguienteCorrelativo
+    );
+    return propuesta.exito
+      ? {
+          exito: true,
+          datos: { correlativoPropuesto: propuesta.datos.correlativo },
+          error: null
+        }
+      : propuesta;
+  } catch (errorPropuesta) {
+    return _mantenimientoResultadoError(
+      'MANTENIMIENTO_PROPUESTA_ERROR',
+      'No fue posible obtener una secuencia disponible.'
+    );
+  }
+}
+
+function generarActaNotaSeleccionada(idDocumentoFuente, correlativo) {
+  if (!_mantenimientoEsUsuarioAutorizado()) {
+    return _mantenimientoResultadoError(
+      'MANTENIMIENTO_NO_AUTORIZADO',
+      'La cuenta activa no está autorizada.'
+    );
+  }
+  if (typeof idDocumentoFuente !== 'string' ||
+    idDocumentoFuente.trim().length === 0 ||
+    !Number.isSafeInteger(correlativo) || correlativo <= 0 ||
+    correlativo > MANTENIMIENTO_LIMITE_CORRELATIVO) {
+    return _mantenimientoResultadoError(
+      'MANTENIMIENTO_GENERACION_INVALIDA',
+      'Selecciona una nota e ingresa un número entero mayor que cero.'
+    );
+  }
+  try {
+    return ejecutarGeneracionActaSeleccionada({
+      idDocumentoFuente: idDocumentoFuente.trim(),
+      correlativo: correlativo
+    });
+  } catch (errorGeneracion) {
+    return _mantenimientoResultadoError(
+      'MANTENIMIENTO_GENERACION_ERROR',
+      'No fue posible generar el acta seleccionada.'
+    );
+  }
+}
+
 function _mantenimientoConvertirFechaIso(fecha) {
   try {
     const valor = fecha.toISOString();

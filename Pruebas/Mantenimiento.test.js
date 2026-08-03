@@ -12,6 +12,7 @@ let correoActivo = 'ADMINISTRADOR@example.com';
 let bloqueoDisponible = true;
 let bloqueoLiberado = false;
 const auditoria = [];
+const generaciones = [];
 const archivosNotas = [];
 for (let indice = 1; indice <= 12; indice += 1) {
   archivosNotas.push({
@@ -91,6 +92,26 @@ const sandbox = {
     })
   },
   registrarInfo: (...argumentos) => auditoria.push(argumentos),
+  obtenerConfiguracion: () => ({
+    procesados: { repositorioId: 'hoja-seguimiento' }
+  }),
+  proponerCorrelativoGeneracion: (repositorio, id, correlativo) => {
+    assert.strictEqual(repositorio, 'hoja-seguimiento');
+    assert.strictEqual(id, 'nota-12');
+    return {
+      exito: true,
+      datos: { estado: 'PENDIENTE', correlativo: correlativo },
+      error: null
+    };
+  },
+  ejecutarGeneracionActaSeleccionada: (parametros) => {
+    generaciones.push(parametros);
+    return {
+      exito: true,
+      datos: { estado: 'PROCESADO', correlativo: parametros.correlativo },
+      error: null
+    };
+  },
   esObjetoPlano: (valor) => valor !== null && typeof valor === 'object' &&
     !Array.isArray(valor)
 };
@@ -136,6 +157,22 @@ assert.strictEqual(
 assert.strictEqual(
   listadoNotas.datos.notas.some((nota) => nota.id === 'nota-papelera'),
   false
+);
+
+const propuesta = sandbox.obtenerPropuestaSecuenciaNota('nota-12');
+assert.strictEqual(propuesta.exito, true);
+assert.strictEqual(propuesta.datos.correlativoPropuesto, 35);
+assert.strictEqual(
+  sandbox.generarActaNotaSeleccionada('nota-12', 35).exito,
+  true
+);
+assert.strictEqual(generaciones.length, 1);
+assert.strictEqual(generaciones[0].idDocumentoFuente, 'nota-12');
+assert.strictEqual(generaciones[0].correlativo, 35);
+assert.strictEqual(valores.get('ACTAS_ULTIMO_CORRELATIVO'), '34');
+assert.strictEqual(
+  sandbox.generarActaNotaSeleccionada('nota-12', 0).error.codigo,
+  'MANTENIMIENTO_GENERACION_INVALIDA'
 );
 
 const estado = sandbox.obtenerEstadoMantenimiento();

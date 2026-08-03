@@ -3228,6 +3228,70 @@ El comando `clasp open-web-app` reproducía la misma URL no operativa.
   para abrir la aplicación.
 - Probar lectura y actualización controlada del correlativo desde la página.
 
+# Cambio 0045
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Al seleccionar una nota, mostrar su ID, una propuesta editable de número de
+> secuencia y un botón de generación de acta. Validar un valor mayor que cero,
+> no actualizar el correlativo global y comprobar en `HojaSeguimiento.gsheet`
+> que ni el ID ni el correlativo hayan sido generados anteriormente.
+
+## Respuesta de Codex
+
+Se implementó un flujo manual dirigido que procesa únicamente la nota elegida.
+La propuesta usa el siguiente correlativo como referencia, admite edición entre
+1 y 999999 y nunca modifica `ACTAS_ULTIMO_CORRELATIVO`. La hoja `Procesados` es
+la autoridad para rechazar IDs registrados y correlativos usados.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora y se revisaron `Main.gs`,
+   `Correlativo.gs` y `Procesados.gs`.
+2. Se definió un contrato independiente para la generación manual.
+3. Se agregó la consulta de disponibilidad por ID y correlativo.
+4. La validación se repite bajo `ScriptLock` durante la reclamación atómica.
+5. Se adaptó el procesador para aceptar un correlativo manual sin invocar la
+   reserva automática.
+6. Se incorporaron el campo editable, la validación mayor que cero, el botón y
+   los mensajes controlados en la interfaz.
+7. Se añadieron pruebas para la interfaz, los duplicados del repositorio y la
+   ausencia de reserva automática.
+8. Se actualizaron arquitectura, flujo, decisiones y riesgos técnicos.
+9. La propuesta se reforzó para omitir correlativos ya usados manualmente en
+   `HojaSeguimiento.gsheet` y advertir desde la selección si el ID ya existe.
+
+## Archivos modificados
+
+- AppsScript/Main.gs
+- AppsScript/Procesados.gs
+- AppsScript/Web/Mantenimiento.gs
+- AppsScript/Web/NotasGemini.html
+- Pruebas/Mantenimiento.test.js
+- Pruebas/MainGeneracionManual.test.js
+- Pruebas/ProcesadosDisponibilidad.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Flujo_Procesamiento.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas iniciales
+
+- `node Pruebas/Mantenimiento.test.js`
+- `node Pruebas/ProcesadosDisponibilidad.test.js`
+- `node Pruebas/MainGeneracionManual.test.js`
+- Validación sintáctica de todos los archivos `.gs`.
+
+## Pendientes
+
+- Ejecutar la regresión completa.
+- Desplegar, crear commit y publicar cuando el usuario lo autorice.
+- Validar la generación con una nota de prueba no registrada y un correlativo
+  libre en `HojaSeguimiento.gsheet`.
+
 # Cambio 0042
 Fecha: 2026-08-03
 Autor: Codex
@@ -3436,3 +3500,51 @@ su URL. La implementación `MantenimientoWeb` pasó de la versión 2 a la versi�
 - Confirmar que `MANTENIMIENTO_CORREOS_AUTORIZADOS` contiene la cuenta usada
   para abrir la aplicación.
 - Probar lectura y actualización controlada del correlativo desde la página.
+
+# Cambio 0046
+Fecha: 2026-08-03
+Autor: Codex
+
+## Registro complementario del cambio 0045
+
+La regresión completa ejecutó once pruebas y todas finalizaron correctamente.
+También se validó la sintaxis de todos los archivos `.gs` y
+`git diff --check`. La propuesta de secuencia consulta una sola vez los
+correlativos de `HojaSeguimiento.gsheet` y avanza hasta el primer número libre.
+
+## Estado
+
+- Implementación funcional y documentación terminadas localmente.
+- No se realizó despliegue, commit ni push porque aún no fueron solicitados para
+  este cambio.
+- `.clasp.json` continúa local y sin versionar.
+
+# Cambio 0047
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Desplegar la generación manual de actas desde la vista de notas.
+
+## Despliegue y verificación
+
+1. Se ejecutaron las once pruebas Node y todas finalizaron correctamente.
+2. Se validó la sintaxis de todos los archivos `.gs` y `git diff --check`.
+3. `clasp push --force` publicó 19 archivos a las 13:04:21, hora de Lima.
+4. La implementación `MantenimientoWeb` se actualizó a la versión 7 sin cambiar
+   su identificador ni su URL.
+5. Una descarga independiente confirmó en el proyecto remoto:
+   - `ejecutarGeneracionActaSeleccionada`;
+   - `consultarDisponibilidadGeneracion`;
+   - `proponerCorrelativoGeneracion`;
+   - `generarActaNotaSeleccionada`;
+   - el botón visible `Generar acta`.
+6. URL vigente:
+   `https://script.google.com/macros/s/AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA/exec?vista=notas`.
+
+## Pendiente operativo
+
+- Ejecutar una generación controlada con una nota no registrada y un
+  correlativo libre, y verificar el nuevo registro en
+  `HojaSeguimiento.gsheet`.
