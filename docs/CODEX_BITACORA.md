@@ -3645,3 +3645,41 @@ Autor: Codex
 - Configurar las propiedades de prueba y ejecutar
   `probarGeneracionActaManual` con una nota controlada no registrada y un
   correlativo libre.
+
+# Cambio 0050
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Recuperar `Inicializar.js`, archivo remoto que debía conservarse en cada
+> despliegue y permanecer fuera del repositorio Git.
+
+## Diagnóstico
+
+La bitácora confirmó que `Inicializar.js` existía únicamente en Apps Script y
+debía preservarse siempre mediante descarga, superposición y despliegue seguro.
+El archivo no estaba en Git ni en la versión remota vigente después de cargas
+forzadas anteriores.
+
+## Recuperación y despliegue
+
+1. `clasp versions` confirmó ocho versiones históricas disponibles.
+2. Se descargó la versión 1 y se recuperó `Inicializar.js`, de 3,889 bytes.
+3. El SHA-256 recuperado fue
+   `439730DC8D25647F8E7F1E6041BCF73E1DEF4057DD44632AD13437157D062D1E`.
+4. Se descargó por separado la versión vigente con sus 20 archivos.
+5. En una carpeta temporal se incorporó únicamente el archivo histórico a los
+   20 archivos actuales; no se añadió al árbol de Git.
+6. Se publicaron 21 archivos a las 14:58:10, hora de Lima.
+7. La implementación `MantenimientoWeb` se actualizó a la versión 9 sin cambiar
+   su identificador ni URL.
+8. Una descarga independiente confirmó 21 archivos, la función
+   `inicializarPropiedades`, el mismo SHA-256 y la permanencia de
+   `obtenerDocumentoFuentePorId` y `probarGeneracionActaManual`.
+
+## Regla reiterada
+
+`Inicializar.js` debe conservarse en cada despliegue mediante el flujo seguro de
+descargar el proyecto remoto vigente, superponer los cambios autorizados y
+publicar el conjunto completo. Nunca debe incorporarse al repositorio Git.
