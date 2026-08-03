@@ -3228,6 +3228,78 @@ El comando `clasp open-web-app` reproducía la misma URL no operativa.
   para abrir la aplicación.
 - Probar lectura y actualización controlada del correlativo desde la página.
 
+# Cambio 0042
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Crear y desplegar una página que muestre como máximo las diez últimas notas
+> de Gemini disponibles en la ruta configurada, usando la fecha de creación, y
+> que permita seleccionar una nota para devolver su identificador de Drive.
+
+## Respuesta de Codex
+
+Se incorporó a la aplicación web la vista `?vista=notas`. La consulta toma los
+documentos nativos de Google ubicados directamente en
+`CARPETA_NOTAS_GEMINI_ID`, no excluye los ya procesados, descarta elementos en
+la papelera y otros tipos de archivo, ordena por fecha de creación descendente
+y limita el resultado a diez. La interfaz presenta nombre, fecha y hora de Lima,
+permite seleccionar una nota y copiar su ID.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora y la documentación obligatoria.
+2. Se confirmó con el usuario que la fuente es la ruta configurada, el criterio
+   temporal es la fecha de creación y no debe aplicarse el estado de procesado.
+3. Se agregó el listado servidor, la nueva vista y el enlace desde mantenimiento.
+4. Se añadió una alternativa de copiado compatible cuando la API moderna del
+   portapapeles no está disponible.
+5. Se ampliaron las pruebas para validar autorización, ruta web, límite,
+   ordenamiento, tipos de archivo y papelera.
+6. Se actualizaron arquitectura, decisiones, riesgos y estructura del proyecto.
+7. Las nueve pruebas Node, la validación sintáctica de todos los `.gs` y
+   `git diff --check` finalizaron correctamente.
+8. El primer `clasp push` omitió la carga y la implementación versión 4 conservó
+   el contenido anterior; una descarga independiente detectó la ausencia de la
+   nueva vista.
+9. Se ejecutó `clasp push --force` con el conjunto local verificado y se
+   actualizó la implementación existente a la versión 5.
+10. Una segunda descarga independiente confirmó 19 archivos remotos, incluida
+    `Web/NotasGemini.html`, y encontró la función
+    `obtenerNotasGeminiDisponibles()` en el servidor publicado.
+
+## Archivos modificados
+
+- AppsScript/Web/Mantenimiento.gs
+- AppsScript/Web/PaginaMantenimiento.html
+- AppsScript/Web/NotasGemini.html
+- Pruebas/Mantenimiento.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Estructura_Proyecto.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas
+
+- `node Pruebas/Mantenimiento.test.js`
+- Regresión completa de pruebas Node del repositorio.
+- Validación sintáctica de los archivos `.gs`.
+- `git diff --check`.
+
+## Pendientes
+
+- Verificar la vista con los documentos reales de la carpeta configurada.
+
+## Despliegue
+
+- Implementación: versión 5, descripción `MantenimientoWeb`.
+- ID conservado:
+  `AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA`.
+- Vista de notas:
+  `https://script.google.com/macros/s/AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA/exec?vista=notas`.
+
 # Cambio 0041
 Fecha: 2026-08-03
 Autor: Codex

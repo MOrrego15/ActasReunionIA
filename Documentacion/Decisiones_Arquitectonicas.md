@@ -180,6 +180,13 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Motivo:** Permitir una operación administrativa controlada sin editar código ni exponer públicamente la propiedad persistente.
 - **Consecuencia:** El despliegue web debe ejecutarse con identidad verificable, requiere el alcance `userinfo.email`, deniega por defecto cuando no existe una lista autorizada y usa `LockService` para excluir ejecuciones concurrentes.
 
+## DA-026: Consulta web de las últimas notas de Gemini
+
+- **Estado:** Aceptada.
+- **Decisión:** La aplicación web mostrará como máximo los diez documentos nativos de Google más recientes ubicados directamente en la carpeta `CARPETA_NOTAS_GEMINI_ID`, usando la fecha de creación. No filtrará por estado de procesamiento. La selección devolverá el identificador estable de Drive.
+- **Motivo:** Permitir que el usuario identifique una nota disponible por su fecha y hora sin inspeccionar manualmente la carpeta ni depender del registro de procesados.
+- **Consecuencia:** Se excluyen carpetas anidadas, archivos no Google Docs y elementos en la papelera. Los empates se ordenan determinísticamente por nombre e identificador. La consulta conserva la lista de correos autorizados y exige acceso de lectura a la carpeta para la cuenta ejecutora.
+
 ## Decisiones pendientes
 
 1. Criterio para identificar documentos como notas válidas de Gemini.

@@ -120,3 +120,12 @@ Estos supuestos deberán validarse; no constituyen requisitos confirmados.
 - ambientes de desarrollo, prueba y producción;
 - responsables de la plantilla y de la aprobación final;
 - objetivos de disponibilidad y soporte.
+
+## 8. Exposición de metadatos en la consulta web
+
+La vista de notas presenta nombre, fecha de creación e identificador de Drive,
+por lo que un enlace compartido con una cuenta no autorizada podría revelar
+metadatos institucionales si el control de acceso fallara. La mitigación es
+denegar por defecto, reutilizar `MANTENIMIENTO_CORREOS_AUTORIZADOS`, ejecutar
+con la identidad del usuario y devolver únicamente diez resultados. La vista no
+lee ni muestra el contenido de las reuniones.

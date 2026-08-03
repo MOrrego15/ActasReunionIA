@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      :root { color-scheme: light; font-family: Arial, sans-serif; }
+      body { margin: 0; background: #f4f6f9; color: #172033; }
+      main { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+      section { background: #fff; border-radius: 12px; padding: 28px;
+        box-shadow: 0 8px 28px rgba(16, 42, 84, .12); }
+      h1 { margin: 0 0 8px; color: #123b73; font-size: 26px; }
+      .ayuda { color: #536178; margin: 0 0 22px; line-height: 1.5; }
+      .acciones { display: flex; gap: 10px; margin-bottom: 18px; }
+      button, a.boton { padding: 10px 14px; border: 0; border-radius: 6px;
+        background: #1558a6; color: #fff; font-size: 14px; font-weight: 700;
+        cursor: pointer; text-decoration: none; }
+      button.secundario, a.secundario { background: #e9eff7; color: #123b73; }
+      button:disabled { opacity: .55; cursor: wait; }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { padding: 12px 10px; border-bottom: 1px solid #d9e1ec;
+        text-align: left; vertical-align: middle; }
+      th { background: #eef4fb; color: #123b73; }
+      td.fecha { white-space: nowrap; }
+      .seleccion { margin-top: 20px; padding: 14px; border-radius: 8px;
+        background: #eef4fb; border: 1px solid #cbdcf0; }
+      .seleccion code { display: block; margin: 8px 0 12px; word-break: break-all;
+        font-size: 14px; }
+      #mensaje { min-height: 22px; font-weight: 700; }
+      .error { color: #a32121; } .correcto { color: #16733d; }
+      @media (max-width: 680px) {
+        th.nombre, td.nombre { max-width: 210px; overflow-wrap: anywhere; }
+        .acciones { flex-wrap: wrap; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section>
+        <h1>Notas de Gemini</h1>
+        <p class="ayuda">Se muestran como máximo las diez notas más recientes
+          encontradas en la carpeta configurada, ordenadas por fecha de creación.</p>
+        <div class="acciones">
+          <button id="actualizar" type="button">Actualizar lista</button>
+          <a class="boton secundario" href="?">Mantenimiento del correlativo</a>
+        </div>
+        <p id="mensaje" role="status" aria-live="polite"></p>
+        <table aria-label="Últimas notas de Gemini">
+          <thead><tr><th class="nombre">Nota</th><th>Fecha y hora</th>
+            <th>Acción</th></tr></thead>
+          <tbody id="notas"></tbody>
+        </table>
+        <div class="seleccion" id="seleccion" hidden>
+          <strong>ID seleccionado</strong>
+          <code id="idSeleccionado"></code>
+          <button id="copiar" type="button">Copiar ID</button>
+        </div>
+      </section>
+    </main>
+    <script>
+      const cuerpoNotas = document.getElementById('notas');
+      const mensaje = document.getElementById('mensaje');
+      const actualizar = document.getElementById('actualizar');
+      const seleccion = document.getElementById('seleccion');
+      const idSeleccionado = document.getElementById('idSeleccionado');
+
+      function formatearFecha(fechaIso) {
+        return new Intl.DateTimeFormat('es-PE', {
+          dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Lima'
+        }).format(new Date(fechaIso));
+      }
+
+      function seleccionarId(id) {
+        idSeleccionado.textContent = id;
+        seleccion.hidden = false;
+        mensaje.className = 'correcto';
+        mensaje.textContent = 'Nota seleccionada.';
+      }
+
+      function mostrarNotas(respuesta) {
+        actualizar.disabled = false;
+        cuerpoNotas.replaceChildren();
+        seleccion.hidden = true;
+        if (!respuesta || !respuesta.exito) {
+          mensaje.className = 'error';
+          mensaje.textContent = respuesta && respuesta.error
+            ? respuesta.error.mensaje : 'No fue posible obtener las notas.';
+          return;
+        }
+        if (respuesta.datos.notas.length === 0) {
+          mensaje.className = '';
+          mensaje.textContent = 'No se encontraron notas de Gemini.';
+          return;
+        }
+        respuesta.datos.notas.forEach(function (nota) {
+          const fila = document.createElement('tr');
+          const celdaNombre = document.createElement('td');
+          celdaNombre.className = 'nombre';
+          celdaNombre.textContent = nota.nombre;
+          const celdaFecha = document.createElement('td');
+          celdaFecha.className = 'fecha';
+          celdaFecha.textContent = formatearFecha(nota.fechaCreacion);
+          const celdaAccion = document.createElement('td');
+          const boton = document.createElement('button');
+          boton.type = 'button';
+          boton.textContent = 'Seleccionar';
+          boton.addEventListener('click', function () { seleccionarId(nota.id); });
+          celdaAccion.appendChild(boton);
+          fila.append(celdaNombre, celdaFecha, celdaAccion);
+          cuerpoNotas.appendChild(fila);
+        });
+        mensaje.className = '';
+        mensaje.textContent = respuesta.datos.cantidad + ' nota(s) encontrada(s).';
+      }
+
+      function mostrarError() {
+        actualizar.disabled = false;
+        mensaje.className = 'error';
+        mensaje.textContent = 'No fue posible comunicarse con el servidor.';
+      }
+
+      function cargarNotas() {
+        actualizar.disabled = true;
+        mensaje.className = '';
+        mensaje.textContent = 'Consultando notas…';
+        google.script.run.withSuccessHandler(mostrarNotas)
+          .withFailureHandler(mostrarError).obtenerNotasGeminiDisponibles();
+      }
+
+      document.getElementById('copiar').addEventListener('click', function () {
+        const id = idSeleccionado.textContent;
+        const copiar = navigator.clipboard && navigator.clipboard.writeText
+          ? navigator.clipboard.writeText(id)
+          : new Promise(function (resolve, reject) {
+            const auxiliar = document.createElement('textarea');
+            auxiliar.value = id;
+            auxiliar.style.position = 'fixed';
+            auxiliar.style.opacity = '0';
+            document.body.appendChild(auxiliar);
+            auxiliar.select();
+            const copiado = document.execCommand('copy');
+            auxiliar.remove();
+            copiado ? resolve() : reject();
+          });
+        copiar.then(function () {
+          mensaje.className = 'correcto';
+          mensaje.textContent = 'ID copiado al portapapeles.';
+        }, mostrarError);
+      });
+      actualizar.addEventListener('click', cargarNotas);
+      cargarNotas();
+    </script>
+  </body>
+</html>

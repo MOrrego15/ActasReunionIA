@@ -580,3 +580,18 @@ El flujo productivo conserva el procesamiento secuencial de todos los
 candidatos elegibles. Como medida de control operacional, la primera prueba
 real debe utilizar una carpeta fuente que contenga exactamente un documento
 elegible.
+
+### 12.7 Consulta web de notas de Gemini
+
+La aplicación web incorpora una vista administrativa de solo lectura accesible
+mediante `?vista=notas`. El servidor consulta directamente los archivos de la
+carpeta identificada por `CARPETA_NOTAS_GEMINI_ID`, sin consultar el registro de
+procesados. Solo admite documentos nativos de Google que no estén en la
+papelera, los ordena por fecha de creación descendente y devuelve como máximo
+los diez primeros.
+
+La interfaz muestra nombre y fecha/hora en la zona `America/Lima`. La selección
+de una fila expone el identificador estable de Drive y permite copiarlo. La
+autorización reutiliza `MANTENIMIENTO_CORREOS_AUTORIZADOS`; además, como la
+aplicación se ejecuta con la identidad del usuario, esa cuenta debe poder leer
+la carpeta configurada.
