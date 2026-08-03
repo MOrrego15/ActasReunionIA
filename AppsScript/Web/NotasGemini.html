@@ -38,15 +38,17 @@
   <body>
     <main>
       <section>
-        <h1>Notas de Gemini</h1>
-        <p class="ayuda">Se muestran como máximo las diez notas más recientes
-          encontradas en la carpeta configurada, ordenadas por fecha de creación.</p>
+        <h1>Notas de Reuniones por Meet</h1>
+        <p class="ayuda">Se muestran como máximo las diez notas de reunión meet,
+          más recientes encontradas en la carpeta configurada, ordenadas por
+          fecha de creación en orden desendente.</p>
         <div class="acciones">
           <button id="actualizar" type="button">Actualizar lista</button>
-          <a class="boton secundario" href="?">Mantenimiento del correlativo</a>
+          <a class="boton secundario" href="<?= urlAplicacion ?>"
+            target="_top">Mantenimiento del correlativo</a>
         </div>
         <p id="mensaje" role="status" aria-live="polite"></p>
-        <table aria-label="Últimas notas de Gemini">
+        <table aria-label="Últimas notas de reuniones por Meet">
           <thead><tr><th class="nombre">Nota</th><th>Fecha y hora</th>
             <th>Acción</th></tr></thead>
           <tbody id="notas"></tbody>

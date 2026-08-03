@@ -74,11 +74,20 @@ const sandbox = {
       contenido,
       setTitle(titulo) { this.titulo = titulo; return this; }
     }),
-    createTemplateFromFile: (archivo) => ({
-      evaluate: () => ({
-        archivo,
-        setTitle(titulo) { this.titulo = titulo; return this; }
-      })
+    createTemplateFromFile: (archivo) => {
+      const plantilla = {
+        evaluate: () => ({
+          archivo,
+          urlAplicacion: plantilla.urlAplicacion,
+          setTitle(titulo) { this.titulo = titulo; return this; }
+        })
+      };
+      return plantilla;
+    }
+  },
+  ScriptApp: {
+    getService: () => ({
+      getUrl: () => 'https://script.google.com/macros/s/prueba/exec'
     })
   },
   registrarInfo: (...argumentos) => auditoria.push(argumentos),
@@ -103,9 +112,12 @@ assert.deepStrictEqual(manifiesto.webapp, {
 assert.strictEqual(sandbox._mantenimientoEsUsuarioAutorizado(), true);
 assert.strictEqual(sandbox.doGet().archivo, 'Web/PaginaMantenimiento');
 assert.strictEqual(
-  sandbox.doGet({ parameter: { vista: 'notas' } }).archivo,
-  'Web/NotasGemini'
+  sandbox.doGet().urlAplicacion,
+  'https://script.google.com/macros/s/prueba/exec'
 );
+const paginaNotas = sandbox.doGet({ parameter: { vista: 'notas' } });
+assert.strictEqual(paginaNotas.archivo, 'Web/NotasGemini');
+assert.strictEqual(paginaNotas.titulo, 'Notas de Reuniones por Meet');
 
 const listadoNotas = sandbox.obtenerNotasGeminiDisponibles();
 assert.strictEqual(listadoNotas.exito, true);

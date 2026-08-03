@@ -3308,6 +3308,100 @@ que `HEAD` y `origin/main` coincidían y que el bloqueo era obsoleto. Se elimin�
 exclusivamente ese archivo y una nueva consulta confirmó el repositorio
 operativo. `.clasp.json` permanece local y sin versionar de forma intencional.
 
+# Cambio 0043
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Cambiar el título de la vista a `Notas de Reuniones por Meet` y sustituir su
+> descripción por el texto proporcionado.
+
+## Respuesta de Codex
+
+Se actualizó el título visible, el título de la pestaña, la descripción y la
+etiqueta accesible de la tabla para mantener una denominación coherente.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora y se revisó el estado del repositorio.
+2. Se localizaron las cadenas visibles en el servidor y la interfaz HTML.
+3. Se aplicó el texto indicado y se mantuvo intacta la lógica del listado.
+
+## Archivos modificados
+
+- AppsScript/Web/Mantenimiento.gs
+- AppsScript/Web/NotasGemini.html
+- Pruebas/Mantenimiento.test.js
+- docs/CODEX_BITACORA.md
+
+## Pendientes
+
+- Desplegar y publicar el cambio cuando el usuario lo autorice explícitamente.
+
+# Cambio 0044
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Corregir el botón `Mantenimiento del correlativo` porque el enlace hacia la
+> otra vista de la aplicación web no funcionó.
+
+## Diagnóstico
+
+El botón utilizaba el enlace relativo `?`. Dentro del iframe de Google Apps
+Script ese valor puede resolverse contra el contenedor de la interfaz y no
+contra la URL pública de la implementación `/exec`.
+
+## Solución
+
+`doGet` obtiene la URL pública mediante `ScriptApp.getService().getUrl()` y la
+inyecta en ambas plantillas. Los enlaces entre mantenimiento y notas usan ahora
+esa URL absoluta, incluyen el parámetro de vista cuando corresponde y navegan
+en el contexto superior con `target="_top"`.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora y se revisaron los cambios locales.
+2. Se identificaron los dos enlaces relativos entre las vistas.
+3. Se incorporó la URL pública al contrato de la plantilla.
+4. Se corrigieron ambos sentidos de navegación.
+5. Se amplió la prueba del servidor para verificar la URL inyectada.
+
+## Archivos modificados
+
+- AppsScript/Web/Mantenimiento.gs
+- AppsScript/Web/PaginaMantenimiento.html
+- AppsScript/Web/NotasGemini.html
+- Pruebas/Mantenimiento.test.js
+- docs/CODEX_BITACORA.md
+
+## Pendientes
+
+- Desplegar y probar ambos enlaces en la implementación web cuando el usuario
+  lo autorice explícitamente.
+
+## Despliegue y verificación
+
+1. Las nueve pruebas Node, la validación sintáctica de todos los `.gs` y
+   `git diff --check` finalizaron correctamente.
+2. `clasp push --force` publicó los 19 archivos del proyecto a las 12:23:50,
+   hora de Lima.
+3. La implementación `MantenimientoWeb` se actualizó a la versión 6 sin cambiar
+   su identificador ni su URL.
+4. Una descarga independiente confirmó el título
+   `Notas de Reuniones por Meet`, la obtención de la URL mediante
+   `ScriptApp.getService().getUrl()` y los enlaces `target="_top"` en ambas
+   plantillas.
+5. URL de la vista de notas:
+   `https://script.google.com/macros/s/AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA/exec?vista=notas`.
+
+## Pendiente operativo
+
+- Confirmar desde el navegador que ambos botones navegan correctamente con la
+  cuenta autorizada.
+
 # Cambio 0041
 Fecha: 2026-08-03
 Autor: Codex

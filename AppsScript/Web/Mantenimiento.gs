@@ -21,11 +21,14 @@ function doGet(evento) {
   }
   const vistaNotas = evento && evento.parameter &&
     evento.parameter.vista === 'notas';
-  return HtmlService.createTemplateFromFile(
+  const plantilla = HtmlService.createTemplateFromFile(
     vistaNotas ? 'Web/NotasGemini' : 'Web/PaginaMantenimiento'
-  )
-    .evaluate()
-    .setTitle(vistaNotas ? 'Notas de Gemini' : MANTENIMIENTO_TITULO);
+  );
+  plantilla.urlAplicacion = ScriptApp.getService().getUrl();
+  return plantilla.evaluate()
+    .setTitle(
+      vistaNotas ? 'Notas de Reuniones por Meet' : MANTENIMIENTO_TITULO
+    );
 }
 
 /**
