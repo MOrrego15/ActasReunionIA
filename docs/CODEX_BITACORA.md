@@ -3192,3 +3192,38 @@ protege la escritura con el mismo bloqueo global del correlativo.
    `https://script.google.com/macros/s/AKfycbxOvo3M7gVzIDdYsG830HR0hy6F-Hs2W0KRE3z8wqlZhwrntWb224zEQI4xBBBPU-rBDA/exec`.
 7. Una descarga independiente confirmó 19 archivos, `Inicializar.js` y
    coincidencia SHA-256 del manifiesto, el servidor y la interfaz web.
+
+# Cambio 0040
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Corregir el acceso a la aplicación web después de que la URL de la versión 1
+> mostrara que Google Drive no podía abrir el archivo, y confirmar la nueva
+> implementación creada desde la interfaz de Apps Script.
+
+## Diagnóstico
+
+Los archivos estaban publicados, pero la versión 1 creada mediante `clasp`
+quedó como una implementación genérica sin un punto de entrada web accesible.
+El comando `clasp open-web-app` reproducía la misma URL no operativa.
+
+## Solución y verificación
+
+1. Se abrió el proyecto en el editor de Apps Script.
+2. El usuario creó manualmente una nueva implementación de tipo
+   `Aplicación web` con los parámetros previamente autorizados.
+3. Apps Script registró la implementación como versión 2, descripción
+   `MantenimientoWeb` e identificador:
+   `AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA`.
+4. La URL operativa vigente es:
+   `https://script.google.com/macros/s/AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA/exec`.
+5. `clasp --json deployments` confirmó la versión 2 y
+   `clasp open-web-app` reconoció y abrió ese mismo punto de entrada.
+
+## Pendientes
+
+- Confirmar que `MANTENIMIENTO_CORREOS_AUTORIZADOS` contiene la cuenta usada
+  para abrir la aplicación.
+- Probar lectura y actualización controlada del correlativo desde la página.
