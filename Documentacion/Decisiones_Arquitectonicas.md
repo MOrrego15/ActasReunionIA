@@ -173,6 +173,13 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Motivo:** La generación y exportación del acta tienen prioridad sobre una mejora exclusivamente visual de la cabecera.
 - **Consecuencia:** La auditoría registrará la etapa segura y el estado HTTP, sin contenido documental. Una indisponibilidad de la combinación no producirá `ACTA_ESCRITURA_ERROR` mientras la reconstrucción compatible finalice correctamente.
 
+## DA-025: Aplicación web restringida para mantenimiento del correlativo
+
+- **Estado:** Aceptada.
+- **Decisión:** El mantenimiento manual del último correlativo se realizará mediante una aplicación web alojada en el mismo proyecto Apps Script y organizada localmente bajo `AppsScript/Web/`. El acceso se controlará con una lista de correos almacenada en Propiedades del script.
+- **Motivo:** Permitir una operación administrativa controlada sin editar código ni exponer públicamente la propiedad persistente.
+- **Consecuencia:** El despliegue web debe ejecutarse con identidad verificable, requiere el alcance `userinfo.email`, deniega por defecto cuando no existe una lista autorizada y usa `LockService` para excluir ejecuciones concurrentes.
+
 ## Decisiones pendientes
 
 1. Criterio para identificar documentos como notas válidas de Gemini.

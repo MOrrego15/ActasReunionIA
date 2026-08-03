@@ -3116,3 +3116,79 @@ confirmó que `Acta.js` remoto coincide exactamente con el archivo local.
 
 - Habilitar Google Docs API en un proyecto Google Cloud asociado para que la
   cabecera use combinaciones reales en lugar de la ruta compatible.
+
+# Cambio 0039
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Crear una página de mantenimiento en una subcarpeta `Web` para modificar el
+> número de secuencia del acta, restringida mediante una lista de correos
+> autorizados, y registrar siempre lo construido en la bitácora.
+
+## Respuesta de Codex
+
+Se creó `AppsScript/Web/` con una aplicación web de mantenimiento. La página
+muestra el último correlativo y el siguiente, solicita confirmación antes de
+guardar y permite establecer el último número utilizado. El servidor valida la
+cuenta activa contra `MANTENIMIENTO_CORREOS_AUTORIZADOS`, deniega por defecto y
+protege la escritura con el mismo bloqueo global del correlativo.
+
+## Registro de progreso
+
+1. Se leyó completamente la documentación obligatoria y la bitácora.
+2. Se confirmó que el proyecto no tenía interfaz web ni punto de entrada
+   `doGet`.
+3. El usuario autorizó expresamente crear la subcarpeta `AppsScript/Web/`.
+4. Se creó una interfaz adaptable con lectura del último y siguiente número.
+5. Se implementó actualización confirmada de `ACTAS_ULTIMO_CORRELATIVO`.
+6. Se agregó autorización mediante una lista de correos configurada fuera del
+   código y se añadió el alcance OAuth `userinfo.email`.
+7. La escritura valida enteros entre 0 y 999999, usa `LockService`, relee el
+   valor persistido y registra únicamente los números anterior y nuevo.
+8. Se agregó una prueba de autorización, lectura, actualización, bloqueo y
+   validación.
+9. La primera regresión del manifiesto detectó que faltaba actualizar la lista
+   esperada de alcances; se corrigió la prueba.
+
+## Archivos creados
+
+- AppsScript/Web/Mantenimiento.gs
+- AppsScript/Web/PaginaMantenimiento.html
+- Pruebas/Mantenimiento.test.js
+
+## Archivos modificados
+
+- AppsScript/appsscript.json
+- Pruebas/WordExportacion.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Riesgos_Tecnicos.md
+- Documentacion/Estructura_Proyecto.md
+- docs/CODEX_BITACORA.md
+
+## Pendientes
+
+- Configurar `MANTENIMIENTO_CORREOS_AUTORIZADOS` en Propiedades del script.
+- Verificar el acceso con una cuenta autorizada y otra no autorizada.
+
+## Despliegue y verificación
+
+1. El usuario autorizó expresamente publicar la aplicación con acceso
+   `ANYONE`, sin acceso anónimo, ejecución `USER_ACCESSING` y control adicional
+   mediante la lista de correos.
+2. La primera publicación detectó que Apps Script no admite un archivo `.gs` y
+   otro `.html` con el mismo nombre lógico `Web/Mantenimiento`; no se publicó
+   el paquete incompleto.
+3. Se renombró internamente la interfaz a
+   `Web/PaginaMantenimiento.html`; el título visible continúa siendo
+   `Mantenimiento del correlativo de actas`.
+4. Se preservaron los 17 archivos remotos y se publicaron 19 archivos a las
+   06:40:27, hora de Lima.
+5. Se creó la implementación web versión 1 con identificador:
+   `AKfycbxOvo3M7gVzIDdYsG830HR0hy6F-Hs2W0KRE3z8wqlZhwrntWb224zEQI4xBBBPU-rBDA`.
+6. La URL de la aplicación es:
+   `https://script.google.com/macros/s/AKfycbxOvo3M7gVzIDdYsG830HR0hy6F-Hs2W0KRE3z8wqlZhwrntWb224zEQI4xBBBPU-rBDA/exec`.
+7. Una descarga independiente confirmó 19 archivos, `Inicializar.js` y
+   coincidencia SHA-256 del manifiesto, el servidor y la interfaz web.

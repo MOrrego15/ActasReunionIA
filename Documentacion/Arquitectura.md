@@ -431,6 +431,15 @@ estar disponible, el módulo limpia el documento temporal y reconstruye todo su
 contenido con la cabecera institucional compatible de tabla anidada. Esta ruta
 conserva el logotipo y evita que una mejora visual impida producir el DOCX.
 
+La aplicación web de mantenimiento se mantiene en `AppsScript/Web/`. Su punto
+de entrada `doGet` valida la cuenta activa contra la propiedad
+`MANTENIMIENTO_CORREOS_AUTORIZADOS`. Las operaciones del navegador delegan en
+funciones servidoras que leen o actualizan `ACTAS_ULTIMO_CORRELATIVO`; la
+escritura usa el mismo bloqueo global de `Correlativo.gs`, verifica la
+persistencia y registra solamente los valores numéricos anterior y nuevo. La
+lista admite correos separados por comas, punto y coma o saltos de línea y
+deniega todo acceso cuando no está configurada.
+
 La sección `Siglas y Acrónimos` se ubica inmediatamente después de Agenda.
 Usa una celda lateral ploma y una tabla interior sin bordes con numeración del
 1 al 11. Su catálogo es fijo y no se extrae de OpenAI ni del contenido de la

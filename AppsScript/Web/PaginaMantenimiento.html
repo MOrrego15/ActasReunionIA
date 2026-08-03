@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      :root { color-scheme: light; font-family: Arial, sans-serif; }
+      body { margin: 0; background: #f4f6f9; color: #172033; }
+      main { max-width: 620px; margin: 48px auto; padding: 0 20px; }
+      section { background: #fff; border-radius: 12px; padding: 28px;
+        box-shadow: 0 8px 28px rgba(16, 42, 84, .12); }
+      h1 { margin: 0 0 8px; color: #123b73; font-size: 26px; }
+      .ayuda { color: #536178; margin: 0 0 26px; line-height: 1.5; }
+      .resumen { display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+        margin-bottom: 24px; }
+      .dato { background: #eef4fb; border: 1px solid #cbdcf0;
+        border-radius: 8px; padding: 14px; }
+      .dato span { display: block; color: #536178; font-size: 13px; }
+      .dato strong { display: block; margin-top: 5px; font-size: 24px; }
+      label { display: block; font-weight: 700; margin-bottom: 8px; }
+      input { box-sizing: border-box; width: 100%; padding: 11px 12px;
+        border: 1px solid #98abc3; border-radius: 6px; font-size: 16px; }
+      button { width: 100%; margin-top: 16px; padding: 12px;
+        border: 0; border-radius: 6px; background: #1558a6; color: #fff;
+        font-size: 16px; font-weight: 700; cursor: pointer; }
+      button:disabled { opacity: .55; cursor: wait; }
+      #mensaje { min-height: 22px; margin: 16px 0 0; font-weight: 700; }
+      .error { color: #a32121; } .correcto { color: #16733d; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section>
+        <h1>Mantenimiento del correlativo</h1>
+        <p class="ayuda">El valor ingresado representa el último número usado.
+          La siguiente acta utilizará el número posterior.</p>
+        <div class="resumen">
+          <div class="dato"><span>Último utilizado</span>
+            <strong id="ultimo">—</strong></div>
+          <div class="dato"><span>Siguiente acta</span>
+            <strong id="siguiente">—</strong></div>
+        </div>
+        <label for="correlativo">Nuevo último correlativo</label>
+        <input id="correlativo" type="number" min="0" max="999999" step="1">
+        <button id="guardar" type="button">Guardar correlativo</button>
+        <p id="mensaje" role="status" aria-live="polite"></p>
+      </section>
+    </main>
+    <script>
+      const boton = document.getElementById('guardar');
+      const entrada = document.getElementById('correlativo');
+      const mensaje = document.getElementById('mensaje');
+
+      function mostrarResultado(respuesta) {
+        boton.disabled = false;
+        if (!respuesta || !respuesta.exito) {
+          mensaje.className = 'error';
+          mensaje.textContent = respuesta && respuesta.error
+            ? respuesta.error.mensaje : 'No fue posible completar la operación.';
+          return;
+        }
+        document.getElementById('ultimo').textContent =
+          respuesta.datos.ultimoCorrelativo;
+        document.getElementById('siguiente').textContent =
+          respuesta.datos.siguienteCorrelativo === null
+            ? 'Límite alcanzado' : respuesta.datos.siguienteCorrelativo;
+        entrada.value = respuesta.datos.ultimoCorrelativo;
+        mensaje.className = 'correcto';
+        mensaje.textContent = 'Correlativo actualizado correctamente.';
+      }
+
+      function mostrarError() {
+        boton.disabled = false;
+        mensaje.className = 'error';
+        mensaje.textContent = 'No fue posible comunicarse con el servidor.';
+      }
+
+      boton.addEventListener('click', function () {
+        const valor = Number(entrada.value);
+        if (!Number.isInteger(valor) || valor < 0 || valor > 999999) {
+          mensaje.className = 'error';
+          mensaje.textContent = 'Ingresa un número entero entre 0 y 999999.';
+          return;
+        }
+        if (!window.confirm(
+          'Se establecerá ' + valor + ' como último correlativo usado. ¿Continuar?'
+        )) return;
+        boton.disabled = true;
+        mensaje.className = '';
+        mensaje.textContent = 'Guardando…';
+        google.script.run
+          .withSuccessHandler(mostrarResultado)
+          .withFailureHandler(mostrarError)
+          .actualizarCorrelativoMantenimiento(valor);
+      });
+
+      boton.disabled = true;
+      google.script.run
+        .withSuccessHandler(function (respuesta) {
+          mostrarResultado(respuesta);
+          if (respuesta && respuesta.exito) mensaje.textContent = '';
+        })
+        .withFailureHandler(mostrarError)
+        .obtenerEstadoMantenimiento();
+    </script>
+  </body>
+</html>
