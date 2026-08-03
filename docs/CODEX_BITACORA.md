@@ -3227,3 +3227,38 @@ El comando `clasp open-web-app` reproducía la misma URL no operativa.
 - Confirmar que `MANTENIMIENTO_CORREOS_AUTORIZADOS` contiene la cuenta usada
   para abrir la aplicación.
 - Probar lectura y actualización controlada del correlativo desde la página.
+
+# Cambio 0041
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Desplegar nuevamente la aplicación web de mantenimiento.
+
+## Respuesta de Codex
+
+Se actualizó la implementación web existente sin cambiar su identificador ni
+su URL. La implementación `MantenimientoWeb` pasó de la versión 2 a la versión
+3 y Apps Script confirmó el mismo punto de entrada `/exec`.
+
+## Registro de progreso
+
+1. Se leyó completamente la bitácora y se revisó el estado del repositorio.
+2. Se confirmó que no existían cambios nuevos pendientes.
+3. Se ejecutaron nueve pruebas y la validación sintáctica del servidor web.
+4. Todas las verificaciones finalizaron correctamente.
+5. `clasp redeploy` actualizó la implementación existente a la versión 3.
+6. `clasp --json deployments` confirmó el identificador y la versión 3.
+7. `clasp open-web-app` confirmó la URL vigente:
+   `https://script.google.com/macros/s/AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA/exec`.
+
+## Archivos modificados
+
+- docs/CODEX_BITACORA.md
+
+## Pendientes
+
+- Confirmar que `MANTENIMIENTO_CORREOS_AUTORIZADOS` contiene la cuenta usada
+  para abrir la aplicación.
+- Probar lectura y actualización controlada del correlativo desde la página.
