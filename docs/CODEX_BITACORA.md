@@ -3300,6 +3300,14 @@ permite seleccionar una nota y copiar su ID.
 - Vista de notas:
   `https://script.google.com/macros/s/AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA/exec?vista=notas`.
 
+## Incidencia de Git
+
+Después del commit y del push apareció un archivo vacío y antiguo
+`.git/packed-refs.lock`. Se confirmó que no existía ningún proceso Git activo,
+que `HEAD` y `origin/main` coincidían y que el bloqueo era obsoleto. Se eliminó
+exclusivamente ese archivo y una nueva consulta confirmó el repositorio
+operativo. `.clasp.json` permanece local y sin versionar de forma intencional.
+
 # Cambio 0041
 Fecha: 2026-08-03
 Autor: Codex
