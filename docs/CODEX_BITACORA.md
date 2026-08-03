@@ -3077,3 +3077,42 @@ flujo de generación y exportación.
 5. Una descarga independiente confirmó 17 archivos, `Inicializar.js` y la
    coincidencia exacta del SHA-256 local y remoto de `Acta`:
    `E3F0A3AD2F0A68C2B1406B23A0149099AA4310E79BE9F15DF67AC89E908A378C`.
+
+# Cambio 0038
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Retomar el despliegue de la versión vigente después de renovar el acceso de
+> `clasp`.
+
+## Respuesta de Codex
+
+La autenticación de `clasp` volvió a estar disponible. Google Apps Script
+informó que el proyecto ya estaba actualizado y una descarga independiente
+confirmó que `Acta.js` remoto coincide exactamente con el archivo local.
+
+## Registro de progreso
+
+1. El intento anterior fue detenido por `invalid_grant / invalid_rapt` antes de
+   modificar el proyecto remoto.
+2. Se solicitó renovar el acceso mediante `clasp login`; la primera espera
+   automática expiró sin confirmación.
+3. En el nuevo intento, `clasp status` reconoció correctamente el proyecto.
+4. Se descargaron y preservaron los 17 archivos remotos, incluido
+   `Inicializar.js`.
+5. Se incorporó exclusivamente la versión local vigente de `Acta`.
+6. `clasp push --force` respondió `Script is already up to date`.
+7. Una descarga independiente confirmó 17 archivos, `Inicializar.js` y la
+   coincidencia exacta del SHA-256 local y remoto de `Acta`:
+   `E3F0A3AD2F0A68C2B1406B23A0149099AA4310E79BE9F15DF67AC89E908A378C`.
+
+## Archivos modificados
+
+- docs/CODEX_BITACORA.md
+
+## Pendientes
+
+- Habilitar Google Docs API en un proyecto Google Cloud asociado para que la
+  cabecera use combinaciones reales en lugar de la ruta compatible.
