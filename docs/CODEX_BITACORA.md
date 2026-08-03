@@ -4021,3 +4021,83 @@ en la URL porque lo expondría en historial y referencias.
 ## URL vigente
 
 `https://script.google.com/macros/s/AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA/exec?vista=notas`
+
+# Cambio 0059
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> En `Temas tratados`, conservar la primera parte de `Resumen` que ya se
+> muestra y agregar debajo el contenido de cada subtítulo, sin mostrar los
+> nombres de los subtítulos ni afectar el contenido vigente.
+
+## Respuesta de Codex
+
+Se mantuvo sin cambios la construcción visual de `TEMAS TRATADOS:`. El prompt
+ahora exige conservar como primer elemento el contenido principal ubicado
+inmediatamente después de `Resumen` y añadir después, en el orden del documento
+fuente, el contenido desarrollado bajo cada subtítulo. Los nombres de los
+subtítulos se excluyen expresamente. La numeración, los anchos y el espaciado
+del acta no cambian.
+
+## Archivos modificados
+
+- AppsScript/Prompt.gs
+- Pruebas/ValidadorAcuerdos.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Flujo_Procesamiento.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas previstas
+
+- Verificar que el prompt preserve el contenido principal de `Resumen`.
+- Verificar que incorpore los contenidos de subtítulos en orden.
+- Verificar que prohíba copiar los nombres de los subtítulos.
+- Ejecutar la suite Node y validar sintaxis y diferencias.
+
+## Pendiente
+
+- Desplegar y publicar cuando el usuario lo autorice expresamente.
+
+# Cambio 0060
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Desplegar.
+
+## Respuesta de Codex
+
+La nueva regla de `Temas tratados` fue publicada en la versión 13 de la
+implementación web vigente, conservando la URL. Se autoriza también respaldar
+los cambios, pruebas, documentación y bitácora mediante commit y push.
+
+## Despliegue seguro
+
+1. El primer intento no inició porque la carpeta temporal todavía no existía;
+   se creó y la descarga se repitió sin modificar el proyecto remoto.
+2. Se descargaron los 21 archivos vigentes.
+3. Se verificó `Inicializar.js` antes y después de superponer únicamente
+   `Prompt.gs`, conservando SHA-256
+   `439730DC8D25647F8E7F1E6041BCF73E1DEF4057DD44632AD13437157D062D1E`.
+4. Se publicaron los 21 archivos a las 17:22:24, hora de Lima.
+5. Se creó la versión 13 y se actualizó `MantenimientoWeb` sin cambiar su ID.
+6. Una descarga independiente confirmó las cuatro reglas de extracción, los
+   21 archivos y la huella histórica de `Inicializar.js`.
+
+## Pruebas
+
+- Trece pruebas Node: correctas.
+- Sintaxis de `Prompt.gs`: correcta.
+- `git diff --check`: correcto.
+
+## URL vigente
+
+`https://script.google.com/macros/s/AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA/exec?vista=notas`
+
+## Pendiente
+
+- Probar una nota real que contenga resumen principal y varios subtítulos.

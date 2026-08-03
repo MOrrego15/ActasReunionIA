@@ -48,6 +48,10 @@ const prompt = fs.readFileSync('AppsScript/Prompt.gs', 'utf8');
 assert.match(prompt, /acuerdos: \[\{numero:integer,descripcion:string no vacía,/);
 assert.match(prompt, /responsable:string/);
 assert.match(prompt, /Cada tarea debe incluir responsable/);
+assert.match(prompt, /Conserva como primer acuerdo el contenido principal/);
+assert.match(prompt, /Después agrega, en el mismo orden, el contenido ubicado/);
+assert.match(prompt, /No copies los nombres de los subtítulos en acuerdos/);
+assert.match(prompt, /No elimines, sustituyas ni resumas el contenido principal/);
 assert.match(prompt, /usa cadena vacía si no existe/);
 
 const sandboxOpenAI = {};

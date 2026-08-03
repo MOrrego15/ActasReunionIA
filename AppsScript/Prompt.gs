@@ -79,6 +79,15 @@ function construirPromptActa(contenidoFuente, contexto) {
       'Cada participante confirmado requiere nombre no vacío.',
       'Cada elemento de agenda requiere texto no vacío.',
       'Cada acuerdo y tarea requiere descripcion no vacía.',
+      'Para acuerdos, usa la sección Resumen del documento fuente.',
+      'Conserva como primer acuerdo el contenido principal que aparece ' +
+        'inmediatamente después de Resumen y antes del primer subtítulo.',
+      'Después agrega, en el mismo orden, el contenido ubicado debajo de ' +
+        'cada subtítulo de Resumen.',
+      'No copies los nombres de los subtítulos en acuerdos; incluye solo ' +
+        'el contenido desarrollado debajo de cada uno.',
+      'No elimines, sustituyas ni resumas el contenido principal de Resumen ' +
+        'al incorporar los contenidos de sus subtítulos.',
       'Cada tarea debe incluir responsable; usa cadena vacía si no existe ' +
         'un responsable explícito en las notas.',
       'Numera acuerdos y tareas secuencialmente desde 1.',

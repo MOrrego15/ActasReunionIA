@@ -120,7 +120,7 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 ## DA-017: Temas tratados equivalentes a acuerdos
 
 - **Estado:** Aceptada.
-- **Decisión:** La Fase 6 representará `Temas tratados` usando directamente los objetos de la lista validada `acuerdos`. Mantendrá la numeración recibida y mostrará cada descripción en una tabla interior sin bordes, con espaciado anterior y posterior en cero y relleno vertical de celda en cero.
+- **Decisión:** La Fase 6 representará `Temas tratados` usando directamente los objetos de la lista validada `acuerdos`. El primer elemento conservará el contenido principal de `Resumen`; debajo se incorporará, en el orden del documento, el contenido desarrollado bajo cada subtítulo de esa sección, excluyendo los nombres de los subtítulos. Mantendrá la numeración recibida y mostrará cada descripción en una tabla interior sin bordes, con espaciado anterior y posterior en cero y relleno vertical de celda en cero.
 - **Motivo:** Para este proyecto los temas tratados son equivalentes a los acuerdos y no requieren un segundo campo ni una inferencia adicional.
 - **Consecuencia:** Temas tratados y la futura Fase 7 comparten la misma fuente de datos. Cualquier diferenciación posterior requerirá modificar explícitamente el contrato.
 

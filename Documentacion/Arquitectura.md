@@ -448,7 +448,10 @@ interiores usan relleno superior e inferior en cero para evitar separación
 vertical entre acrónimos.
 
 La sección `TEMAS TRATADOS:` se ubica después de Siglas y Acrónimos y usa
-directamente la lista validada `acuerdos`. Cada acuerdo conserva su número y
+directamente la lista validada `acuerdos`. La lista conserva primero el
+contenido principal situado inmediatamente después de `Resumen` y agrega a
+continuación, en su orden original, el contenido desarrollado debajo de cada
+subtítulo de esa sección, sin copiar los nombres de los subtítulos. Cada acuerdo conserva su número y
 descripción en una tabla interior sin bordes. Los párrafos usan espaciado
 anterior y posterior en cero, y las celdas usan relleno vertical en cero, para
 evitar líneas o espacios vacíos entre temas.

@@ -56,6 +56,9 @@ Coordinar una ejecución que transforme como máximo un documento pendiente de G
 10. **Construir la solicitud para OpenAI.**
     - Integrar instrucciones, plantilla, notas y metadatos permitidos.
     - Incluir una versión del prompt para reproducibilidad.
+    - Para `Temas tratados`, conservar primero el contenido principal de
+      `Resumen` y agregar después los contenidos de sus subtítulos, sin copiar
+      los nombres de esos subtítulos.
 
 11. **Invocar OpenAI.**
     - Enviar una sola solicitud conforme a la configuración.
