@@ -194,6 +194,13 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 - **Motivo:** Permitir una generación explícita desde la interfaz sin alterar la numeración automática y sin crear actas duplicadas.
 - **Consecuencia:** Una nota con cualquier registro previo o un correlativo asociado a otra fila se rechazan con un mensaje controlado. El flujo automático mantiene su reserva habitual; ambos flujos comparten la restricción atómica de unicidad del repositorio.
 
+## DA-028: Resolución exacta por ID para generación manual
+
+- **Estado:** Aceptada.
+- **Decisión:** La generación manual localizará directamente el ID seleccionado entre los archivos inmediatos de la carpeta configurada. No usará `obtenerDocumentosFuente`, cuya regla automática devuelve solo el documento más recientemente modificado. Una función de prueba ejecutable desde Apps Script recibirá ID y correlativo mediante Propiedades del script.
+- **Motivo:** Una nota visible en la página puede no ser el archivo modificado más recientemente y, por tanto, quedar fuera del selector automático aunque pertenezca a la carpeta.
+- **Consecuencia:** El flujo manual conserva la selección explícita del usuario, valida carpeta, MIME y papelera, y no incrusta IDs reales en el repositorio. Ejecutar la función de prueba genera un acta real y requiere valores controlados.
+
 ## Decisiones pendientes
 
 1. Criterio para identificar documentos como notas válidas de Gemini.

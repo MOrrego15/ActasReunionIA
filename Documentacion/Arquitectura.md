@@ -609,3 +609,13 @@ configurado del repositorio. Tanto el ID fuente como el correlativo deben estar
 ausentes de la hoja `Procesados`. La misma comprobación se repite bajo
 `ScriptLock` al registrar `EN_PROCESO`, evitando duplicados concurrentes. Solo
 un entero entre 1 y 999999 es aceptado.
+
+El flujo manual obtiene el descriptor mediante
+`obtenerDocumentoFuentePorId`: recorre los archivos directos de la carpeta y
+devuelve exclusivamente el ID solicitado. No reutiliza la selección automática
+que reduce el conjunto al documento más recientemente modificado.
+
+Para pruebas desde el editor, `probarGeneracionActaManual` lee
+`PRUEBA_GENERACION_NOTA_ID` y `PRUEBA_GENERACION_CORRELATIVO` desde Propiedades
+del script. La función ejecuta una generación real y conserva las mismas
+validaciones de unicidad del flujo web.

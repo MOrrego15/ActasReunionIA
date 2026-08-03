@@ -264,22 +264,24 @@ function ejecutarGeneracionActaSeleccionada(parametros) {
       }
     };
   }
-  const fuentes = obtenerDocumentosFuente(
-    configuracion.gemini.carpetaNotasId, contexto
+  const fuente = obtenerDocumentoFuentePorId(
+    configuracion.gemini.carpetaNotasId,
+    parametros.idDocumentoFuente,
+    contexto
   );
-  if (!_mainResultadoExitoso(fuentes) || !fuentes.datos ||
-    !Array.isArray(fuentes.datos.documentos)) {
+  if (!_mainResultadoExitoso(fuente) || !fuente.datos ||
+    !esObjetoPlano(fuente.datos.documento)) {
     return {
       exito: false, datos: null,
       error: {
         codigo: MAIN_CODIGOS_ERROR.FUENTES_ERROR,
-        mensaje: MAIN_MENSAJES_ERROR.FUENTES_ERROR
+        mensaje: fuente && fuente.error && fuente.error.mensaje
+          ? fuente.error.mensaje
+          : MAIN_MENSAJES_ERROR.FUENTES_ERROR
       }
     };
   }
-  const documento = fuentes.datos.documentos.find(function (elemento) {
-    return elemento.idDocumentoFuente === parametros.idDocumentoFuente;
-  });
+  const documento = fuente.datos.documento;
   if (!documento || !_mainValidarDescriptor(documento)) {
     return {
       exito: false, datos: null,

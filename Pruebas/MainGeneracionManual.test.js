@@ -6,7 +6,10 @@ let reservasAutomaticas = 0;
 let correlativoRegistrado = null;
 const exito = (datos) => ({ exito: true, datos, error: null });
 const sandbox = {
-  Utilities: { formatDate: () => '03/08/2026' },
+  Utilities: {
+    formatDate: () => '03/08/2026',
+    getUuid: () => 'ejecucion-manual'
+  },
   Session: { getScriptTimeZone: () => 'America/Lima' },
   leerContenidoDocumentoFuente: () => exito({ contenidoFuente: 'contenido' }),
   construirPromptActa: () => exito({ mensajes: [{}] }),
@@ -36,6 +39,24 @@ const sandbox = {
   exportarDocumentoWord: () => exito({ idArchivoDocx: 'acta-docx' }),
   marcarProcesamientoCompletado: () => exito({ estado: 'PROCESADO' }),
   marcarProcesamientoConError: () => exito({ estado: 'ERROR' }),
+  obtenerConfiguracion: () => ({
+    gemini: { carpetaNotasId: 'carpeta-notas' },
+    plantilla: { documentoId: 'plantilla' },
+    recursos: { carpetaOtrosId: 'recursos' },
+    actas: { carpetaRaizId: 'actas' },
+    procesados: { repositorioId: 'hoja-seguimiento' }
+  }),
+  obtenerDocumentoFuentePorId: (carpeta, id) => exito({
+    documento: {
+      idDocumentoFuente: id, nombre: 'Nota',
+      mimeType: 'application/vnd.google-apps.document',
+      fechaCreacion: '2026-08-03T10:00:00.000Z',
+      fechaModificacion: '2026-08-03T10:01:00.000Z'
+    }
+  }),
+  consultarDisponibilidadGeneracion: () => exito({
+    estado: 'PENDIENTE', correlativo: null
+  }),
   registrarInfo: () => {},
   registrarError: () => {},
   esObjetoPlano: (valor) => valor !== null && typeof valor === 'object' &&
@@ -66,6 +87,13 @@ const resultado = sandbox._mainProcesarDocumento(
 assert.strictEqual(resultado.estado, 'PROCESADO');
 assert.strictEqual(resultado.correlativo, 77);
 assert.strictEqual(correlativoRegistrado, 77);
+assert.strictEqual(reservasAutomaticas, 0);
+
+const dirigido = sandbox.ejecutarGeneracionActaSeleccionada({
+  idDocumentoFuente: 'nota-anterior', correlativo: 78
+});
+assert.strictEqual(dirigido.exito, true);
+assert.strictEqual(dirigido.datos.correlativo, 78);
 assert.strictEqual(reservasAutomaticas, 0);
 
 console.log('MainGeneracionManual.test.js: correlativo manual sin reserva.');

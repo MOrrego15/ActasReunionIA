@@ -398,6 +398,60 @@ function obtenerDocumentosFuente(carpetaId, contexto) {
  * @param {*} contexto Contexto recibido.
  * @returns {boolean} true si solo contiene idEjecucion válido.
  */
+/**
+ * Returns one exact Google Docs source located directly in a folder.
+ *
+ * @param {string} carpetaId Configured source folder ID.
+ * @param {string} idDocumentoFuente Selected Drive file ID.
+ * @param {{idEjecucion: string}} contexto Technical execution context.
+ * @returns {{exito: boolean, datos: (Object|null), error: (Object|null)}}
+ */
+function obtenerDocumentoFuentePorId(
+  carpetaId,
+  idDocumentoFuente,
+  contexto
+) {
+  if (!_driveValidarIdentificador(carpetaId) ||
+    !_driveValidarIdentificador(idDocumentoFuente) ||
+    !_driveValidarContextoDocumentos(contexto)) {
+    return _driveConstruirResultadoDocumentosError(
+      DRIVE_CODIGOS_ERROR.PARAMETRO_INVALIDO,
+      'Los parámetros para localizar la nota no son válidos.'
+    );
+  }
+  try {
+    const carpeta = _driveObtenerCarpetaPorId(carpetaId);
+    const archivos = carpeta.getFiles();
+    while (archivos.hasNext()) {
+      const archivo = archivos.next();
+      if (archivo.getId() !== idDocumentoFuente) continue;
+      const mimeType = archivo.getMimeType();
+      if (archivo.isTrashed() || !_driveEsMimeFuenteAdmitido(mimeType)) {
+        return _driveConstruirResultadoDocumentosError(
+          DRIVE_CODIGOS_ERROR.TIPO_RECURSO_INCORRECTO,
+          'La nota seleccionada no es un documento Google disponible.'
+        );
+      }
+      const documento = _driveConstruirDocumentoFuente(archivo, mimeType);
+      return documento === null
+        ? _driveConstruirResultadoDocumentosError(
+            DRIVE_CODIGOS_ERROR.RESPUESTA_INVALIDA,
+            DRIVE_MENSAJES_DOCUMENTOS_FUENTE.RESPUESTA_INVALIDA
+          )
+        : { exito: true, datos: { documento: documento }, error: null };
+    }
+    return _driveConstruirResultadoDocumentosError(
+      DRIVE_CODIGOS_ERROR.RECURSO_NO_DISPONIBLE,
+      'La nota seleccionada no se encuentra directamente en la carpeta.'
+    );
+  } catch (errorAcceso) {
+    return _driveConstruirResultadoDocumentosError(
+      DRIVE_CODIGOS_ERROR.RECURSO_NO_DISPONIBLE,
+      'La nota seleccionada no está disponible en la carpeta.'
+    );
+  }
+}
+
 function _driveValidarContextoDocumentos(contexto) {
   try {
     if (!esObjetoPlano(contexto)) {

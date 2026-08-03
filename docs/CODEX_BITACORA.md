@@ -3548,3 +3548,100 @@ Autor: Codex
 - Ejecutar una generación controlada con una nota no registrada y un
   correlativo libre, y verificar el nuevo registro en
   `HojaSeguimiento.gsheet`.
+
+# Cambio 0048
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Corregir el error `La nota seleccionada no está disponible en la carpeta` y
+> crear un procedimiento que pueda invocarse desde Apps Script.
+
+## Diagnóstico
+
+La vista enumeraba hasta diez documentos directos de la carpeta, mientras que
+la generación manual volvía a usar `obtenerDocumentosFuente`. Esa función del
+flujo automático ordena por modificación y devuelve únicamente el documento
+más reciente. Una nota visible podía quedar fuera aunque su ID y carpeta fueran
+correctos.
+
+## Solución
+
+1. Se agregó `obtenerDocumentoFuentePorId`, que recorre la carpeta y devuelve
+   exactamente el documento solicitado después de validar ID, MIME y papelera.
+2. `ejecutarGeneracionActaSeleccionada` utiliza ahora esa resolución exacta.
+3. Se creó `probarGeneracionActaManual`, ejecutable desde Apps Script.
+4. El procedimiento lee `PRUEBA_GENERACION_NOTA_ID` y
+   `PRUEBA_GENERACION_CORRELATIVO` desde Propiedades del script para no incluir
+   valores reales en el código.
+5. Se agregaron pruebas de selección de una nota anterior, flujo dirigido y
+   lectura de propiedades.
+
+## Archivos modificados
+
+- AppsScript/Drive.gs
+- AppsScript/Main.gs
+- AppsScript/PruebaGeneracionManual.gs
+- Pruebas/DriveDocumentoPorId.test.js
+- Pruebas/MainGeneracionManual.test.js
+- Pruebas/PruebaGeneracionManual.test.js
+- Documentacion/Arquitectura.md
+- Documentacion/Decisiones_Arquitectonicas.md
+- Documentacion/Flujo_Procesamiento.md
+- Documentacion/Estructura_Proyecto.md
+- Documentacion/Riesgos_Tecnicos.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas iniciales
+
+- `DriveDocumentoPorId.test.js`: selección exacta correcta.
+- `MainGeneracionManual.test.js`: correlativo manual sin reserva.
+- `PruebaGeneracionManual.test.js`: propiedades e invocación correctas.
+- Sintaxis de todos los archivos `.gs`: correcta.
+- Regresión completa: trece pruebas correctas.
+- `git diff --check`: correcto.
+
+## Pendientes
+
+- Desplegar y publicar cuando el usuario lo autorice.
+- Configurar las dos propiedades con valores de prueba antes de ejecutar el
+  procedimiento desde Apps Script.
+
+# Cambio 0049
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Desplegar la corrección de selección exacta y el procedimiento ejecutable
+> desde Apps Script.
+
+## Registro de progreso
+
+1. Se ejecutaron trece pruebas Node, la validación sintáctica de todos los
+   `.gs` y `git diff --check`; todas finalizaron correctamente.
+2. El primer intento de despliegue fue rechazado por Google con
+   `invalid_grant / invalid_rapt`; no se cargaron archivos ni se creó una
+   versión parcial.
+3. Se ejecutó `clasp login` y se renovó la autenticación con la cuenta
+   institucional del proyecto.
+4. El reintento publicó 20 archivos a las 14:44:40, hora de Lima.
+5. La implementación `MantenimientoWeb` se actualizó a la versión 8 sin cambiar
+   su identificador ni su URL.
+6. Una descarga independiente confirmó:
+   - `obtenerDocumentoFuentePorId` en `Drive.js`;
+   - su uso desde `Main.js`;
+   - `probarGeneracionActaManual`;
+   - las propiedades `PRUEBA_GENERACION_NOTA_ID` y
+     `PRUEBA_GENERACION_CORRELATIVO`.
+
+## URL vigente
+
+`https://script.google.com/macros/s/AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA/exec?vista=notas`
+
+## Pendiente operativo
+
+- Configurar las propiedades de prueba y ejecutar
+  `probarGeneracionActaManual` con una nota controlada no registrada y un
+  correlativo libre.

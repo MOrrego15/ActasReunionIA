@@ -183,9 +183,14 @@ Es un error crítico porque puede permitir duplicidades. La salida deberá conse
 2. La interfaz presenta el ID y propone el siguiente correlativo informativo.
 3. El usuario confirma o edita un entero mayor que cero.
 4. El servidor valida autorización, ID y rango numérico.
-5. Se localiza exclusivamente el documento seleccionado en la carpeta fuente.
+5. Se recorre la carpeta y se localiza exclusivamente el ID seleccionado, sin
+   aplicar la reducción automática al archivo modificado más recientemente.
 6. `HojaSeguimiento.gsheet` rechaza un ID ya registrado o un correlativo usado.
 7. El procesamiento funcional se ejecuta para esa única nota.
 8. La reclamación `EN_PROCESO` repite la validación bajo `ScriptLock`.
 9. El flujo genera y verifica el DOCX y registra `PROCESADO` o `ERROR`.
 10. `ACTAS_ULTIMO_CORRELATIVO` permanece sin cambios.
+
+La misma operación puede iniciarse desde el editor de Apps Script mediante
+`probarGeneracionActaManual`, después de configurar las propiedades
+`PRUEBA_GENERACION_NOTA_ID` y `PRUEBA_GENERACION_CORRELATIVO`.

@@ -66,6 +66,7 @@ Los nombres son propuestos y podrán ajustarse a las restricciones de empaquetad
 | `AppsScript/Web/Mantenimiento.gs` | Autorización y operaciones servidoras para mantener el correlativo. |
 | `AppsScript/Web/PaginaMantenimiento.html` | Interfaz web restringida de mantenimiento. |
 | `AppsScript/Web/NotasGemini.html` | Vista restringida de las diez notas más recientes y selección de su ID. |
+| `AppsScript/PruebaGeneracionManual.gs` | Punto de entrada controlado para probar una generación manual desde Apps Script. |
 | `Configuracion/README.md` | Catálogo de propiedades y procedimiento de aprovisionamiento sin valores secretos. |
 | `Prompts/Prompt_Acta.md` | Fuente mantenible de las instrucciones del modelo, si la estrategia de despliegue lo permite. |
 | `Pruebas/` | Casos unitarios, dobles de prueba y verificaciones de integración. |

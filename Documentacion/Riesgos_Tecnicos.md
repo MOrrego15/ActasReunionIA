@@ -137,3 +137,11 @@ flujo automático entre su reserva y su registro. La hoja `Procesados` aplica un
 restricción de unicidad bajo `ScriptLock`: solo una ejecución puede reclamar el
 número. La otra finaliza con error controlado. El correlativo automático ya
 reservado no se revierte, conforme a la política vigente de no reutilización.
+
+## 10. Ejecución accidental del procedimiento de prueba manual
+
+`probarGeneracionActaManual` produce un acta real cuando las dos propiedades de
+prueba son válidas. Debe configurarse únicamente con una nota controlada y un
+correlativo libre. Después de la prueba se recomienda eliminar
+`PRUEBA_GENERACION_NOTA_ID` y `PRUEBA_GENERACION_CORRELATIVO` para impedir una
+ejecución accidental posterior.
