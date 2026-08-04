@@ -25,8 +25,7 @@
       td.fecha { white-space: nowrap; }
       .seleccion { margin-top: 20px; padding: 14px; border-radius: 8px;
         background: #eef4fb; border: 1px solid #cbdcf0; }
-      .seleccion code { display: block; margin: 8px 0 12px; word-break: break-all;
-        font-size: 14px; }
+      #detalleReunion { margin: 8px 0 12px; font-weight: 700; }
       .campo { margin: 14px 0; }
       .campo label { display: block; margin-bottom: 6px; font-weight: 700; }
       .campo input { width: 180px; padding: 10px; border: 1px solid #9cacbf;
@@ -62,8 +61,8 @@
           <tbody id="notas"></tbody>
         </table>
         <div class="seleccion" id="seleccion" hidden>
-          <strong>ID seleccionado</strong>
-          <code id="idSeleccionado"></code>
+          <strong>Reunión seleccionada</strong>
+          <p id="detalleReunion"></p>
           <div class="crear-acta">
             <button id="generar" type="button">Crear Acta</button>
             <span class="aviso-secuencia">Respetando la secuencia</span>
@@ -85,11 +84,12 @@
       const mensaje = document.getElementById('mensaje');
       const actualizar = document.getElementById('actualizar');
       const seleccion = document.getElementById('seleccion');
-      const idSeleccionado = document.getElementById('idSeleccionado');
+      const detalleReunion = document.getElementById('detalleReunion');
       const correlativo = document.getElementById('correlativo');
       const generar = document.getElementById('generar');
       const generarSecuencia = document.getElementById('generarSecuencia');
       const descargar = document.getElementById('descargar');
+      let idDocumentoSeleccionado = '';
 
       function formatearFecha(fechaIso) {
         return new Intl.DateTimeFormat('es-PE', {
@@ -97,8 +97,22 @@
         }).format(new Date(fechaIso));
       }
 
-      function seleccionarId(id) {
-        idSeleccionado.textContent = id;
+      function formatearDetalleReunion(fechaIso) {
+        const fecha = new Date(fechaIso);
+        const dia = new Intl.DateTimeFormat('es-PE', {
+          day: '2-digit', month: '2-digit', year: 'numeric',
+          timeZone: 'America/Lima'
+        }).format(fecha);
+        const hora = new Intl.DateTimeFormat('es-PE', {
+          hour: '2-digit', minute: '2-digit',
+          timeZone: 'America/Lima'
+        }).format(fecha);
+        return 'Reunión: Día ' + dia + ' Hora: ' + hora;
+      }
+
+      function seleccionarReunion(id, fechaCreacion) {
+        idDocumentoSeleccionado = id;
+        detalleReunion.textContent = formatearDetalleReunion(fechaCreacion);
         seleccion.hidden = false;
         correlativo.value = '';
         descargar.hidden = true;
@@ -133,6 +147,7 @@
         actualizar.disabled = false;
         cuerpoNotas.replaceChildren();
         seleccion.hidden = true;
+        idDocumentoSeleccionado = '';
         if (!respuesta || !respuesta.exito) {
           mensaje.className = 'error';
           mensaje.textContent = respuesta && respuesta.error
@@ -156,7 +171,9 @@
           const boton = document.createElement('button');
           boton.type = 'button';
           boton.textContent = 'Seleccionar';
-          boton.addEventListener('click', function () { seleccionarId(nota.id); });
+          boton.addEventListener('click', function () {
+            seleccionarReunion(nota.id, nota.fechaCreacion);
+          });
           celdaAccion.appendChild(boton);
           fila.append(celdaNombre, celdaFecha, celdaAccion);
           cuerpoNotas.appendChild(fila);
@@ -228,12 +245,12 @@
         });
         if (usarSecuenciaManual) {
           ejecucion.generarActaNotaSeleccionada(
-            idSeleccionado.textContent,
+            idDocumentoSeleccionado,
             valor
           );
         } else {
           ejecucion.generarActaNotaSeleccionadaAutomatica(
-            idSeleccionado.textContent
+            idDocumentoSeleccionado
           );
         }
       }

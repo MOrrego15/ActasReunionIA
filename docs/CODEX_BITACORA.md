@@ -4061,6 +4061,33 @@ del acta no cambian.
 
 - Desplegar y publicar cuando el usuario lo autorice expresamente.
 
+# Cambio 0063
+Fecha: 2026-08-03
+Autor: Codex
+
+## Continuidad y validación del cambio 0062
+
+Se añadió una aserción funcional en
+`Pruebas/ProcesadosDisponibilidad.test.js` para exigir exactamente el nuevo
+mensaje de reunión ya procesada. Las trece pruebas Node y la sintaxis del
+JavaScript embebido en `NotasGemini.html` finalizaron correctamente.
+
+Una primera búsqueda de control incluyó documentación histórica y encontró la
+expresión técnica `ID seleccionado` fuera de la interfaz. La búsqueda se repitió
+limitada a `AppsScript/` y confirmó que no permanecen el texto visible, el
+elemento `code`, la variable `idSeleccionado` ni el mensaje anterior. El ID se
+conserva únicamente en `idDocumentoSeleccionado`, variable de memoria requerida
+para la llamada al servidor.
+
+## Archivos modificados adicionales
+
+- Pruebas/ProcesadosDisponibilidad.test.js
+- docs/CODEX_BITACORA.md
+
+## Pendiente
+
+- Desplegar y publicar el conjunto acumulado cuando el usuario lo autorice.
+
 # Cambio 0060
 Fecha: 2026-08-03
 Autor: Codex
@@ -4101,3 +4128,150 @@ los cambios, pruebas, documentación y bitácora mediante commit y push.
 ## Pendiente
 
 - Probar una nota real que contenga resumen principal y varios subtítulos.
+
+# Cambio 0061
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Al desplegar, mejorar también el README de GitHub.
+
+## Respuesta de Codex
+
+Se establece como regla permanente que cada instrucción explícita `desplegar`
+incluye actualizar `README.md` con las funciones, instrucciones y estado
+realmente publicados. La actualización debe ser pertinente al cambio y no
+puede incluir credenciales, identificadores operativos ni datos sensibles.
+
+El README vigente se modernizó para describir el flujo funcional actual, la
+aplicación web, los modos `Crear Acta` y `Crear Acta SEC.`, la descarga segura,
+la arquitectura real, los módulos, las propiedades sin valores, las pruebas,
+la seguridad y la documentación técnica. Se retiraron la estructura ficticia,
+los hitos ya completados y la versión semántica no formalizada.
+
+## Archivos modificados
+
+- AGENTS.md
+- README.md
+- docs/CODEX_BITACORA.md
+
+## Validaciones
+
+- Revisión de las rutas y módulos mencionados en el README.
+- Eliminación de un enlace propuesto a un archivo inexistente en
+  `Configuracion/`.
+- Confirmación de ausencia de valores reales, credenciales y URLs operativas.
+- Verificación de formato Markdown mediante `git diff --check`.
+
+## Pendiente
+
+- Incluir estos archivos en el siguiente despliegue autorizado, commit y push.
+
+# Cambio 0062
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Cambiar el mensaje de reunión ya procesada, sustituir `ID seleccionado` por
+> `Reunión seleccionada`, ocultar completamente el identificador y mostrar en
+> su lugar `Reunión: Día <fecha> Hora: <hora>` usando la fecha del archivo.
+
+## Respuesta de Codex
+
+El mensaje controlado pasa a ser `La reunión seleccionada ya generó el acta
+correspondiente.` en las tres rutas de detección. La vista deja de crear un
+elemento HTML con el ID de Drive; lo conserva únicamente en una variable de
+memoria necesaria para invocar el servidor. La selección presenta el día y la
+hora de creación en `America/Lima` bajo el encabezado `Reunión seleccionada`.
+
+## Archivos modificados
+
+- AppsScript/Main.gs
+- AppsScript/Procesados.gs
+- AppsScript/Web/NotasGemini.html
+- Pruebas/Mantenimiento.test.js
+- Documentacion/Arquitectura.md
+- README.md
+- docs/CODEX_BITACORA.md
+
+## Validaciones previstas
+
+- Confirmar que no permanezcan `ID seleccionado` ni `idSeleccionado`.
+- Confirmar el nuevo mensaje en todos los módulos.
+- Validar el formato de fecha y hora y la sintaxis del cliente web.
+- Ejecutar la suite Node y `git diff --check`.
+
+## Pendiente
+
+- Desplegar y publicar cuando el usuario lo autorice expresamente.
+
+# Cambio 0064
+Fecha: 2026-08-03
+Autor: Codex
+
+## Resultado de validación del cambio 0062
+
+- Las trece pruebas Node finalizaron correctamente.
+- La sintaxis del JavaScript embebido en `NotasGemini.html` es válida.
+- No permanecen en `AppsScript/` el mensaje anterior, `ID seleccionado`,
+  `idSeleccionado` ni un elemento `code` para mostrar el identificador.
+- El nuevo mensaje aparece en `Main.gs` y en las dos rutas de
+  `Procesados.gs`.
+- La página conserva el ID únicamente en la variable de memoria
+  `idDocumentoSeleccionado`.
+- `git diff --check` finalizó correctamente.
+
+La entrada 0063 registró estas pruebas durante la ejecución, pero quedó ubicada
+antes de entradas ya existentes debido a una coincidencia ambigua al agregarla.
+No se movió ni reescribió para respetar la inmutabilidad de la bitácora; esta
+entrada final conserva la continuidad cronológica efectiva.
+
+## Pendiente
+
+- Desplegar y publicar cuando el usuario lo autorice expresamente.
+
+# Cambio 0065
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Desplegar.
+
+## Respuesta de Codex
+
+Se publicó la interfaz de reunión seleccionada sin ID visible, el nuevo mensaje
+de acta ya generada y el detalle de fecha/hora de creación. El despliegue
+incluye también la mejora integral del README y la regla permanente que exige
+actualizarlo en cada publicación pertinente.
+
+## Despliegue seguro
+
+1. Se repitieron las trece pruebas Node, la sintaxis web y `git diff --check`.
+2. Se descargaron los 21 archivos vigentes de Apps Script.
+3. Se verificó `Inicializar.js` antes y después de superponer únicamente
+   `Main`, `Procesados` y `Web/NotasGemini`, conservando SHA-256
+   `439730DC8D25647F8E7F1E6041BCF73E1DEF4057DD44632AD13437157D062D1E`.
+4. Se publicaron 21 archivos a las 23:43:07, hora de Lima.
+5. Se creó la versión 14 y se actualizó `MantenimientoWeb` sin cambiar su ID.
+6. Una descarga independiente confirmó el nuevo mensaje, `Reunión
+   seleccionada`, el formato `Reunión: Día ... Hora: ...`, la variable interna
+   `idDocumentoSeleccionado`, la ausencia del texto y variable anteriores, los
+   21 archivos y la huella histórica de `Inicializar.js`.
+
+## README
+
+`README.md` quedó actualizado con el flujo vigente, capacidades, aplicación
+web, modos de generación, descarga segura, módulos, configuración, pruebas,
+seguridad y documentación. No contiene valores sensibles ni identificadores
+operativos.
+
+## URL vigente
+
+`https://script.google.com/macros/s/AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA/exec?vista=notas`
+
+## Pendiente
+
+- Validar visualmente desde el navegador la fecha y hora de una reunión real.

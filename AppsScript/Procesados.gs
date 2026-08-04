@@ -308,7 +308,7 @@ function proponerCorrelativoGeneracion(
     if (fuente.registro !== null) {
       return _procesadosConstruirResultadoError(
         PROCESADOS_CODIGOS_ERROR.DOCUMENTO_YA_PROCESADO,
-        'La nota seleccionada ya fue registrada anteriormente.'
+        'La reunión seleccionada ya generó el acta correspondiente.'
       );
     }
     const listado = _procesadosListarCorrelativos(acceso.hoja);
@@ -935,7 +935,7 @@ function _procesadosComprobarDisponibilidad(
   if (fuente.registro !== null) {
     return _procesadosConstruirResultadoError(
       PROCESADOS_CODIGOS_ERROR.DOCUMENTO_YA_PROCESADO,
-      'La nota seleccionada ya fue registrada anteriormente.'
+      'La reunión seleccionada ya generó el acta correspondiente.'
     );
   }
   const secuencia = _procesadosBuscarRegistroPorCorrelativo(

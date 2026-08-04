@@ -160,6 +160,11 @@ No almacenes entregables generados dentro del árbol versionado. Consulta `Docum
 - No incluyas credenciales, contenido sensible ni datos reales de reuniones.
 - Mantén consistencia entre la documentación y el comportamiento implementado.
 - No modifiques documentos ajenos al alcance de la tarea.
+- Cada instrucción explícita `desplegar` incluye la actualización de
+  `README.md` para reflejar únicamente las funciones, instrucciones y estado
+  realmente publicados. La mejora debe ser pertinente al cambio desplegado,
+  mantener coherencia con la documentación técnica y excluir identificadores
+  operativos, credenciales y datos sensibles.
 
 ## Versionado
 

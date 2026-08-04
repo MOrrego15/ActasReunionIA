@@ -593,8 +593,10 @@ procesados. Solo admite documentos nativos de Google que no estén en la
 papelera, los ordena por fecha de creación descendente y devuelve como máximo
 los diez primeros.
 
-La interfaz muestra nombre y fecha/hora en la zona `America/Lima`. La selección
-de una fila expone el identificador estable de Drive. La
+La interfaz muestra nombre y fecha/hora en la zona `America/Lima`. Al seleccionar
+una fila presenta `Reunión: Día <fecha> Hora: <hora>` usando la fecha de creación.
+El identificador estable de Drive permanece únicamente en memoria del cliente
+para invocar el servidor y no se renderiza en la página. La
 autorización reutiliza `MANTENIMIENTO_CORREOS_AUTORIZADOS`; además, como la
 aplicación se ejecuta con la identidad del usuario, esa cuenta debe poder leer
 la carpeta configurada.
@@ -619,7 +621,8 @@ de descarga con vigencia de diez minutos. La respuesta web devuelve solo el
 token. Al solicitar la descarga, el servidor vuelve a validar autorización,
 token, MIME, papelera y tamaño máximo, entrega el contenido en Base64 y elimina
 el token. La interfaz crea localmente el archivo, impide repetir la generación
-sobre la misma nota y actualiza el campo con el primer correlativo libre posterior.
+sobre la misma reunión con el mensaje `La reunión seleccionada ya generó el
+acta correspondiente.` y actualiza el campo con el primer correlativo libre posterior.
 
 Ambos flujos dirigidos obtienen el descriptor mediante
 `obtenerDocumentoFuentePorId`: recorre los archivos directos de la carpeta y

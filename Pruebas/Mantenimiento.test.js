@@ -251,6 +251,10 @@ const paginaNotasHtml = fs.readFileSync(
 assert.match(paginaNotasHtml, /id="generarSecuencia"/);
 assert.match(paginaNotasHtml, />Crear Acta SEC\.<\/button>/);
 assert.match(paginaNotasHtml, /generarActaNotaSeleccionadaAutomatica/);
+assert.match(paginaNotasHtml, />Reunión seleccionada<\/strong>/);
+assert.match(paginaNotasHtml, /Reunión: Día /);
+assert.doesNotMatch(paginaNotasHtml, /ID seleccionado/);
+assert.doesNotMatch(paginaNotasHtml, /idSeleccionado/);
 
 const estado = sandbox.obtenerEstadoMantenimiento();
 assert.strictEqual(estado.exito, true);

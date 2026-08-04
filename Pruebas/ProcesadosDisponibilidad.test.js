@@ -54,6 +54,12 @@ assert.strictEqual(
 );
 assert.strictEqual(
   sandbox.consultarDisponibilidadGeneracion(
+    'hoja-seguimiento', 'nota-generada', 30
+  ).error.mensaje,
+  'La reunión seleccionada ya generó el acta correspondiente.'
+);
+assert.strictEqual(
+  sandbox.consultarDisponibilidadGeneracion(
     'hoja-seguimiento', 'nota-nueva', 25
   ).error.codigo,
   'PROCESADOS_CORRELATIVO_YA_UTILIZADO'

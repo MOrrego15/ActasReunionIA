@@ -341,7 +341,7 @@ function _mainEjecutarGeneracionSeleccionada(
       exito: false, datos: null,
       error: {
         codigo: MAIN_CODIGOS_ERROR.PROCESADOS_ERROR,
-        mensaje: 'La nota seleccionada ya fue registrada anteriormente.'
+        mensaje: 'La reunión seleccionada ya generó el acta correspondiente.'
       }
     };
   }
