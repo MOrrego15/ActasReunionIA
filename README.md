@@ -58,9 +58,9 @@ documento candidato.
 La aplicación web, restringida mediante una lista de correos autorizados,
 ofrece dos vistas:
 
-- **Notas de Reuniones por Meet:** muestra hasta diez notas recientes,
+- **Notas de Daily por MEET:** muestra hasta diez notas recientes,
   ordenadas por fecha de creación, y permite generar el acta seleccionada.
-- **Mantenimiento del correlativo:** permite consultar y ajustar de forma
+- **Mantenimiento del Correlativo Daily:** permite consultar y ajustar de forma
   controlada el último correlativo persistido.
 
 Al seleccionar una reunión, la interfaz muestra únicamente su día y hora de

@@ -1,7 +1,7 @@
 /** Web maintenance page for the act sequence number. */
 
 const MANTENIMIENTO_CLAVE_CORREOS = 'MANTENIMIENTO_CORREOS_AUTORIZADOS';
-const MANTENIMIENTO_TITULO = 'Mantenimiento del correlativo de actas';
+const MANTENIMIENTO_TITULO = 'Mantenimiento del Correlativo Daily';
 const MANTENIMIENTO_LIMITE_CORRELATIVO = 999999;
 const MANTENIMIENTO_MIME_GOOGLE_DOCS =
   'application/vnd.google-apps.document';
@@ -32,7 +32,7 @@ function doGet(evento) {
   plantilla.urlAplicacion = ScriptApp.getService().getUrl();
   return plantilla.evaluate()
     .setTitle(
-      vistaNotas ? 'Notas de Reuniones por Meet' : MANTENIMIENTO_TITULO
+      vistaNotas ? 'Notas de Daily por MEET' : MANTENIMIENTO_TITULO
     );
 }
 

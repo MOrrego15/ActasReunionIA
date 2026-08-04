@@ -586,7 +586,7 @@ elegible.
 
 ### 12.7 Consulta web de notas de Gemini
 
-La aplicación web incorpora una vista administrativa de solo lectura accesible
+La aplicación web incorpora la vista `Notas de Daily por MEET`, de solo lectura, accesible
 mediante `?vista=notas`. El servidor consulta directamente los archivos de la
 carpeta identificada por `CARPETA_NOTAS_GEMINI_ID`, sin consultar el registro de
 procesados. Solo admite documentos nativos de Google que no estén en la
@@ -600,6 +600,10 @@ para invocar el servidor y no se renderiza en la página. La
 autorización reutiliza `MANTENIMIENTO_CORREOS_AUTORIZADOS`; además, como la
 aplicación se ejecuta con la identidad del usuario, esa cuenta debe poder leer
 la carpeta configurada.
+
+La vista administrativa del correlativo usa el título institucional
+`Mantenimiento del Correlativo Daily` y enlaza la consulta mediante el texto
+`Ver últimas reuniones Daily`.
 
 ### 12.8 Generación dirigida desde la vista de notas
 

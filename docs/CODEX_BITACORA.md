@@ -4275,3 +4275,144 @@ operativos.
 ## Pendiente
 
 - Validar visualmente desde el navegador la fecha y hora de una reunión real.
+
+# Cambio 0066
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Cambiar el título a `Mantenimiento del Correlativo Daily` y el enlace de la
+> segunda imagen a `Ver últimas reuniones Daily`.
+
+## Respuesta de Codex
+
+La página de mantenimiento, el título de su pestaña y el enlace de retorno
+desde la vista de notas usan `Mantenimiento del Correlativo Daily`. El enlace
+que abre la lista de reuniones usa `Ver últimas reuniones Daily`. La
+descripción y la lógica de ambas vistas permanecen sin cambios.
+
+## Archivos modificados
+
+- AppsScript/Web/Mantenimiento.gs
+- AppsScript/Web/PaginaMantenimiento.html
+- AppsScript/Web/NotasGemini.html
+- Pruebas/Mantenimiento.test.js
+- Documentacion/Arquitectura.md
+- README.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas previstas
+
+- Verificar título del servidor, encabezado HTML y ambos enlaces.
+- Ejecutar las trece pruebas Node.
+- Validar sintaxis de los dos clientes web y `git diff --check`.
+
+## Pendiente
+
+- Desplegar y publicar cuando el usuario lo autorice expresamente.
+
+# Cambio 0067
+Fecha: 2026-08-03
+Autor: Codex
+
+## Validación del cambio 0066
+
+- Las trece pruebas Node finalizaron correctamente.
+- La prueba de mantenimiento exige el título de la pestaña, el encabezado, el
+  enlace `Ver últimas reuniones Daily` y el retorno hacia mantenimiento.
+- La sintaxis JavaScript de las dos páginas HTML es válida.
+- `git diff --check` finalizó correctamente.
+
+## Pendiente
+
+- Desplegar y publicar cuando el usuario lo autorice expresamente.
+
+# Cambio 0068
+Fecha: 2026-08-03
+Autor: Codex
+
+## Solicitud del usuario
+
+> Cambiar `Notas de Reuniones por Meet` por `Notas de Daily por MEET` y
+> reemplazar la descripción para referirse a las diez notas de Daily por MEET.
+
+## Respuesta de Codex
+
+La vista, el título de la pestaña y la etiqueta accesible de la tabla usan
+`Notas de Daily por MEET`. La descripción visible quedó como `Se muestran como
+máximo las diez notas de Daily por MEET, más recientes encontradas en la
+carpeta configurada, ordenadas por fecha de creación en orden desendente.` La
+lógica de consulta, ordenamiento y límite permanece sin cambios.
+
+## Archivos modificados
+
+- AppsScript/Web/Mantenimiento.gs
+- AppsScript/Web/NotasGemini.html
+- Pruebas/Mantenimiento.test.js
+- Documentacion/Arquitectura.md
+- README.md
+- docs/CODEX_BITACORA.md
+
+## Pruebas previstas
+
+- Verificar los textos visibles, el título del servidor y la etiqueta ARIA.
+- Ejecutar las trece pruebas Node.
+- Validar sintaxis web y `git diff --check`.
+
+## Pendiente
+
+- Desplegar y publicar cuando el usuario lo autorice expresamente.
+
+# Cambio 0069
+Fecha: 2026-08-03
+Autor: Codex
+
+## Validación del cambio 0068
+
+- Las trece pruebas Node finalizaron correctamente.
+- La sintaxis JavaScript de `NotasGemini.html` es válida.
+- No permanecen en Apps Script ni README el título y la descripción anteriores.
+- La prueba web exige título, descripción y etiqueta ARIA nuevos.
+- `git diff --check` finalizó correctamente.
+
+## Pendiente
+
+- Desplegar y publicar el conjunto acumulado cuando el usuario lo autorice.
+
+# Cambio 0070
+Fecha: 2026-08-04
+Autor: Codex
+
+## Solicitud del usuario
+
+> Desplegar.
+
+## Respuesta de Codex
+
+Se publicaron los títulos Daily acumulados en la versión 15 de la aplicación
+web. El conjunto incluye `Mantenimiento del Correlativo Daily`, `Ver últimas
+reuniones Daily`, `Notas de Daily por MEET` y su descripción actualizada. El
+README también refleja los nombres realmente publicados.
+
+## Despliegue seguro
+
+1. Se repitieron las trece pruebas Node, la sintaxis web y `git diff --check`.
+2. Se descargaron los 21 archivos remotos vigentes.
+3. Se verificó `Inicializar.js` antes y después de superponer únicamente
+   `Web/Mantenimiento`, `Web/NotasGemini` y `Web/PaginaMantenimiento`,
+   conservando SHA-256
+   `439730DC8D25647F8E7F1E6041BCF73E1DEF4057DD44632AD13437157D062D1E`.
+4. Se publicaron los 21 archivos a las 00:00:56, hora de Lima.
+5. Se creó la versión 15 y se actualizó `MantenimientoWeb` sin cambiar su ID.
+6. Una descarga independiente confirmó todos los textos nuevos, la ausencia de
+   sus variantes anteriores, los 21 archivos y la huella histórica de
+   `Inicializar.js`.
+
+## URL vigente
+
+`https://script.google.com/macros/s/AKfycbz_Rwx8PN0EXUeH92wa-2_c11EksXjR3NJeIvJADxCgv4RsIXFteBwfbE10d5zmDnJdBA/exec?vista=notas`
+
+## Pendiente
+
+- Validar visualmente ambas vistas desde el navegador.

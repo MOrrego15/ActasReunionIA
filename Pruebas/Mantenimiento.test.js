@@ -181,12 +181,16 @@ assert.deepStrictEqual(manifiesto.webapp, {
 assert.strictEqual(sandbox._mantenimientoEsUsuarioAutorizado(), true);
 assert.strictEqual(sandbox.doGet().archivo, 'Web/PaginaMantenimiento');
 assert.strictEqual(
+  sandbox.doGet().titulo,
+  'Mantenimiento del Correlativo Daily'
+);
+assert.strictEqual(
   sandbox.doGet().urlAplicacion,
   'https://script.google.com/macros/s/prueba/exec'
 );
 const paginaNotas = sandbox.doGet({ parameter: { vista: 'notas' } });
 assert.strictEqual(paginaNotas.archivo, 'Web/NotasGemini');
-assert.strictEqual(paginaNotas.titulo, 'Notas de Reuniones por Meet');
+assert.strictEqual(paginaNotas.titulo, 'Notas de Daily por MEET');
 
 const listadoNotas = sandbox.obtenerNotasGeminiDisponibles();
 assert.strictEqual(listadoNotas.exito, true);
@@ -251,6 +255,24 @@ const paginaNotasHtml = fs.readFileSync(
 assert.match(paginaNotasHtml, /id="generarSecuencia"/);
 assert.match(paginaNotasHtml, />Crear Acta SEC\.<\/button>/);
 assert.match(paginaNotasHtml, /generarActaNotaSeleccionadaAutomatica/);
+assert.match(paginaNotasHtml, /<h1>Notas de Daily por MEET<\/h1>/);
+assert.match(
+  paginaNotasHtml,
+  /Se muestran como máximo las diez notas de Daily por MEET,/
+);
+assert.match(paginaNotasHtml, /Últimas notas de Daily por MEET/);
+assert.match(
+  paginaNotasHtml,
+  /Mantenimiento del Correlativo Daily/
+);
+const paginaMantenimientoHtml = fs.readFileSync(
+  'AppsScript/Web/PaginaMantenimiento.html', 'utf8'
+);
+assert.match(
+  paginaMantenimientoHtml,
+  /<h1>Mantenimiento del Correlativo Daily<\/h1>/
+);
+assert.match(paginaMantenimientoHtml, /Ver últimas reuniones Daily/);
 assert.match(paginaNotasHtml, />Reunión seleccionada<\/strong>/);
 assert.match(paginaNotasHtml, /Reunión: Día /);
 assert.doesNotMatch(paginaNotasHtml, /ID seleccionado/);
