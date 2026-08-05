@@ -169,9 +169,21 @@ exportación Word.
 
 ## Estado
 
-El proyecto dispone de un flujo funcional desplegado y continúa en evolución
-controlada. No se declara una versión semántica formal hasta que exista una
-publicación aprobada.
+| Aspecto | Detalle |
+|---|---|
+| **Rama activa de desarrollo** | `ActasReuIA_GEMI` |
+| **Rama estable** | `main` |
+| **IA principal** | Google Gemini (`GeminiIA.gs`) |
+| **IA secundaria / respaldo** | OpenAI (`OpenAI.gs`) — opcional |
+| **Despliegue** | Google Apps Script vía `clasp` |
+| **Flujo** | Funcional y en evolución controlada |
+
+La rama `ActasReuIA_GEMI` concentra la migración del cliente de inteligencia
+artificial de OpenAI a Google Gemini. No se fusionará con `main` hasta
+aprobación explícita.
+
+No se declara una versión semántica formal hasta que exista una publicación
+aprobada.
 
 ## Licencia
 
