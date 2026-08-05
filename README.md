@@ -24,9 +24,7 @@ El nombre del entregable conserva el formato:
 
 ```text
 DD.MM.AAAA-NNN-Daily.docx
-```
-
-## Flujo general
+`## Flujo general
 
 ```text
 Nota de Gemini + transcripción
@@ -35,19 +33,19 @@ Nota de Gemini + transcripción
   Selección y control de estado
               │
               ▼
- Extracción y análisis con OpenAI
+  Extracción y análisis con Google Gemini (GeminiIA)
               │
               ▼
- Validación y reserva de correlativo
+  Validación y reserva de correlativo
               │
               ▼
-   Generación del Google Docs
+    Generación del Google Docs
               │
               ▼
-    Exportación y verificación DOCX
+     Exportación y verificación DOCX
               │
               ▼
- Registro final y eliminación temporal
+  Registro final y eliminación temporal
 ```
 
 Un error individual se registra y el procesamiento continúa con el siguiente
@@ -89,7 +87,7 @@ ActasReunionIA/
 ├── Pruebas/          Pruebas automatizadas ejecutables con Node.js
 ├── Recursos/         Recursos gráficos y auxiliares autorizados
 ├── Scripts/          Utilidades de desarrollo y despliegue
-├── docs/             Bitácora técnica acumulativa de Codex
+├── docs/             Bitácora técnica acumulativa
 ├── .github/          Configuración de GitHub
 ├── AGENTS.md         Reglas permanentes de colaboración
 └── README.md
@@ -106,8 +104,9 @@ Los documentos generados y las notas reales no se almacenan en Git.
 | `Drive.gs` | Acceso a notas, transcripciones y metadatos de Drive |
 | `Procesados.gs` | Estados, unicidad e idempotencia en Google Sheets |
 | `Correlativo.gs` | Reserva persistente protegida por bloqueo |
-| `Prompt.gs` | Construcción de instrucciones para OpenAI |
-| `OpenAI.gs` | Integración con la API y esquema de respuesta |
+| `Prompt.gs` | Construcción de instrucciones para la IA |
+| `GeminiIA.gs` | Integración con la API de Google Gemini y esquema JSON estructurado |
+| `OpenAI.gs` | Cliente secundario de respaldo con la API de OpenAI |
 | `ValidadorRespuesta.gs` | Validación y normalización del acta estructurada |
 | `Personas.gs` | Resolución de participantes, cargos y unidades |
 | `Acta.gs` | Construcción y formato del documento institucional |
@@ -125,8 +124,9 @@ encuentran:
 - `CARPETA_OTRO`
 - `CARPETA_RAIZ_ACTAS_ID`
 - `REPOSITORIO_PROCESADOS_ID`
-- `OPENAI_API_KEY`
-- `OPENAI_MODELO`
+- `GEMINI_API_KEY`
+- `GEMINI_MODELO` (predeterminado: `gemini-2.0-flash`)
+- `OPENAI_API_KEY` (opcional / respaldo)
 - `PROMPT_VERSION`
 - `MANTENIMIENTO_CORREOS_AUTORIZADOS`
 - `ACTAS_ULTIMO_CORRELATIVO`

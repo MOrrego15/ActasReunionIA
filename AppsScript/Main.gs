@@ -409,17 +409,21 @@ function _mainProcesarDocumento(
       );
     }
 
-    const openAI = solicitarActaEstructurada(prompt.datos.mensajes, contexto);
-    if (!_mainResultadoExitoso(openAI) || !openAI.datos ||
-      !esCadenaNoVacia(openAI.datos.respuestaTexto)) {
+    const geminiIA = solicitarActaEstructuradaGemini(prompt.datos.mensajes, contexto);
+    const respuestaIA = _mainResultadoExitoso(geminiIA) && geminiIA.datos && esCadenaNoVacia(geminiIA.datos.respuestaTexto)
+      ? geminiIA
+      : (typeof solicitarActaEstructurada === 'function' ? solicitarActaEstructurada(prompt.datos.mensajes, contexto) : geminiIA);
+
+    if (!_mainResultadoExitoso(respuestaIA) || !respuestaIA.datos ||
+      !esCadenaNoVacia(respuestaIA.datos.respuestaTexto)) {
       return _mainResultadoDesdeModulo(
-        posicion, MAIN_ETAPAS.OPENAI, correlativo, openAI,
+        posicion, MAIN_ETAPAS.OPENAI, correlativo, respuestaIA,
         MAIN_CODIGOS_ERROR.OPENAI_ERROR
       );
     }
 
     const validacion = validarRespuestaActa(
-      openAI.datos.respuestaTexto,
+      respuestaIA.datos.respuestaTexto,
       contexto
     );
     if (!_mainResultadoExitoso(validacion) || !validacion.datos ||

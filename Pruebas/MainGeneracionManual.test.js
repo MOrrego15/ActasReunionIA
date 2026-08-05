@@ -13,6 +13,7 @@ const sandbox = {
   Session: { getScriptTimeZone: () => 'America/Lima' },
   leerContenidoDocumentoFuente: () => exito({ contenidoFuente: 'contenido' }),
   construirPromptActa: () => exito({ mensajes: [{}] }),
+  solicitarActaEstructuradaGemini: () => exito({ respuestaTexto: '{}' }),
   solicitarActaEstructurada: () => exito({ respuestaTexto: '{}' }),
   validarRespuestaActa: () => exito({ respuestaActaValidada: {} }),
   listarDocumentosGoogleVinculados: () => exito({ documentos: [] }),

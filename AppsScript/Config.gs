@@ -74,11 +74,20 @@ function _configConstruir(propiedadesScript) {
     propiedadesInvalidas,
     false
   );
-  const claveApiOpenAI = _configLeerObligatoria(
+  const claveApiGemini = _configLeerOpcionalNoVacia(
+    propiedadesScript,
+    'GEMINI_API_KEY',
+    propiedadesInvalidas
+  );
+  const modeloGemini = _configLeerOpcionalNoVacia(
+    propiedadesScript,
+    'GEMINI_MODELO',
+    propiedadesInvalidas
+  ) || 'gemini-2.0-flash';
+  const claveApiOpenAI = _configLeerOpcionalNoVacia(
     propiedadesScript,
     'OPENAI_API_KEY',
-    propiedadesInvalidas,
-    true
+    propiedadesInvalidas
   );
   const versionPrompt = _configLeerObligatoria(
     propiedadesScript,
@@ -91,6 +100,10 @@ function _configConstruir(propiedadesScript) {
     'OPENAI_MODELO',
     propiedadesInvalidas
   );
+
+  if (!esCadenaNoVacia(claveApiGemini) && !esCadenaNoVacia(claveApiOpenAI)) {
+    propiedadesInvalidas.push('GEMINI_API_KEY');
+  }
 
   _configAsegurarValidez(propiedadesInvalidas);
 
@@ -109,6 +122,10 @@ function _configConstruir(propiedadesScript) {
     }),
     procesados: Object.freeze({
       repositorioId: identificadorRepositorioProcesados
+    }),
+    geminiIA: Object.freeze({
+      apiKey: claveApiGemini || claveApiOpenAI,
+      modelo: modeloGemini
     }),
     openAI: Object.freeze({
       apiKey: claveApiOpenAI,

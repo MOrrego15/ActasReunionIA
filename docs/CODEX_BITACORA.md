@@ -4416,3 +4416,70 @@ README también refleja los nombres realmente publicados.
 ## Pendiente
 
 - Validar visualmente ambas vistas desde el navegador.
+
+# Cambio 0071
+Fecha: 2026-08-04
+Autor: Antigravity
+
+## Solicitud del usuario
+
+> Crear una rama en Git solo para este proyecto con nombre `ActasReuIA_GEMI`, la cual desplegará en Apps Script y no se hará merger con la principal hasta instrucción explícita.
+
+## Respuesta de Antigravity
+
+Se creó y activó la rama de trabajo `ActasReuIA_GEMI` a partir de `main`. Todas las modificaciones, desarrollo de la integración con Google Gemini, pruebas y despliegues en Google Apps Script se realizarán de manera aislada en esta rama. La rama `main` permanecerá sin cambios hasta recibir autorización explícita de fusión.
+
+## Registro de progreso
+
+1. Se leyó completamente la documentación obligatoria y la bitácora `docs/CODEX_BITACORA.md`.
+2. Se ejecutó `git checkout -b ActasReuIA_GEMI` de forma segura.
+3. Se verificó el estado de Git (`git status`), confirmando la posición en la nueva rama `ActasReuIA_GEMI`.
+4. Se actualizó el plan de implementación para reflejar el trabajo en la rama `ActasReuIA_GEMI`.
+
+## Archivos modificados
+
+- docs/CODEX_BITACORA.md
+
+## Pendiente
+
+- Desplegar los cambios del cliente `GeminiIA.gs` en Google Apps Script usando la rama `ActasReuIA_GEMI` cuando el usuario lo autorice.
+
+# Cambio 0072
+Fecha: 2026-08-04
+Autor: Antigravity
+
+## Solicitud del usuario
+
+> Crea el cliente geminiIA.
+
+## Respuesta de Antigravity
+
+Se creó el módulo cliente [`AppsScript/GeminiIA.gs`](file:///G:/Mi%20unidad/CHATGPT/ActasReunionIA/AppsScript/GeminiIA.gs) para consumir la API de Google Gemini (`generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent`). El cliente utiliza `responseMimeType: "application/json"` y valida la respuesta mediante el esquema de datos estricto del proyecto (`_geminiIAConstruirEsquemaActa`).
+
+Se actualizaron [`AppsScript/Config.gs`](file:///G:/Mi%20unidad/CHATGPT/ActasReunionIA/AppsScript/Config.gs) para leer las propiedades `GEMINI_API_KEY` y `GEMINI_MODELO` (predeterminado `gemini-2.0-flash`), y [`AppsScript/Main.gs`](file:///G:/Mi%20unidad/CHATGPT/ActasReunionIA/AppsScript/Main.gs) para invocar `solicitarActaEstructuradaGemini` con *fallback* transparente.
+
+## Registro de progreso
+
+1. Se creó `AppsScript/GeminiIA.gs` implementando `solicitarActaEstructuradaGemini`, `_geminiIAConstruirCarga` y `_geminiIAConstruirEsquemaActa`.
+2. Se adaptó `Config.gs` para leer `GEMINI_API_KEY` y `GEMINI_MODELO`.
+3. Se integró la llamada a `GeminiIA` en `Main.gs`.
+4. Se creó la prueba unitaria `Pruebas/GeminiIA.test.js` y se actualizó `Pruebas/MainGeneracionManual.test.js`.
+5. Se ejecutaron las 14 pruebas de la suite de Node, todas con éxito.
+
+## Archivos creados
+
+- AppsScript/GeminiIA.gs
+- Pruebas/GeminiIA.test.js
+
+## Archivos modificados
+
+- AppsScript/Config.gs
+- AppsScript/Main.gs
+- Pruebas/MainGeneracionManual.test.js
+- docs/CODEX_BITACORA.md
+
+## Pendiente
+
+- Solicitar autorización para desplegar los cambios en Google Apps Script dentro de la rama `ActasReuIA_GEMI`.
+
+
