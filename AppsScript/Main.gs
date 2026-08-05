@@ -831,3 +831,15 @@ function _mainRegistrar(mensaje, contexto, datos, esError) {
     // Un fallo de Logger no modifica el resultado funcional.
   }
 }
+
+/**
+ * Punto de entrada para ejecución manual desde el editor de Apps Script.
+ * Llama a ejecutarGeneracionActas con el parámetro vacío requerido.
+ * Selecciona esta función en el menú desplegable del editor y presiona ▶️.
+ */
+function ejecutar() {
+  const resultado = ejecutarGeneracionActas({});
+  Logger.log(JSON.stringify(resultado, null, 2));
+  return resultado;
+}
+
