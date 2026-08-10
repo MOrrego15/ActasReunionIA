@@ -838,7 +838,14 @@ function _mainRegistrar(mensaje, contexto, datos, esError) {
  * Selecciona esta función en el menú desplegable del editor y presiona ▶️.
  */
 function ejecutar() {
-  const resultado = ejecutarGeneracionActas({});
+  const parametros = {};
+  const tipo = typeof parametros;
+  const prototipo = Object.getPrototypeOf(parametros);
+  const claves = Object.keys(parametros).length;
+  Logger.log('DIAGNOSTICO - tipo: ' + tipo +
+    ' | esObject: ' + (prototipo === Object.prototype) +
+    ' | claves: ' + claves);
+  const resultado = ejecutarGeneracionActas(parametros);
   Logger.log(JSON.stringify(resultado, null, 2));
   return resultado;
 }

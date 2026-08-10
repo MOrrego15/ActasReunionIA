@@ -4482,4 +4482,45 @@ Se actualizaron [`AppsScript/Config.gs`](file:///G:/Mi%20unidad/CHATGPT/ActasReu
 
 - Solicitar autorización para desplegar los cambios en Google Apps Script dentro de la rama `ActasReuIA_GEMI`.
 
+# Cambio 0073
+Fecha: 2026-08-10
+Autor: Codex
+
+## Solicitud del usuario
+
+> Separar la versión estable y la variante Gemini; continuar y desplegar sin
+> perder el cambio local pendiente.
+
+## Diagnóstico
+
+- Rama experimental identificada: `ActasReuIA_GEMI`.
+- Commit base y estable: `e59854e`.
+- Commit experimental confirmado antes de este cambio: `9afcb79`.
+- El `.clasp.json` versionado en la rama experimental todavía apunta al Script
+  ID original, por lo que no debe usarse para desplegar Gemini.
+- `AppsScript/Main.gs` contenía un diagnóstico local no confirmado dentro de
+  `ejecutar()`; el usuario autorizó desplegar y, por tanto, respaldar el cambio
+  antes de cambiar de rama.
+
+## Cambio preservado
+
+`ejecutar()` registra el tipo, el prototipo y la cantidad de claves del objeto
+vacío que entrega a `ejecutarGeneracionActas`. No se incluyeron secretos ni
+identificadores operativos.
+
+## Pruebas
+
+- Catorce pruebas Node, incluida `GeminiIA.test.js`: correctas.
+- `git diff --check`: sin errores de contenido.
+
+## Archivos modificados
+
+- AppsScript/Main.gs
+- docs/CODEX_BITACORA.md
+
+## Pendiente
+
+- Confirmar y publicar este respaldo en `ActasReuIA_GEMI`.
+- Restaurar `main` y verificar el proyecto Apps Script original antes de push.
+- Crear el entorno y proyecto independiente `ActasReunionIA_G`.
 
