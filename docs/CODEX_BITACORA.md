@@ -4617,3 +4617,53 @@ Autor: Codex
 - Confirmar desde el navegador que la cuenta institucional accede a la vista
   de notas y completa la autorización OAuth inicial.
 
+# Cambio 0076
+Fecha: 2026-08-10
+Autor: Codex
+
+## Solicitud del usuario
+
+> Actualizar el resumen de GitHub, adjuntar la infografía donde corresponde y
+> desplegar, reflejando que la variante utiliza Google Gemini.
+
+## Resultado
+
+1. Se editó la infografía vertical conservando estructura, numeración, estilo,
+   dimensiones relativas y contenido general.
+2. En el paso 5 se sustituyeron el símbolo y el texto de OpenAI por Google
+   Gemini: `Procesar contenido con Google Gemini`.
+3. La imagen final se guardó en
+   `Recursos/ProcesoCreacionActaGemini.png` y se incorporó al README después del
+   flujo general.
+4. El README aclara que Google Gemini realiza la estructuración principal del
+   contenido en el entorno experimental.
+
+## Herramienta visual
+
+Se utilizó la edición raster integrada de Codex con la imagen entregada como
+objetivo de edición. No se utilizó una API externa ni se almacenaron secretos.
+
+## Archivos modificados
+
+- `Recursos/ProcesoCreacionActaGemini.png`
+- `README.md`
+- `docs/CODEX_BITACORA.md`
+
+## Validaciones
+
+- Imagen PNG válida: 864 × 1821 píxeles.
+- Texto del paso 5 legible y referido a Google Gemini.
+- Enlace relativo del README resuelto dentro del repositorio.
+
+## Despliegue
+
+- Se publicaron 22 archivos verificados en el proyecto experimental.
+- La implementación web independiente se actualizó a la versión 4 conservando
+  su URL.
+- No se modificó el proyecto estable ni la rama `main`.
+
+## Pendiente
+
+- Verificar la representación de la infografía en la página principal de
+  GitHub después del push.
+

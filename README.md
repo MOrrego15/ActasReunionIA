@@ -51,6 +51,14 @@ Nota de Gemini + transcripción
 Un error individual se registra y el procesamiento continúa con el siguiente
 documento candidato.
 
+### Proceso de creación del acta
+
+![Proceso de creación del acta con Google Gemini](Recursos/ProcesoCreacionActaGemini.png)
+
+La infografía representa el flujo desplegado en el entorno experimental:
+Google Gemini realiza la estructuración principal del contenido antes de la
+validación y la generación documental.
+
 ## Aplicación web administrativa
 
 La aplicación web, restringida mediante una lista de correos autorizados,
