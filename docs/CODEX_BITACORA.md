@@ -4524,3 +4524,51 @@ identificadores operativos.
 - Restaurar `main` y verificar el proyecto Apps Script original antes de push.
 - Crear el entorno y proyecto independiente `ActasReunionIA_G`.
 
+# Cambio 0074
+Fecha: 2026-08-10
+Autor: Codex
+
+## Solicitud del usuario
+
+> Restaurar la versión estable y desplegar la variante Gemini en una ruta web
+> nueva, diferente de la aplicación estable, indicando la URL de ejecución.
+
+## Resultado
+
+1. Se restauró el proyecto Apps Script estable desde `main` (`e59854e`) con
+   21 archivos. Se retiró `GeminiIA.js` del proyecto estable y se recuperó
+   `Inicializar.js` con su huella SHA-256 histórica.
+2. Una clonación independiente confirmó 21 archivos, ausencia de
+   `GeminiIA.js` y presencia íntegra de `Inicializar.js`.
+3. Se creó el proyecto independiente `ActasReunionIA_G` con un Script ID
+   diferente del estable.
+4. Se restauró el manifiesto autorizado con zona `America/Lima`, aplicación
+   web ejecutada por el usuario y alcances OAuth para Drive, Docs, Sheets,
+   correo y solicitudes externas.
+5. Se publicaron 22 archivos en el proyecto nuevo, incluidos `GeminiIA.gs` e
+   `Inicializar.js`, y se creó su primera implementación web independiente.
+6. Se excluyó `.clasp.json` del control de versiones y se documentó la
+   separación física y lógica de ambos entornos.
+
+## Pruebas y validaciones
+
+- Catorce pruebas Node: correctas.
+- Sintaxis de los 18 archivos `.gs`: correcta.
+- Manifiesto JSON: válido.
+- Script ID experimental: distinto del estable.
+- `Inicializar.js`: SHA-256 histórico confirmado.
+
+## Archivos modificados
+
+- `.gitignore`
+- `README.md`
+- `Documentacion/Arquitectura.md`
+- `Documentacion/Decisiones_Arquitectonicas.md`
+- `docs/CODEX_BITACORA.md`
+
+## Pendientes operativos
+
+- Configurar en el proyecto nuevo las Script Properties necesarias, sin copiar
+  secretos al repositorio.
+- Autorizar la aplicación con la cuenta ejecutora al abrir la nueva URL.
+

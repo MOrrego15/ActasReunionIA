@@ -185,6 +185,23 @@ aprobación explícita.
 No se declara una versión semántica formal hasta que exista una publicación
 aprobada.
 
+## Entorno experimental independiente
+
+Esta copia corresponde exclusivamente a la variante Google Gemini:
+
+- Carpeta local: `ActasReunionIA_G`.
+- Rama Git: `ActasReuIA_GEMI`.
+- Proyecto Apps Script: `ActasReunionIA_G`.
+- Implementación web: independiente de la aplicación estable.
+
+El proyecto estable permanece en `ActasReunionIA`, rama `main`, y conserva su
+propio proyecto e implementación de Apps Script. La variante experimental no
+debe desplegarse sobre el Script ID estable ni fusionarse con `main` sin una
+autorización explícita.
+
+`.clasp.json` es una asociación local del entorno y no se versiona porque
+contiene el identificador operativo del proyecto Apps Script.
+
 ## Licencia
 
 Pendiente de definición.

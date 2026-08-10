@@ -228,3 +228,15 @@ Este documento registra las decisiones iniciales, su motivación y las cuestione
 9. Fecha utilizada en el nombre del acta.
 10. Retención, clasificación y acceso a datos.
 11. Estrategia de pruebas y ambientes.
+
+## DA-012 — Separación del entorno experimental Gemini
+
+**Fecha:** 2026-08-10
+**Estado:** Aprobada
+
+La variante basada en Google Gemini se mantiene en la carpeta
+`ActasReunionIA_G`, rama `ActasReuIA_GEMI`, y en un proyecto Apps Script nuevo.
+La versión estable permanece en `ActasReunionIA`, rama `main`, asociada a su
+proyecto original. Los Script ID son distintos y `.clasp.json` se excluye de
+Git. No se permite desplegar la variante Gemini sobre el proyecto estable ni
+fusionarla con `main` sin autorización explícita.

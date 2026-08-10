@@ -637,3 +637,16 @@ Para pruebas desde el editor, `probarGeneracionActaManual` lee
 `PRUEBA_GENERACION_NOTA_ID` y `PRUEBA_GENERACION_CORRELATIVO` desde Propiedades
 del script. La función ejecuta una generación real y conserva las mismas
 validaciones de unicidad del flujo web.
+
+## Entornos físicamente separados
+
+Desde el 10 de agosto de 2026 existen dos entornos sin asociación compartida:
+
+- `ActasReunionIA`, rama `main`, conserva la versión estable y su proyecto
+  original de Apps Script.
+- `ActasReunionIA_G`, rama `ActasReuIA_GEMI`, aloja el cliente principal
+  `GeminiIA.gs` y utiliza un proyecto Apps Script independiente.
+
+Cada carpeta mantiene su propio `.clasp.json` local. Este archivo no forma
+parte del repositorio. Los despliegues deben comprobar rama, commit, proyecto
+esperado, Script ID enmascarado y lista de archivos antes de publicar.
