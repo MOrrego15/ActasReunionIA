@@ -4572,3 +4572,48 @@ Autor: Codex
   secretos al repositorio.
 - Autorizar la aplicación con la cuenta ejecutora al abrir la nueva URL.
 
+# Cambio 0075
+Fecha: 2026-08-10
+Autor: Codex
+
+## Solicitud del usuario
+
+> Conceder acceso administrativo y de ejecución a la cuenta institucional
+> indicada, desplegar y resolver la imposibilidad de ingresar.
+
+## Resultado
+
+1. Se confirmó que la autorización interna depende de la propiedad
+   `MANTENIMIENTO_CORREOS_AUTORIZADOS` y del correo de la sesión activa.
+2. Se publicó una función temporal restringida para registrar el administrador
+   en Script Properties, sin incorporar el correo al repositorio.
+3. Dos intentos de ejecución remota no modificaron propiedades: el primero
+   recibió parámetros JSON alterados por PowerShell y el segundo fue rechazado
+   por la API de ejecución de Google.
+4. El usuario ejecutó la función desde el editor de Apps Script y confirmó su
+   finalización.
+5. Se retiraron la función y la API ejecutable temporales.
+6. `Inicializar.js` se restauró con su SHA-256 histórico y se publicaron los 22
+   archivos limpios.
+7. La implementación web experimental se actualizó a la versión 3 conservando
+   su URL independiente.
+8. La implementación temporal de configuración fue eliminada.
+
+## Validaciones
+
+- `Inicializar.js`: huella histórica confirmada.
+- Función temporal: ausente en el código final.
+- `executionApi`: ausente en el manifiesto final.
+- Implementación temporal: eliminada.
+- Implementación web experimental: versión 3 disponible.
+
+## Archivos modificados
+
+- `README.md`
+- `docs/CODEX_BITACORA.md`
+
+## Pendiente
+
+- Confirmar desde el navegador que la cuenta institucional accede a la vista
+  de notas y completa la autorización OAuth inicial.
+

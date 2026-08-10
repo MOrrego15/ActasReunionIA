@@ -202,6 +202,10 @@ autorización explícita.
 `.clasp.json` es una asociación local del entorno y no se versiona porque
 contiene el identificador operativo del proyecto Apps Script.
 
+El acceso administrativo se concede mediante la propiedad segura
+`MANTENIMIENTO_CORREOS_AUTORIZADOS`. Los correos autorizados se configuran
+directamente en Apps Script y no se almacenan en Git.
+
 ## Licencia
 
 Pendiente de definición.
