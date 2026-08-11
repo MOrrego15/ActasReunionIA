@@ -240,3 +240,15 @@ La versión estable permanece en `ActasReunionIA`, rama `main`, asociada a su
 proyecto original. Los Script ID son distintos y `.clasp.json` se excluye de
 Git. No se permite desplegar la variante Gemini sobre el proyecto estable ni
 fusionarla con `main` sin autorización explícita.
+
+## DA-031: Parametrización de metadatos fijos del acta
+
+- **Estado:** Aceptada.
+- **Decisión:** El código de formato y la célula se obtienen de las propiedades
+  obligatorias `ACTA_CODIGO_FORMATO` y `ACTA_CELULA`. El texto posterior a
+  `Dayli –` se obtiene de `ACTA_AGENDA_FIJA`, que es opcional.
+- **Motivo:** Evitar valores operativos codificados sin alterar el diseño ni el
+  contrato JSON de la respuesta de IA.
+- **Consecuencia:** La configuración se rechaza antes de procesar documentos si
+  falta el código o la célula. Una agenda ausente o vacía no genera error y
+  produce una celda Agenda vacía.

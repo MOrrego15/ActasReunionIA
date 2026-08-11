@@ -4,6 +4,7 @@ const vm = require('vm');
 
 let reservasAutomaticas = 0;
 let correlativoRegistrado = null;
+let datosEmisionRecibidos = null;
 const exito = (datos) => ({ exito: true, datos, error: null });
 const sandbox = {
   Utilities: {
@@ -36,7 +37,10 @@ const sandbox = {
     correlativoRegistrado = datos.correlativo;
     return exito({ estado: 'EN_PROCESO' });
   },
-  generarDocumentoActa: () => exito({ idDocumentoGoogle: 'acta-google' }),
+  generarDocumentoActa: (respuesta, datosEmision) => {
+    datosEmisionRecibidos = datosEmision;
+    return exito({ idDocumentoGoogle: 'acta-google' });
+  },
   exportarDocumentoWord: () => exito({ idArchivoDocx: 'acta-docx' }),
   marcarProcesamientoCompletado: () => exito({ estado: 'PROCESADO' }),
   marcarProcesamientoConError: () => exito({ estado: 'ERROR' }),
@@ -44,7 +48,10 @@ const sandbox = {
     gemini: { carpetaNotasId: 'carpeta-notas' },
     plantilla: { documentoId: 'plantilla' },
     recursos: { carpetaOtrosId: 'recursos' },
-    actas: { carpetaRaizId: 'actas' },
+    actas: {
+      carpetaRaizId: 'actas', codigoFormato: 'FR 37',
+      celula: 'CEL002', agendaFija: 'reunión de seguimiento'
+    },
     procesados: { repositorioId: 'hoja-seguimiento' }
   }),
   obtenerDocumentoFuentePorId: (carpeta, id) => exito({
@@ -81,7 +88,10 @@ const resultado = sandbox._mainProcesarDocumento(
   1,
   {
     procesados: { repositorioId: 'hoja-seguimiento' },
-    actas: { carpetaRaizId: 'actas' },
+    actas: {
+      carpetaRaizId: 'actas', codigoFormato: 'FR 37',
+      celula: 'CEL002', agendaFija: 'reunión de seguimiento'
+    },
     recursos: { carpetaOtrosId: 'recursos' }
   },
   { idEjecucion: 'ejecucion-manual' },
@@ -92,6 +102,14 @@ assert.strictEqual(resultado.estado, 'PROCESADO');
 assert.strictEqual(resultado.correlativo, 77);
 assert.strictEqual(correlativoRegistrado, 77);
 assert.strictEqual(reservasAutomaticas, 0);
+assert.deepStrictEqual(JSON.parse(JSON.stringify(datosEmisionRecibidos)), {
+  correlativo: 77,
+  carpetaDestinoId: 'actas',
+  carpetaRecursosId: 'recursos',
+  codigoFormato: 'FR 37',
+  celula: 'CEL002',
+  agendaFija: 'reunión de seguimiento'
+});
 
 const dirigido = sandbox.ejecutarGeneracionActaSeleccionada({
   idDocumentoFuente: 'nota-anterior', correlativo: 78

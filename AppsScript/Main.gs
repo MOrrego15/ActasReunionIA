@@ -558,7 +558,10 @@ function _mainProcesarDocumento(
       {
         correlativo: correlativo,
         carpetaDestinoId: configuracion.actas.carpetaRaizId,
-        carpetaRecursosId: configuracion.recursos.carpetaOtrosId
+        carpetaRecursosId: configuracion.recursos.carpetaOtrosId,
+        codigoFormato: configuracion.actas.codigoFormato,
+        celula: configuracion.actas.celula,
+        agendaFija: configuracion.actas.agendaFija
       },
       personas.datos.participantes,
       contexto

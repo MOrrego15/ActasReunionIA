@@ -74,6 +74,23 @@ function _configConstruir(propiedadesScript) {
     propiedadesInvalidas,
     false
   );
+  const codigoFormatoActa = _configLeerObligatoria(
+    propiedadesScript,
+    'ACTA_CODIGO_FORMATO',
+    propiedadesInvalidas,
+    false
+  );
+  const celulaActa = _configLeerObligatoria(
+    propiedadesScript,
+    'ACTA_CELULA',
+    propiedadesInvalidas,
+    false
+  );
+  const agendaFijaActa = _configLeerOpcionalPermitirVacia(
+    propiedadesScript,
+    'ACTA_AGENDA_FIJA',
+    propiedadesInvalidas
+  );
   const claveApiGemini = _configLeerOpcionalNoVacia(
     propiedadesScript,
     'GEMINI_API_KEY',
@@ -118,7 +135,10 @@ function _configConstruir(propiedadesScript) {
       carpetaOtrosId: identificadorCarpetaOtros
     }),
     actas: Object.freeze({
-      carpetaRaizId: identificadorCarpetaRaizActas
+      carpetaRaizId: identificadorCarpetaRaizActas,
+      codigoFormato: codigoFormatoActa,
+      celula: celulaActa,
+      agendaFija: agendaFijaActa
     }),
     procesados: Object.freeze({
       repositorioId: identificadorRepositorioProcesados
@@ -191,6 +211,33 @@ function _configLeerOpcionalNoVacia(
   }
 
   return valor.trim();
+}
+
+/**
+ * Lee una propiedad opcional cuyo valor vacío equivale a ausencia.
+ *
+ * @param {Object<string, string>} propiedadesScript Propiedades del proyecto.
+ * @param {string} nombre Nombre de la propiedad.
+ * @param {string[]} propiedadesInvalidas Nombres de propiedades inválidas.
+ * @return {string|undefined} Valor normalizado o ausencia explícita.
+ * @private
+ */
+function _configLeerOpcionalPermitirVacia(
+  propiedadesScript,
+  nombre,
+  propiedadesInvalidas
+) {
+  if (!Object.prototype.hasOwnProperty.call(propiedadesScript, nombre)) {
+    return undefined;
+  }
+
+  const valor = propiedadesScript[nombre];
+  if (typeof valor !== 'string') {
+    propiedadesInvalidas.push(nombre);
+    return undefined;
+  }
+
+  return valor.trim() || undefined;
 }
 
 /**

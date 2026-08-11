@@ -4667,3 +4667,68 @@ objetivo de edición. No se utilizó una API externa ni se almacenaron secretos.
 - Verificar la representación de la infografía en la página principal de
   GitHub después del push.
 
+# Cambio 0077
+Fecha: 2026-08-11
+Autor: Codex
+
+## Objetivo
+
+Parametrizar exclusivamente en `ActasReunionIA_G` el código del formato, la
+célula del identificador de reunión y el texto fijo de Agenda, sin alterar el
+diseño, el contrato JSON, la arquitectura de IA ni el flujo E2E.
+
+## Propiedades nuevas
+
+- `ACTA_CODIGO_FORMATO`: obligatoria. Completa el campo `Código`.
+- `ACTA_CELULA`: obligatoria. Completa el sufijo de
+  `<correlativo>-<año>-<célula>`.
+- `ACTA_AGENDA_FIJA`: opcional. Si tiene contenido, muestra
+  `Dayli – <valor>`; ausente o vacía deja la celda Agenda vacía.
+
+## Impacto
+
+`Config.gs` centraliza lectura y validación. `Main.gs` transporta los valores
+como datos técnicos de emisión. `Acta.gs` los consume tanto en la cabecera
+principal como en la compatible, en la identificación de reunión y en Agenda.
+Se eliminaron del código productivo los literales operativos anteriores. No se
+modificaron los módulos de prompt, IA, validación, procesados, correlativo ni
+exportación Word.
+
+## Archivos modificados
+
+- `AppsScript/Config.gs`
+- `AppsScript/Main.gs`
+- `AppsScript/Acta.gs`
+- `Pruebas/ConfigActa.test.js`
+- `Pruebas/ActaAgenda.test.js`
+- `Pruebas/ActaCabecera.test.js`
+- `Pruebas/MainGeneracionManual.test.js`
+- `README.md`
+- `Documentacion/Arquitectura.md`
+- `Documentacion/Decisiones_Arquitectonicas.md`
+- `docs/CODEX_BITACORA.md`
+
+## Pruebas realizadas
+
+1. Código `FR 37`, célula `CEL002` y agenda configurada producen los textos
+   solicitados.
+2. Agenda vacía no genera error y deja vacía su celda.
+3. Célula vacía detiene la carga con error de configuración.
+4. Código de formato vacío detiene la carga con error de configuración.
+5. Las 15 pruebas Node finalizaron correctamente.
+6. Los 18 archivos `.gs` superaron la validación de sintaxis.
+7. No permanecen `FR 37`, `CEL002` ni la agenda completa anterior en el código
+   productivo.
+8. `git diff --check` finalizó sin errores.
+
+## Seguridad e aislamiento
+
+La ruta de trabajo es `ActasReunionIA_G`, rama `ActasReuIA_GEMI`, con Script ID
+distinto del estable. `ActasReunionIA` no fue modificado.
+
+## Pendiente
+
+- Configurar las tres propiedades en el proyecto Apps Script experimental.
+- Reautenticar `clasp` antes de cualquier despliegue.
+- Solicitar autorización expresa antes de commit o push de Git.
+

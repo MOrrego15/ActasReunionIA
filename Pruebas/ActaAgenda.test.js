@@ -64,10 +64,13 @@ const cuerpo = {
   }
 };
 
-const sandbox = {};
+const sandbox = {
+  esCadenaNoVacia: (valor) => typeof valor === 'string' &&
+    valor.trim().length > 0
+};
 vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync('AppsScript/Acta.gs', 'utf8'), sandbox);
-sandbox._actaAgregarAgenda(cuerpo);
+sandbox._actaAgregarAgenda(cuerpo, 'reunión de seguimiento');
 
 assert.deepStrictEqual(
   JSON.parse(JSON.stringify(filasRecibidas)),
@@ -84,6 +87,21 @@ assert.deepStrictEqual(
 assert.deepStrictEqual(
   valor.estado.texto,
   { fuente: 'Arial', tamano: 10, negrita: false }
+);
+
+sandbox._actaAgregarAgenda(cuerpo, '   ');
+assert.deepStrictEqual(
+  JSON.parse(JSON.stringify(filasRecibidas)),
+  [['Agenda', '']]
+);
+
+assert.strictEqual(
+  sandbox._actaConstruirNumeroReunion(215, '02.07.2026', 'CEL002'),
+  '215-2026-CEL002'
+);
+assert.throws(
+  () => sandbox._actaConstruirNumeroReunion(215, '02.07.2026', ''),
+  /configuracion_acta_celula/
 );
 
 console.log('ActaAgenda.test.js: contenido y formato correctos.');

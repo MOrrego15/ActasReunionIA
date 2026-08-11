@@ -5,10 +5,8 @@ const ACTA_DOCS_API = 'https://docs.googleapis.com/v1/documents/';
 const ACTA_LOGO_NOMBRE_ARCHIVO = 'LogoMEF.jpg';
 const ACTA_DIRECTOR_PROYECTO = 'Damaso Carlos Tay';
 const ACTA_REUNION = Object.freeze({
-  CODIGO: 'CEL002',
   HORA: '09:00 am a 09:20 am'
 });
-const ACTA_AGENDA = 'Dayli – reunión de seguimiento';
 const ACTA_SIGLAS_ACRONIMOS = Object.freeze([
   ['AFSP', 'Administración Financiera del Sector Público'],
   [
@@ -40,7 +38,6 @@ const ACTA_SIGLAS_ACRONIMOS = Object.freeze([
 ]);
 const ACTA_CABECERA = Object.freeze({
   TITULO: 'Acta de Reunión',
-  CODIGO: 'FR 37',
   VERSION: '1',
   METODOLOGIA:
     'Metodología de Gestión de Proyectos Informáticos de la Oficina ' +
@@ -104,7 +101,8 @@ const ACTA_CODIGOS_ERROR = Object.freeze({
  * Genera, ubica y verifica un Google Docs de acta.
  * @param {RespuestaActaValidada} respuestaActaValidada Datos ya validados.
  * @param {{correlativo: number, carpetaDestinoId: string,
- *     carpetaRecursosId: string}} datosEmisionActa
+ *     carpetaRecursosId: string, codigoFormato: string, celula: string,
+ *     agendaFija: (string|undefined)}} datosEmisionActa
  *     Datos técnicos de emisión.
  * @param {{nombre: string, cargo: string, unidad: string}[]} participantesActa
  *     Participantes resueltos desde el catálogo institucional.
@@ -171,7 +169,8 @@ function generarDocumentoActa(
       respuestaActaValidada,
       logoInstitucional,
       datosEmisionActa.correlativo,
-      participantesActa
+      participantesActa,
+      datosEmisionActa
     );
     documento.saveAndClose();
     _actaCombinarCabecera(idDocumentoGoogle);
@@ -183,7 +182,8 @@ function generarDocumentoActa(
           respuestaActaValidada,
           logoInstitucional,
           datosEmisionActa.correlativo,
-          participantesActa
+          participantesActa,
+          datosEmisionActa
         );
         _actaRegistrarAdvertenciaCombinacion(
           contexto,
@@ -265,10 +265,13 @@ function _actaValidarRespuesta(acta) {
 
 function _actaValidarEmision(datos) {
   return _actaClavesExactas(datos,
-    ['correlativo','carpetaDestinoId','carpetaRecursosId']) &&
+    ['correlativo','carpetaDestinoId','carpetaRecursosId','codigoFormato',
+      'celula','agendaFija']) &&
     Number.isSafeInteger(datos.correlativo) && datos.correlativo > 0 &&
     datos.correlativo <= 999999 && esCadenaNoVacia(datos.carpetaDestinoId) &&
-    esCadenaNoVacia(datos.carpetaRecursosId);
+    esCadenaNoVacia(datos.carpetaRecursosId) &&
+    esCadenaNoVacia(datos.codigoFormato) && esCadenaNoVacia(datos.celula) &&
+    (datos.agendaFija === undefined || typeof datos.agendaFija === 'string');
 }
 
 function _actaValidarParticipantes(participantes) {
@@ -303,17 +306,28 @@ function _actaEscribirDocumento(
   acta,
   logoInstitucional,
   correlativo,
-  participantesActa
+  participantesActa,
+  datosEmisionActa
 ) {
   const cuerpo = documento.getBody();
   _actaConfigurarPagina(cuerpo);
-  _actaAgregarCabecera(cuerpo, acta.fechaReunion, logoInstitucional);
+  _actaAgregarCabecera(
+    cuerpo,
+    acta.fechaReunion,
+    logoInstitucional,
+    datosEmisionActa.codigoFormato
+  );
 
-  _actaAgregarDatosReunion(cuerpo, correlativo, acta.fechaReunion);
+  _actaAgregarDatosReunion(
+    cuerpo,
+    correlativo,
+    acta.fechaReunion,
+    datosEmisionActa.celula
+  );
 
   _actaAgregarAsistentes(cuerpo, participantesActa);
 
-  _actaAgregarAgenda(cuerpo);
+  _actaAgregarAgenda(cuerpo, datosEmisionActa.agendaFija);
 
   _actaAgregarSiglasAcronimos(cuerpo);
 
@@ -327,7 +341,8 @@ function _actaReescribirConCabeceraCompatible(
   acta,
   logoInstitucional,
   correlativo,
-  participantesActa
+  participantesActa,
+  datosEmisionActa
 ) {
   const documento = DocumentApp.openById(idDocumento);
   const cuerpo = documento.getBody();
@@ -336,11 +351,17 @@ function _actaReescribirConCabeceraCompatible(
   _actaAgregarCabeceraCompatible(
     cuerpo,
     acta.fechaReunion,
-    logoInstitucional
+    logoInstitucional,
+    datosEmisionActa.codigoFormato
   );
-  _actaAgregarDatosReunion(cuerpo, correlativo, acta.fechaReunion);
+  _actaAgregarDatosReunion(
+    cuerpo,
+    correlativo,
+    acta.fechaReunion,
+    datosEmisionActa.celula
+  );
   _actaAgregarAsistentes(cuerpo, participantesActa);
-  _actaAgregarAgenda(cuerpo);
+  _actaAgregarAgenda(cuerpo, datosEmisionActa.agendaFija);
   _actaAgregarSiglasAcronimos(cuerpo);
   _actaAgregarTemasTratados(cuerpo, acta.acuerdos);
   _actaAgregarCierre(cuerpo, acta.tareas, acta.fechaReunion);
@@ -402,9 +423,14 @@ function _actaConfigurarPagina(cuerpo) {
   cuerpo.setMarginLeft(ACTA_FORMATO.MARGEN_IZQUIERDO);
 }
 
-function _actaAgregarCabecera(cuerpo, fechaReunion, logoInstitucional) {
+function _actaAgregarCabecera(
+  cuerpo,
+  fechaReunion,
+  logoInstitucional,
+  codigoFormato
+) {
   const tabla = cuerpo.appendTable([
-    ['', ACTA_CABECERA.TITULO, 'Código:', ACTA_CABECERA.CODIGO],
+    ['', ACTA_CABECERA.TITULO, 'Código:', codigoFormato],
     ['', '', 'Versión:', ACTA_CABECERA.VERSION],
     ['', ACTA_CABECERA.METODOLOGIA, 'Fecha:',
       _actaFormatearFechaCabecera(fechaReunion)],
@@ -452,7 +478,8 @@ function _actaConfigurarFilaInstitucionalExcel(fila) {
 function _actaAgregarCabeceraCompatible(
   cuerpo,
   fechaReunion,
-  logoInstitucional
+  logoInstitucional,
+  codigoFormato
 ) {
   const tabla = cuerpo.appendTable([
     ['', ''],
@@ -468,13 +495,18 @@ function _actaAgregarCabeceraCompatible(
   _actaAgregarLogo(tabla.getRow(0).getCell(0), logoInstitucional);
   _actaAgregarControlesCabeceraCompatible(
     tabla.getRow(0).getCell(1),
-    _actaFormatearFechaCabecera(fechaReunion)
+    _actaFormatearFechaCabecera(fechaReunion),
+    codigoFormato
   );
   _actaConfigurarFilaInstitucionalCompatible(tabla.getRow(1));
   _actaConfigurarFilaInstitucionalCompatible(tabla.getRow(2));
 }
 
-function _actaAgregarControlesCabeceraCompatible(celda, fechaCabecera) {
+function _actaAgregarControlesCabeceraCompatible(
+  celda,
+  fechaCabecera,
+  codigoFormato
+) {
   celda.clear();
   celda.setPaddingTop(0);
   celda.setPaddingBottom(0);
@@ -482,7 +514,7 @@ function _actaAgregarControlesCabeceraCompatible(celda, fechaCabecera) {
   celda.setPaddingRight(0);
   celda.setVerticalAlignment(DocumentApp.VerticalAlignment.TOP);
   const tabla = celda.appendTable([
-    [ACTA_CABECERA.TITULO, 'Código:', ACTA_CABECERA.CODIGO],
+    [ACTA_CABECERA.TITULO, 'Código:', codigoFormato],
     ['', 'Versión:', ACTA_CABECERA.VERSION],
     [ACTA_CABECERA.METODOLOGIA, 'Fecha:', fechaCabecera]
   ]);
@@ -684,12 +716,17 @@ function _actaFormatearFechaCabecera(fechaReunion) {
   return fechaReunion.replace(/\//g, '.');
 }
 
-function _actaAgregarDatosReunion(cuerpo, correlativo, fechaReunion) {
+function _actaAgregarDatosReunion(
+  cuerpo,
+  correlativo,
+  fechaReunion,
+  celula
+) {
   const fechaFormateada = _actaFormatearFechaCabecera(fechaReunion);
   const tabla = cuerpo.appendTable([
     [
       'Reunión',
-      _actaConstruirNumeroReunion(correlativo, fechaFormateada)
+      _actaConstruirNumeroReunion(correlativo, fechaFormateada, celula)
     ],
     ['Fecha', fechaFormateada],
     ['Hora', ACTA_REUNION.HORA]
@@ -714,7 +751,7 @@ function _actaAgregarDatosReunion(cuerpo, correlativo, fechaReunion) {
   }
 }
 
-function _actaConstruirNumeroReunion(correlativo, fechaFormateada) {
+function _actaConstruirNumeroReunion(correlativo, fechaFormateada, celula) {
   const coincidencia = fechaFormateada.match(
     /^(?:\d{2}\.\d{2}\.(\d{4})|(\d{4})-\d{2}-\d{2})$/
   );
@@ -722,11 +759,15 @@ function _actaConstruirNumeroReunion(correlativo, fechaFormateada) {
     throw new Error('fecha_reunion');
   }
   const anio = coincidencia[1] || coincidencia[2];
-  return String(correlativo) + '-' + anio + '-' + ACTA_REUNION.CODIGO;
+  if (!esCadenaNoVacia(celula)) throw new Error('configuracion_acta_celula');
+  return String(correlativo) + '-' + anio + '-' + celula.trim();
 }
 
-function _actaAgregarAgenda(cuerpo) {
-  const tabla = cuerpo.appendTable([['Agenda', ACTA_AGENDA]]);
+function _actaAgregarAgenda(cuerpo, agendaFija) {
+  const textoAgenda = esCadenaNoVacia(agendaFija)
+    ? 'Dayli – ' + agendaFija.trim()
+    : '';
+  const tabla = cuerpo.appendTable([['Agenda', textoAgenda]]);
   tabla.setBorderWidth(0.75);
   const celdaEtiqueta = tabla.getRow(0).getCell(0);
   const celdaValor = tabla.getRow(0).getCell(1);

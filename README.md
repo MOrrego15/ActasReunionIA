@@ -132,6 +132,9 @@ encuentran:
 - `CARPETA_OTRO`
 - `CARPETA_RAIZ_ACTAS_ID`
 - `REPOSITORIO_PROCESADOS_ID`
+- `ACTA_CODIGO_FORMATO` (obligatoria; código visible de la cabecera)
+- `ACTA_CELULA` (obligatoria; sufijo del identificador de reunión)
+- `ACTA_AGENDA_FIJA` (opcional; contenido posterior a `Dayli –`)
 - `GEMINI_API_KEY`
 - `GEMINI_MODELO` (predeterminado: `gemini-2.0-flash`)
 - `OPENAI_API_KEY` (opcional / respaldo)

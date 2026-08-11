@@ -119,7 +119,12 @@ const sandbox = {
 vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync('AppsScript/Acta.gs', 'utf8'), sandbox);
 
-sandbox._actaAgregarCabecera(cuerpo, '02/07/2026', { imagen: true });
+sandbox._actaAgregarCabecera(
+  cuerpo,
+  '02/07/2026',
+  { imagen: true },
+  'FR 37'
+);
 
 assert.strictEqual(tablaExterior.filas.length, 5);
 const celdaLogo = tablaExterior.filas[0].celdas[0];
@@ -136,6 +141,7 @@ assert.strictEqual(tablaExterior.filas[0].celdas[1].estado.texto, 'Acta de Reuni
 assert.strictEqual(tablaExterior.filas[0].celdas[2].estado.texto, 'Código:');
 assert.strictEqual(tablaExterior.filas[1].celdas[2].estado.texto, 'Versión:');
 assert.strictEqual(tablaExterior.filas[2].celdas[2].estado.texto, 'Fecha:');
+assert.strictEqual(tablaExterior.filas[0].celdas[3].estado.texto, 'FR 37');
 assert.strictEqual(tablaExterior.filas[2].celdas[3].estado.texto, '02.07.2026');
 tablaExterior.filas.forEach((fila) => {
   assert.strictEqual(fila.celdas[0].estado.ancho, 103);
@@ -182,7 +188,8 @@ assert.deepStrictEqual(
 sandbox._actaAgregarCabeceraCompatible(
   cuerpo,
   '02/07/2026',
-  { imagen: true }
+  { imagen: true },
+  'FR 37'
 );
 assert.strictEqual(tablaExterior.filas.length, 3);
 assert.strictEqual(tablaExterior.filas[0].celdas[0].estado.logo, undefined);
@@ -193,6 +200,10 @@ assert.strictEqual(
 assert.strictEqual(
   tablaExterior.filas[0].celdas[1].estado.tabla.filas.length,
   3
+);
+assert.strictEqual(
+  tablaExterior.filas[0].celdas[1].estado.tabla.filas[0].celdas[2].estado.texto,
+  'FR 37'
 );
 assert.strictEqual(tablaExterior.filas[1].celdas[0].estado.texto, 'Proyecto:');
 

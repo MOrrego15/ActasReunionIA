@@ -168,7 +168,11 @@ separadamente de la respuesta externa:
 ```text
 DatosEmisionActa = {
   correlativo: number,
-  carpetaDestinoId: string
+  carpetaDestinoId: string,
+  carpetaRecursosId: string,
+  codigoFormato: string,
+  celula: string,
+  agendaFija: string | undefined
 }
 ```
 
@@ -411,10 +415,13 @@ El nombre del Google Docs será `ACTA-` seguido por seis dígitos. Para conserva
 exactamente esta convención sin truncar, `Acta.gs` admite correlativos entre 1
 y 999999. El formato inicial es funcional: título centrado y en negrita,
 encabezados en negrita y tablas para datos generales, participantes, agenda,
-acuerdos y tareas. La Agenda usa una fila institucional con etiqueta ploma y el
-valor fijo `Dayli – reunión de seguimiento`; no consume la lista variable
-producida por OpenAI. Las etapas visuales restantes se incorporan de forma
-incremental.
+acuerdos y tareas. `ACTA_CODIGO_FORMATO` completa el campo `Código` y
+`ACTA_CELULA` completa el identificador `<correlativo>-<año>-<célula>`; ambas
+propiedades son obligatorias. La Agenda usa una fila institucional con etiqueta
+ploma y, cuando `ACTA_AGENDA_FIJA` tiene contenido, muestra
+`Dayli – <ACTA_AGENDA_FIJA>`. Si la propiedad opcional está ausente o vacía,
+la celda de contenido queda vacía. La lista variable de agenda producida por la
+IA no se representa en esta sección.
 
 La cabecera usa una tabla única de cinco filas por cuatro columnas, equivalente
 al rango `B2:E6` del modelo institucional en Excel. Después de cerrar el
