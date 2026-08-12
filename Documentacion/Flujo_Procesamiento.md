@@ -182,6 +182,21 @@ Es un error crítico porque puede permitir duplicidades. La salida deberá conse
 
 ## 8. Flujos dirigidos desde la aplicación web
 
+### 8.1 Publicación y acceso
+
+1. El usuario abre `https://inversiones-actasdaily.web.app`.
+2. Firebase Hosting carga la página estática, inicializa Analytics y registra
+   `hosting_redirect` sin datos institucionales.
+3. La página redirige a la aplicación web de Google Apps Script.
+4. Apps Script valida el correo autorizado, muestra las notas disponibles y
+   recibe la solicitud de generación mediante `google.script.run`.
+5. Desde ese punto comienza el flujo dirigido descrito a continuación.
+
+Firebase se limita a publicación y acceso; no selecciona documentos, no llama
+a Gemini, no reserva correlativos y no genera actas.
+
+### 8.2 Generación dirigida
+
 1. El usuario autorizado selecciona una de las notas mostradas.
 2. La interfaz presenta el ID y propone el primer número de secuencia disponible
    a partir del siguiente correlativo configurado.

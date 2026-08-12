@@ -4732,3 +4732,206 @@ distinto del estable. `ActasReunionIA` no fue modificado.
 - Reautenticar `clasp` antes de cualquier despliegue.
 - Solicitar autorización expresa antes de commit o push de Git.
 
+# Cambio 0079
+Fecha: 2026-08-11
+Autor: Codex
+
+## Objetivo
+
+Publicar una entrada web de `ActasReunionIA_G` mediante Firebase Hosting sin
+modificar el proyecto estable ni otros servicios Firebase.
+
+## Verificaciones previas
+
+- Ruta: `H:\Mi unidad\CHATGPT\ActasReunionIA_G`.
+- Rama: `ActasReuIA_GEMI`.
+- Commit desplegado: `5270cf7ac48a45feba259ecdea5b65e6af138c55`.
+- Firebase CLI: 15.26.0.
+- Cuenta autenticada: cuenta institucional autorizada.
+- Proyecto: `Inversiones-ActasDaily`.
+- Project ID: `inversiones-actasdaily`.
+- Project Number: `1046265694344`.
+- Sitio Hosting confirmado sin aplicación previamente desplegada.
+
+## Implementación
+
+Se creó una página estática de entrada que redirige hacia la aplicación web
+vigente de Apps Script. `firebase.json` limita el despliegue a
+`FirebaseHosting/` y `.firebaserc` selecciona exclusivamente
+`inversiones-actasdaily`.
+
+## Archivos modificados
+
+- `.firebaserc`
+- `firebase.json`
+- `FirebaseHosting/index.html`
+- `.gitignore`
+- `README.md`
+- `Documentacion/Arquitectura.md`
+- `Documentacion/Decisiones_Arquitectonicas.md`
+- `docs/CODEX_BITACORA.md`
+
+## Servicios autorizados
+
+- Firebase Hosting.
+
+No se modifican Firestore, Storage, Authentication, Functions ni reglas de
+seguridad.
+
+## Resultado del despliegue
+
+- Servicio desplegado: Firebase Hosting únicamente.
+- Canal: `live`.
+- Versión: `ea7d85f92638ce69`.
+- Fecha y hora: 2026-08-11 20:29:09, hora de Lima.
+- URL: `https://inversiones-actasdaily.web.app`.
+- Verificación HTTP: estado 200, título `Actas de Daily` y redirección hacia
+  la aplicación vigente confirmada.
+
+No se realizó Git push. Firestore, Storage, Authentication, Functions y las
+reglas de seguridad permanecieron sin cambios.
+
+# Cambio 0080
+Fecha: 2026-08-11
+Autor: Codex
+
+## Solicitud
+
+> Agregar Firebase Analytics y desplegar.
+
+## Implementación
+
+La página de Firebase Hosting importa desde el CDN oficial Firebase JavaScript
+SDK 12.16.0, inicializa la aplicación web configurada y registra el evento
+`hosting_redirect` con el destino lógico `apps_script`. La navegación se
+realiza después de 800 milisegundos. `isSupported()` y el manejo de errores
+garantizan que Analytics nunca impida el acceso.
+
+## Privacidad y alcance
+
+El evento no contiene contenido de reuniones, nombres, correos,
+identificadores de Drive ni correlativos. No se incorporaron Authentication,
+Firestore, Storage o Functions.
+
+## Archivos modificados
+
+- `FirebaseHosting/index.html`
+- `README.md`
+- `Documentacion/Arquitectura.md`
+- `Documentacion/Decisiones_Arquitectonicas.md`
+- `docs/CODEX_BITACORA.md`
+
+## Validaciones y despliegue
+
+- Los módulos `firebase-app.js` y `firebase-analytics.js` respondieron HTTP 200.
+- La publicación confirmó `initializeApp`, `getAnalytics` y el evento
+  `hosting_redirect`.
+- Servicio desplegado: Firebase Hosting únicamente.
+- Canal: `live`.
+- Versión: `e38f42084f0dc04f`.
+- Fecha y hora: 2026-08-11 20:46:04, hora de Lima.
+- URL: `https://inversiones-actasdaily.web.app`.
+
+No se realizó Git push. Los demás servicios Firebase permanecieron sin
+cambios.
+
+# Cambio 0081
+Fecha: 2026-08-12
+Autor: Codex
+
+## Rama y objetivo
+
+- Rama: `ActasReuIA_GEMI`.
+- Commit base: `5270cf7`.
+- Objetivo: actualizar el gráfico `Proceso de creación del acta` e incorporar
+  explícitamente Firebase como capa de publicación y acceso, manteniendo
+  Google Apps Script como backend y Google Gemini como motor de IA.
+
+## Gráfico actualizado
+
+Se creó `Recursos/ProcesoCreacionActaGeminiFirebase_v01.png` sin sobrescribir
+`Recursos/ProcesoCreacionActaGemini.png`. La nueva versión agrega:
+
+- usuario, Firebase Hosting y solicitud desde la aplicación;
+- identificación de Firebase como capa de publicación y acceso;
+- Google Apps Script como backend y orquestador;
+- Google Gemini como motor de análisis y estructuración;
+- resultado disponible para el usuario;
+- conservación de las etapas Entrada, Extracción y análisis, Generación,
+  Cabecera, Salida y la regla de error individual.
+
+## Firebase identificado
+
+- Proyecto: `Inversiones-ActasDaily`.
+- Project ID: `inversiones-actasdaily`.
+- Hosting: `https://inversiones-actasdaily.web.app`.
+- Mecanismo: Firebase sirve una página estática con Analytics y redirige a la
+  interfaz de Apps Script; `google.script.run` inicia el procesamiento desde
+  dicha interfaz.
+- Acceso: Apps Script valida el correo activo contra
+  `MANTENIMIENTO_CORREOS_AUTORIZADOS`.
+
+La verificación remota de Hosting del 12 de agosto requirió reautenticación de
+Firebase CLI; la URL y la arquitectura corresponden al despliegue live ya
+documentado en los cambios 0079 y 0080.
+
+## Archivos modificados
+
+- `Recursos/ProcesoCreacionActaGeminiFirebase_v01.png`
+- `README.md`
+- `Documentacion/Arquitectura.md`
+- `Documentacion/Flujo_Procesamiento.md`
+- `docs/CODEX_BITACORA.md`
+
+## Verificaciones realizadas
+
+- Inspección visual satisfactoria del PNG y dimensiones confirmadas de
+  `864 x 1821` píxeles.
+- Referencia a la nueva imagen confirmada en `README.md`; la versión anterior
+  permanece disponible como referencia histórica.
+- Coherencia confirmada entre gráfico, README, arquitectura y flujo E2E para
+  las responsabilidades de Firebase Hosting, Google Apps Script y Gemini.
+- `git diff --name-only -- AppsScript Pruebas Prompts` no devolvió archivos:
+  no se modificaron módulos funcionales, pruebas ni prompts.
+- `git diff --check` finalizó sin errores.
+- Estado final revisado en la rama `ActasReuIA_GEMI`, un commit por delante
+  del remoto debido al estado previo del proyecto.
+
+## Pendiente
+
+- Reautenticar Firebase CLI únicamente si se requiere una nueva consulta o
+  publicación.
+- El commit y el push quedan pendientes de autorización explícita.
+
+# Cambio 0082
+Fecha: 2026-08-12
+Autor: Codex
+
+## Solicitud
+
+> Desplegar en GitHub.
+
+## Alcance de la publicación
+
+- Rama publicada: `ActasReuIA_GEMI`.
+- Remoto: repositorio GitHub configurado como `origin`.
+- Se incluyen la configuración de Firebase Hosting y Analytics previamente
+  desplegada, la documentación técnica actualizada y la nueva infografía del
+  proceso con Firebase, Apps Script y Gemini.
+- Se excluyen los archivos `desktop.ini` ajenos al proyecto.
+- No se modifica ni publica desde la rama estable `main`.
+
+## Validaciones previas
+
+- Autenticación de GitHub CLI renovada para la cuenta configurada.
+- `git diff --check` finalizó sin errores.
+- La revisión del cambio actual no encontró modificaciones adicionales en
+  `AppsScript`, `Pruebas` ni `Prompts`.
+- La rama contenía previamente el commit local `5270cf7`, pendiente de
+  publicación y perteneciente a la misma línea de desarrollo autorizada.
+
+## Resultado
+
+El commit, el identificador final y la confirmación del push se consignan en
+el informe de cierre de la publicación.
+

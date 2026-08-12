@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Actas de Daily</title>
+    <style>
+      body {
+        align-items: center;
+        background: #f4f7fb;
+        color: #0b3471;
+        display: flex;
+        font-family: Arial, sans-serif;
+        justify-content: center;
+        margin: 0;
+        min-height: 100vh;
+      }
+      main {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 8px 28px rgba(11, 52, 113, 0.12);
+        max-width: 560px;
+        padding: 32px;
+        text-align: center;
+      }
+      a {
+        background: #1769ba;
+        border-radius: 6px;
+        color: #fff;
+        display: inline-block;
+        font-weight: 700;
+        margin-top: 12px;
+        padding: 12px 18px;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Actas de Daily</h1>
+      <p>Abriendo la aplicación de ActasReunionIA_G…</p>
+      <a href="https://script.google.com/macros/s/AKfycbxz4NopUx910vRflabUJdf16FU2cF-w1ejXMDWl1SH9kupBIDD78pVa69pyGcqn1NslqQ/exec?vista=notas">Continuar a la aplicación</a>
+    </main>
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js';
+      import {
+        getAnalytics,
+        isSupported,
+        logEvent
+      } from 'https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js';
+
+      const firebaseConfig = {
+        apiKey: 'AIzaSyASqhhWg-Ubapr5Zh703wG9e2R9pKYdQ2g',
+        authDomain: 'inversiones-actasdaily.firebaseapp.com',
+        projectId: 'inversiones-actasdaily',
+        storageBucket: 'inversiones-actasdaily.firebasestorage.app',
+        messagingSenderId: '1046265694344',
+        appId: '1:1046265694344:web:513fb00aa05263ae8b773d',
+        measurementId: 'G-50R6W2M13Y'
+      };
+      const destino = document.querySelector('a').href;
+      const app = initializeApp(firebaseConfig);
+
+      try {
+        if (await isSupported()) {
+          const analytics = getAnalytics(app);
+          logEvent(analytics, 'hosting_redirect', {
+            destination: 'apps_script'
+          });
+        }
+      } catch (errorAnalytics) {
+        // Analytics no debe impedir el acceso a la aplicación.
+      } finally {
+        window.setTimeout(function () {
+          window.location.replace(destino);
+        }, 800);
+      }
+    </script>
+  </body>
+</html>

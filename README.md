@@ -53,11 +53,14 @@ documento candidato.
 
 ### Proceso de creación del acta
 
-![Proceso de creación del acta con Google Gemini](Recursos/ProcesoCreacionActaGemini.png)
+![Proceso de creación del acta con Firebase y Google Gemini](Recursos/ProcesoCreacionActaGeminiFirebase_v01.png)
 
 La infografía representa el flujo desplegado en el entorno experimental:
-Google Gemini realiza la estructuración principal del contenido antes de la
-validación y la generación documental.
+Firebase Hosting actúa como capa de publicación y acceso, Google Apps Script
+orquesta el backend y Google Gemini realiza el análisis y la estructuración del
+contenido antes de la validación y la generación documental. La versión previa
+se conserva en `Recursos/ProcesoCreacionActaGemini.png` como referencia
+histórica.
 
 ## Aplicación web administrativa
 
@@ -216,6 +219,35 @@ contiene el identificador operativo del proyecto Apps Script.
 El acceso administrativo se concede mediante la propiedad segura
 `MANTENIMIENTO_CORREOS_AUTORIZADOS`. Los correos autorizados se configuran
 directamente en Apps Script y no se almacenan en Git.
+
+## Firebase Hosting
+
+La dirección pública `https://inversiones-actasdaily.web.app` proporciona una
+entrada estable hacia la aplicación web de `ActasReunionIA_G`. Firebase
+Hosting sirve únicamente una página de redirección; el procesamiento, la
+autorización y el acceso a Google Drive continúan ejecutándose en Google Apps
+Script.
+
+La página inicializa Firebase Analytics mediante el SDK modular servido desde
+el CDN oficial y registra el evento `hosting_redirect` antes de abrir Apps
+Script. Una indisponibilidad de Analytics no bloquea la redirección.
+
+El despliegue está limitado a Hosting mediante `firebase deploy --only
+hosting`. No utiliza ni modifica Firestore, Storage, Authentication o Cloud
+Functions.
+
+## Resumen técnico de ActasReuIA_GEMI
+
+| Capa | Tecnología | Responsabilidad |
+|---|---|---|
+| Publicación y acceso | Firebase Hosting | Publicar la entrada web, permitir el acceso y redirigir hacia la interfaz operativa |
+| Interfaz y backend | Google Apps Script | Mostrar notas y resultados, recibir solicitudes, orquestar Drive, correlativos, documentos, Word y procesados |
+| Inteligencia artificial | Google Gemini | Analizar notas y transcripción y estructurar participantes, agenda, acuerdos, tareas y resumen ejecutivo |
+| Persistencia documental | Google Drive, Docs y Sheets | Almacenar fuentes y salidas, generar documentos y mantener correlativos y estados |
+
+Firebase no genera actas. La página alojada registra el acceso mediante
+Analytics y redirige a la aplicación web de Apps Script, que inicia las
+solicitudes y presenta el resultado al usuario.
 
 ## Licencia
 

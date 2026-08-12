@@ -36,35 +36,42 @@ Quedan fuera de esta fase la interfaz de usuario, la lógica concreta de transfo
 ## 4. Vista lógica
 
 ```text
-Disparador de Apps Script
-          |
-          v
-Orquestador principal
-          |
-          +--> Configuración
-          +--> Control de concurrencia
-          +--> Búsqueda de pendientes ----> Google Drive / Google Docs
-          +--> Control de procesados
-          +--> Gestión de correlativo
-          +--> Plantilla y construcción del prompt
-          +--> Cliente OpenAI -----------> API de OpenAI
-          +--> Validación de respuesta
-          +--> Generación y formato de Google Docs
-          +--> Exportación DOCX
-          +--> Organización mensual -----> Google Drive
-          +--> Auditoría y errores
+Usuario
+   |
+   v
+Firebase Hosting --------> Publicación, acceso y Analytics
+   |
+   v
+Interfaz web en Apps Script
+   |
+   v
+Orquestador Apps Script --> Configuración y control de concurrencia
+   |
+   +--> Google Drive / Docs ------> Notas y transcripción
+   +--> Google Gemini ------------> Análisis y estructuración
+   +--> ValidadorRespuesta.gs ----> Contrato validado
+   +--> Correlativo.gs -----------> Reserva secuencial
+   +--> Acta.gs / Google Docs ----> Documento temporal
+   +--> Word.gs ------------------> DOCX verificado
+   +--> Procesados.gs / Sheets ---> PROCESADO o ERROR
+   |
+   v
+Resultado disponible para el usuario
 ```
 
-Google Apps Script será la plataforma principal. Google Drive y Google Docs actuarán como fuentes y destinos documentales. OpenAI será un servicio externo de estructuración de contenido.
+Firebase es exclusivamente la capa de presentación/publicación. Google Apps
+Script es el backend y orquestador. Google Gemini es la IA principal para el
+análisis y la estructuración. Drive, Docs y Sheets proporcionan almacenamiento,
+documentos y persistencia operativa.
 
 ### 4.1 Flujo entre validación y generación documental
 
-La respuesta estructurada de OpenAI pasará directamente del módulo de
+La respuesta estructurada de Google Gemini pasará directamente del módulo de
 validación al generador documental. No existirá un módulo intermedio de
 generación o transformación de datos:
 
 ```text
-OpenAI.gs
+GeminiIA.gs
     |
     v
 ValidadorRespuesta.gs
@@ -657,3 +664,21 @@ Desde el 10 de agosto de 2026 existen dos entornos sin asociación compartida:
 Cada carpeta mantiene su propio `.clasp.json` local. Este archivo no forma
 parte del repositorio. Los despliegues deben comprobar rama, commit, proyecto
 esperado, Script ID enmascarado y lista de archivos antes de publicar.
+
+### Entrada pública mediante Firebase Hosting
+
+`ActasReunionIA_G` dispone de una página estática en Firebase Hosting que
+redirige a la implementación web vigente de Google Apps Script. Firebase no
+replica el backend ni sustituye `google.script.run`; Apps Script conserva la
+autorización, las reglas de negocio y las integraciones con Drive, Docs,
+Sheets y Gemini. El alcance de Firebase se limita al servicio Hosting.
+
+La página de entrada inicializa Firebase Analytics en el navegador y registra
+un evento `hosting_redirect` sin contenido de reuniones ni identificadores de
+Drive. La redirección continúa aun cuando el SDK no sea compatible o Analytics
+no esté disponible.
+
+La página de Firebase no invoca directamente el procesamiento. Redirige a la
+interfaz de Apps Script, donde `google.script.run` solicita la generación y
+presenta el estado o la descarga. Esta separación evita representar Firebase
+como motor de generación y mantiene Gemini como motor de IA.

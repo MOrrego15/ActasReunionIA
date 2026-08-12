@@ -252,3 +252,23 @@ fusionarla con `main` sin autorización explícita.
 - **Consecuencia:** La configuración se rechaza antes de procesar documentos si
   falta el código o la célula. Una agenda ausente o vacía no genera error y
   produce una celda Agenda vacía.
+
+## DA-032: Firebase Hosting como entrada de la aplicación web
+
+- **Estado:** Aceptada.
+- **Decisión:** Publicar en Firebase Hosting una página estática que redirige a
+  la implementación vigente de `ActasReunionIA_G` en Google Apps Script.
+- **Motivo:** Proporcionar una URL Firebase estable sin migrar ni duplicar el
+  backend dependiente de `HtmlService` y `google.script.run`.
+- **Consecuencia:** Firebase despliega únicamente Hosting. La autenticación,
+  el procesamiento y los datos permanecen en Apps Script y servicios Google.
+
+## DA-033: Medición de la entrada Firebase
+
+- **Estado:** Aceptada.
+- **Decisión:** Inicializar Firebase Analytics en la página de Hosting y
+  registrar `hosting_redirect` antes de redirigir a Apps Script.
+- **Motivo:** Medir el uso de la entrada pública sin trasladar datos de
+  reuniones ni reglas de negocio a Firebase.
+- **Consecuencia:** La página espera brevemente el registro del evento. Los
+  errores o la incompatibilidad de Analytics no bloquean la aplicación.
