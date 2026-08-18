@@ -258,7 +258,7 @@ assert.match(paginaNotasHtml, /generarActaNotaSeleccionadaAutomatica/);
 assert.match(paginaNotasHtml, /<h1>Notas de Reuniones por MEET<\/h1>/);
 assert.match(
   paginaNotasHtml,
-  /Se muestran como máximo las diez notas de Daily por MEET,/
+  /Se muestran como máximo las diez notas de Reunion por MEET,/
 );
 assert.match(paginaNotasHtml, /Últimas notas de Daily por MEET/);
 assert.match(

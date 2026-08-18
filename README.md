@@ -74,7 +74,7 @@ La vista publicada de esta línea independiente está disponible en:
 `https://script.google.com/macros/s/AKfycbw2-H74M7V7lRri9EC1yehucw-Z-3Z7wxr4IpcKJjJk-lxHxz-3Q08SE4306SEqhiQ/exec?vista=notas`
 
 Su encabezado visible es **Notas de Reuniones por MEET**. La implementación
-versionada `2` y el Script ID pertenecen exclusivamente a
+versionada `3` y el Script ID pertenecen exclusivamente a
 `ActasReunion2IA_G`.
 
 Al seleccionar una reunión, la interfaz muestra únicamente su día y hora de
@@ -190,16 +190,18 @@ exportación Word.
 
 | Aspecto | Detalle |
 |---|---|
-| **Rama activa de desarrollo** | `ActasReuIA_GEMI` |
+| **Rama activa de desarrollo** | `ActasReunion2IA_G` |
 | **Rama estable** | `main` |
 | **IA principal** | Google Gemini (`GeminiIA.gs`) |
 | **IA secundaria / respaldo** | OpenAI (`OpenAI.gs`) — opcional |
 | **Despliegue** | Google Apps Script vía `clasp` |
-| **Flujo** | Funcional y en evolución controlada |
+| **Flujo** | Nuevo modelo funcional orientado a reuniones que no son Daily |
 
-La rama `ActasReuIA_GEMI` concentra la migración del cliente de inteligencia
-artificial de OpenAI a Google Gemini. No se fusionará con `main` hasta
-aprobación explícita.
+La rama `ActasReunion2IA_G` constituye un nuevo modelo orientado a generar
+actas de reuniones que no corresponden a sesiones Daily. Conserva Google
+Gemini como motor principal de análisis y mantiene una implementación web y un
+proyecto Apps Script independientes. No se fusionará con `main` ni con
+`ActasReuIA_GEMI` sin aprobación explícita.
 
 No se declara una versión semántica formal hasta que exista una publicación
 aprobada.

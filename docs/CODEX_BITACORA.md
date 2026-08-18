@@ -4832,3 +4832,59 @@ históricas de esta bitácora.
 - La prueba `Pruebas/Mantenimiento.test.js` finalizó correctamente antes del
   despliegue.
 
+# Cambio 0080
+Fecha: 2026-08-18
+Autor: Codex
+
+## Solicitud
+
+> Cambiar la descripción `Se muestran como máximo las diez notas de Daily por
+> MEET...` por `Se muestran como máximo las diez notas de Reunion por MEET...`.
+
+## Implementación
+
+Se actualizó exclusivamente el texto descriptivo visible de la vista de notas
+en `ActasReunion2IA_G`. El título `Notas de Reuniones por MEET` y el resto de
+la interfaz permanecen sin cambios. La aserción correspondiente de la prueba
+de mantenimiento se sincronizó con el nuevo texto.
+
+## Archivos modificados
+
+- `AppsScript/Web/NotasGemini.html`
+- `Pruebas/Mantenimiento.test.js`
+- `docs/CODEX_BITACORA.md`
+
+## Estado
+
+- Cambio local pendiente de despliegue y publicación.
+
+## Ampliación solicitada
+
+El usuario autorizó guardar el cambio en GitHub y desplegarlo en Apps Script.
+También solicitó que el resumen del proyecto identifique esta línea como un
+nuevo modelo orientado a reuniones que no son Daily.
+
+El README se actualizó para:
+
+- identificar `ActasReunion2IA_G` como rama activa;
+- declarar el flujo como un nuevo modelo funcional para reuniones no Daily;
+- mantener Google Gemini como motor principal;
+- confirmar su independencia frente a `main` y `ActasReuIA_GEMI`.
+
+La publicación se realizará exclusivamente sobre el Script ID independiente
+`11nqac…Hbc7q` y la rama `ActasReunion2IA_G`.
+
+## Resultado del despliegue
+
+- `Pruebas/Mantenimiento.test.js`: correcto.
+- `git diff --check`: sin errores.
+- `clasp push`: 21 archivos publicados a las 14:11:44, hora de Lima.
+- Implementación actualizada: `AKfycbw2-…SEqhiQ`.
+- Versión publicada: `3`.
+- Descripción: `ActasReunion2IA_G - modelo para reuniones no Daily`.
+- URL conservada:
+  `https://script.google.com/macros/s/AKfycbw2-H74M7V7lRri9EC1yehucw-Z-3Z7wxr4IpcKJjJk-lxHxz-3Q08SE4306SEqhiQ/exec?vista=notas`.
+
+El cambio queda listo para su respaldo en la rama GitHub
+`ActasReunion2IA_G`.
+
