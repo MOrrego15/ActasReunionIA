@@ -32,7 +32,7 @@ function doGet(evento) {
   plantilla.urlAplicacion = ScriptApp.getService().getUrl();
   return plantilla.evaluate()
     .setTitle(
-      vistaNotas ? 'Notas de Daily por MEET' : MANTENIMIENTO_TITULO
+      vistaNotas ? 'Notas de Reuniones por MEET' : MANTENIMIENTO_TITULO
     );
 }
 

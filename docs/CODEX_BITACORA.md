@@ -4732,3 +4732,85 @@ distinto del estable. `ActasReunionIA` no fue modificado.
 - Reautenticar `clasp` antes de cualquier despliegue.
 - Solicitar autorización expresa antes de commit o push de Git.
 
+# Cambio 0078
+Fecha: 2026-08-11
+Autor: Codex
+
+## Objetivo
+
+Crear la línea de desarrollo independiente `ActasReunion2IA_G` como copia fiel
+del estado confirmado de `ActasReunionIA_G`, conservando su historial, código,
+arquitectura, funcionalidades, dependencias y documentación.
+
+## Origen
+
+- Proyecto local: `ActasReunionIA_G`.
+- Rama: `ActasReuIA_GEMI`.
+- Commit: `5270cf7`.
+- Fecha de creación: 2026-08-11.
+
+## Nuevo entorno
+
+- Carpeta: `H:\Mi unidad\CHATGPT\ActasReunion2IA_G`.
+- Rama: `ActasReunion2IA_G`.
+- Proyecto Apps Script: `ActasReunion2IA_G`.
+- Script ID: `11nqac…Hbc7q`.
+
+El Script ID se verificó como distinto de los asociados a `ActasReunionIA` y
+`ActasReunionIA_G`. `.clasp.json` permanece local y excluido de Git.
+
+## Archivos modificados en la nueva línea
+
+- `README.md`
+- `Documentacion/Arquitectura.md`
+- `docs/CODEX_BITACORA.md`
+
+## Despliegue
+
+- Se publicaron 22 archivos exclusivamente en `ActasReunion2IA_G`.
+- La primera sincronización normal fue omitida por `clasp`; se repitió con
+  `clasp push --force` únicamente sobre el proyecto nuevo y vacío.
+- `Inicializar.js` conservó su huella SHA-256 histórica.
+
+## Pendiente
+
+- Replicar de forma segura las Script Properties operativas y secretos; estos
+  valores no se almacenan ni se trasladan mediante Git.
+- Ejecutar las validaciones finales y comprobar el aislamiento de los tres
+  entornos.
+- No realizar commit ni Git push sin autorización expresa.
+
+# Cambio 0079
+Fecha: 2026-08-18
+Autor: Codex
+
+## Solicitud
+
+> Desplegar como otra rama en GitHub con el nombre `ActasReunion2IA_G` y,
+> para diferenciarla, cambiar `Notas de Daily por MEET` por
+> `Notas de Reuniones por MEET`.
+
+## Implementación
+
+Se actualizó exclusivamente la línea independiente `ActasReunion2IA_G`. El
+título visible de la vista de notas y el título de la respuesta HTML pasaron a
+ser `Notas de Reuniones por MEET`. También se sincronizaron las pruebas, el
+README y la descripción arquitectónica. No se modificaron las entradas
+históricas de esta bitácora.
+
+## Archivos modificados
+
+- `AppsScript/Web/Mantenimiento.gs`
+- `AppsScript/Web/NotasGemini.html`
+- `Pruebas/Mantenimiento.test.js`
+- `README.md`
+- `Documentacion/Arquitectura.md`
+- `docs/CODEX_BITACORA.md`
+
+## Publicación solicitada
+
+- Rama: `ActasReunion2IA_G`.
+- Remoto: `origin`.
+- Se excluyen archivos ajenos y asociaciones locales como `.clasp.json`.
+- No se modifican ni publican las ramas `main` o `ActasReuIA_GEMI`.
+

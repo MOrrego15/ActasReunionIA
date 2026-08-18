@@ -593,7 +593,7 @@ elegible.
 
 ### 12.7 Consulta web de notas de Gemini
 
-La aplicación web incorpora la vista `Notas de Daily por MEET`, de solo lectura, accesible
+La aplicación web incorpora la vista `Notas de Reuniones por MEET`, de solo lectura, accesible
 mediante `?vista=notas`. El servidor consulta directamente los archivos de la
 carpeta identificada por `CARPETA_NOTAS_GEMINI_ID`, sin consultar el registro de
 procesados. Solo admite documentos nativos de Google que no estén en la
@@ -647,12 +647,14 @@ validaciones de unicidad del flujo web.
 
 ## Entornos físicamente separados
 
-Desde el 10 de agosto de 2026 existen dos entornos sin asociación compartida:
+Existen tres entornos sin asociación compartida:
 
 - `ActasReunionIA`, rama `main`, conserva la versión estable y su proyecto
   original de Apps Script.
 - `ActasReunionIA_G`, rama `ActasReuIA_GEMI`, aloja el cliente principal
   `GeminiIA.gs` y utiliza un proyecto Apps Script independiente.
+- `ActasReunion2IA_G`, rama homónima, deriva de `ActasReunionIA_G` en el commit
+  `5270cf7` y utiliza otro proyecto Apps Script con Script ID independiente.
 
 Cada carpeta mantiene su propio `.clasp.json` local. Este archivo no forma
 parte del repositorio. Los despliegues deben comprobar rama, commit, proyecto

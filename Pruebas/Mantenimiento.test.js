@@ -190,7 +190,7 @@ assert.strictEqual(
 );
 const paginaNotas = sandbox.doGet({ parameter: { vista: 'notas' } });
 assert.strictEqual(paginaNotas.archivo, 'Web/NotasGemini');
-assert.strictEqual(paginaNotas.titulo, 'Notas de Daily por MEET');
+assert.strictEqual(paginaNotas.titulo, 'Notas de Reuniones por MEET');
 
 const listadoNotas = sandbox.obtenerNotasGeminiDisponibles();
 assert.strictEqual(listadoNotas.exito, true);
@@ -255,7 +255,7 @@ const paginaNotasHtml = fs.readFileSync(
 assert.match(paginaNotasHtml, /id="generarSecuencia"/);
 assert.match(paginaNotasHtml, />Crear Acta SEC\.<\/button>/);
 assert.match(paginaNotasHtml, /generarActaNotaSeleccionadaAutomatica/);
-assert.match(paginaNotasHtml, /<h1>Notas de Daily por MEET<\/h1>/);
+assert.match(paginaNotasHtml, /<h1>Notas de Reuniones por MEET<\/h1>/);
 assert.match(
   paginaNotasHtml,
   /Se muestran como máximo las diez notas de Daily por MEET,/

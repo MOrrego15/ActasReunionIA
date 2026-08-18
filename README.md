@@ -64,7 +64,7 @@ validación y la generación documental.
 La aplicación web, restringida mediante una lista de correos autorizados,
 ofrece dos vistas:
 
-- **Notas de Daily por MEET:** muestra hasta diez notas recientes,
+- **Notas de Reuniones por MEET:** muestra hasta diez notas recientes,
   ordenadas por fecha de creación, y permite generar el acta seleccionada.
 - **Mantenimiento del Correlativo Daily:** permite consultar y ajustar de forma
   controlada el último correlativo persistido.
@@ -196,19 +196,23 @@ aprobación explícita.
 No se declara una versión semántica formal hasta que exista una publicación
 aprobada.
 
-## Entorno experimental independiente
+## Línea independiente ActasReunion2IA_G
 
-Esta copia corresponde exclusivamente a la variante Google Gemini:
+Esta copia conserva el código, historial y arquitectura de la variante Google
+Gemini de origen:
 
-- Carpeta local: `ActasReunionIA_G`.
-- Rama Git: `ActasReuIA_GEMI`.
-- Proyecto Apps Script: `ActasReunionIA_G`.
-- Implementación web: independiente de la aplicación estable.
+- Fecha de creación: `2026-08-11`.
+- Proyecto de origen: `ActasReunionIA_G`.
+- Rama de origen: `ActasReuIA_GEMI`.
+- Commit de origen: `5270cf7`.
+- Carpeta local: `ActasReunion2IA_G`.
+- Rama Git: `ActasReunion2IA_G`.
+- Proyecto Apps Script: `ActasReunion2IA_G`.
+- Script ID: `11nqac…Hbc7q`.
 
-El proyecto estable permanece en `ActasReunionIA`, rama `main`, y conserva su
-propio proyecto e implementación de Apps Script. La variante experimental no
-debe desplegarse sobre el Script ID estable ni fusionarse con `main` sin una
-autorización explícita.
+La nueva línea no comparte proyecto Apps Script con `ActasReunionIA` ni con
+`ActasReunionIA_G`. No debe fusionarse con otras ramas sin autorización
+explícita.
 
 `.clasp.json` es una asociación local del entorno y no se versiona porque
 contiene el identificador operativo del proyecto Apps Script.
