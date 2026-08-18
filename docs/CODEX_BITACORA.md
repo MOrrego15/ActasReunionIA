@@ -4814,3 +4814,21 @@ históricas de esta bitácora.
 - Se excluyen archivos ajenos y asociaciones locales como `.clasp.json`.
 - No se modifican ni publican las ramas `main` o `ActasReuIA_GEMI`.
 
+## Despliegue en Apps Script
+
+- Fecha: 2026-08-18.
+- Proyecto: `ActasReunion2IA_G`.
+- Script ID comprobado de forma parcialmente enmascarada:
+  `11nqac…Hbc7q`.
+- La implementación previa `AKfycbw-…XTvPU` estaba asociada a `@HEAD` y Google
+  la declaró de solo lectura al intentar actualizarla; no fue modificada.
+- Nueva implementación web: `AKfycbw2-…SEqhiQ`, versión `2`.
+- URL de la vista:
+  `https://script.google.com/macros/s/AKfycbw2-H74M7V7lRri9EC1yehucw-Z-3Z7wxr4IpcKJjJk-lxHxz-3Q08SE4306SEqhiQ/exec?vista=notas`.
+- Cuenta de despliegue: cuenta institucional autorizada.
+- `clasp push` publicó correctamente 21 archivos a las 13:53:39, hora de Lima.
+- `clasp deploy` creó correctamente la versión `2` con la descripción
+  `ActasReunion2IA_G - Notas de Reuniones por MEET`.
+- La prueba `Pruebas/Mantenimiento.test.js` finalizó correctamente antes del
+  despliegue.
+

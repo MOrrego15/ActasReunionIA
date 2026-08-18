@@ -69,6 +69,14 @@ ofrece dos vistas:
 - **Mantenimiento del Correlativo Daily:** permite consultar y ajustar de forma
   controlada el último correlativo persistido.
 
+La vista publicada de esta línea independiente está disponible en:
+
+`https://script.google.com/macros/s/AKfycbw2-H74M7V7lRri9EC1yehucw-Z-3Z7wxr4IpcKJjJk-lxHxz-3Q08SE4306SEqhiQ/exec?vista=notas`
+
+Su encabezado visible es **Notas de Reuniones por MEET**. La implementación
+versionada `2` y el Script ID pertenecen exclusivamente a
+`ActasReunion2IA_G`.
+
 Al seleccionar una reunión, la interfaz muestra únicamente su día y hora de
 creación. El identificador de Drive se conserva en memoria para la operación,
 pero no aparece en la página.
