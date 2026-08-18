@@ -69,12 +69,24 @@ ofrece dos vistas:
 - **Mantenimiento del Correlativo Daily:** permite consultar y ajustar de forma
   controlada el último correlativo persistido.
 
+Después de seleccionar una reunión, la vista permite revisar y editar antes de
+generar el acta:
+
+- Hora de inicio, inicialmente `09:00 AM`.
+- Hora de fin, inicialmente `09:20 AM`.
+- Agenda, inicialmente `Reunión`.
+- Próxima reunión, inicialmente vacía.
+
+Estos valores se envían al backend y prevalecen en el documento generado. La
+vista no calcula horarios ni próxima reunión con reglas Daily; una próxima
+reunión vacía permanece vacía.
+
 La vista publicada de esta línea independiente está disponible en:
 
 `https://script.google.com/macros/s/AKfycbw2-H74M7V7lRri9EC1yehucw-Z-3Z7wxr4IpcKJjJk-lxHxz-3Q08SE4306SEqhiQ/exec?vista=notas`
 
 Su encabezado visible es **Notas de Reuniones por MEET**. La implementación
-versionada `3` y el Script ID pertenecen exclusivamente a
+versionada `4` y el Script ID pertenecen exclusivamente a
 `ActasReunion2IA_G`.
 
 Al seleccionar una reunión, la interfaz muestra únicamente su día y hora de

@@ -4888,3 +4888,91 @@ La publicación se realizará exclusivamente sobre el Script ID independiente
 El cambio queda listo para su respaldo en la rama GitHub
 `ActasReunion2IA_G`.
 
+# Cambio 0081
+Fecha: 2026-08-18
+Autor: Codex
+
+## Solicitud
+
+Incorporar, después de seleccionar el archivo fuente, cuatro campos editables:
+hora de inicio, hora de fin, agenda y próxima reunión. Los valores iniciales
+deben ser `09:00 AM`, `09:20 AM`, `Reunión` y vacío. El documento debe utilizar
+los valores confirmados y no debe aplicar reglas Daily ni calcular una próxima
+reunión vacía.
+
+## Diseño
+
+Se definió el objeto exacto `datosReunion`:
+
+```text
+{
+  horaInicio: string,
+  horaFin: string,
+  agenda: string,
+  proximaReunion: string
+}
+```
+
+La interfaz normaliza las horas a mayúsculas y el servidor vuelve a validar
+claves, tipos, formato de doce horas y longitudes. El objeto viaja separado de
+la respuesta de Gemini y tiene prioridad exclusivamente en la generación web
+seleccionada. El flujo automático existente conserva su comportamiento cuando
+el objeto está ausente.
+
+## Implementación
+
+- La vista muestra y reinicia los cuatro campos al seleccionar cada reunión.
+- Los dos botones de generación envían cualquier edición realizada.
+- `Mantenimiento.gs` normaliza el contrato y rechaza datos inválidos.
+- `Main.gs` transporta el objeto hasta la emisión documental.
+- `Acta.gs` usa las horas editadas, agenda sin prefijo Daily y próxima reunión
+  literal, incluida la cadena vacía.
+- La prueba manual controlada utiliza los mismos valores iniciales no Daily.
+
+## Archivos funcionales modificados
+
+- `AppsScript/Web/NotasGemini.html`
+- `AppsScript/Web/Mantenimiento.gs`
+- `AppsScript/Main.gs`
+- `AppsScript/Acta.gs`
+- `AppsScript/PruebaGeneracionManual.gs`
+
+## Pruebas modificadas o incorporadas
+
+- `Pruebas/Mantenimiento.test.js`
+- `Pruebas/MainGeneracionManual.test.js`
+- `Pruebas/ActaAgenda.test.js`
+- `Pruebas/ActaCierre.test.js`
+- `Pruebas/PruebaGeneracionManual.test.js`
+- `Pruebas/ActaDatosReunionEditable.test.js` (nuevo)
+
+## Documentación actualizada
+
+- `README.md`
+- `Documentacion/Arquitectura.md`
+- `Documentacion/Flujo_Procesamiento.md`
+- `Documentacion/Decisiones_Arquitectonicas.md`
+- `Documentacion/Riesgos_Tecnicos.md`
+- `docs/CODEX_BITACORA.md`
+
+## Validaciones
+
+- Las cinco pruebas específicas iniciales finalizaron correctamente.
+- Después de completar código y documentación, la suite completa ejecutó los
+  16 archivos de prueba sin errores.
+- `git diff --check` finalizó sin errores.
+- La revisión de la ruta `datosReunion` confirmó que las constantes Daily solo
+  permanecen como contingencia del flujo automático sin datos manuales; no
+  sobrescriben la generación web seleccionada.
+
+## Estado
+
+- Implementación local en la rama `ActasReunion2IA_G`.
+- `clasp push` publicó 21 archivos a las 16:25:02, hora de Lima.
+- Implementación actualizada: `AKfycbw2-…SEqhiQ`.
+- Versión publicada: `4`.
+- Descripción: `ActasReunion2IA_G - datos editables de reunión`.
+- URL conservada:
+  `https://script.google.com/macros/s/AKfycbw2-H74M7V7lRri9EC1yehucw-Z-3Z7wxr4IpcKJjJk-lxHxz-3Q08SE4306SEqhiQ/exec?vista=notas`.
+- El commit y Git push se realizan como cierre de la publicación autorizada.
+

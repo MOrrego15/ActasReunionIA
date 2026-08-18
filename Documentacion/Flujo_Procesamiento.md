@@ -183,24 +183,31 @@ Es un error crítico porque puede permitir duplicidades. La salida deberá conse
 ## 8. Flujos dirigidos desde la aplicación web
 
 1. El usuario autorizado selecciona una de las notas mostradas.
-2. La interfaz presenta el ID y propone el primer número de secuencia disponible
-   a partir del siguiente correlativo configurado.
-3. El usuario elige `Crear Acta` para reservar el correlativo automático o
+2. La interfaz conserva el ID internamente, propone el primer número de
+   secuencia disponible y muestra `Hora de inicio`, `Hora de fin`, `Agenda` y
+   `Próxima reunión` como campos editables.
+3. Los valores iniciales son `09:00 AM`, `09:20 AM`, `Reunión` y cadena vacía,
+   respectivamente. El usuario puede modificarlos antes de continuar.
+4. El usuario elige `Crear Acta` para reservar el correlativo automático o
    `Crear Acta SEC.` para usar exactamente el entero visible en el campo.
-4. El servidor valida autorización e ID; para SEC. también valida el rango.
-5. Se recorre la carpeta y se localiza exclusivamente el ID seleccionado, sin
+5. El servidor valida autorización, ID y el objeto exacto de datos de reunión;
+   para SEC. también valida el rango del correlativo.
+6. Se recorre la carpeta y se localiza exclusivamente el ID seleccionado, sin
    aplicar la reducción automática al archivo modificado más recientemente.
-6. `HojaSeguimiento.gsheet` rechaza un ID ya registrado y, en SEC., un
+7. `HojaSeguimiento.gsheet` rechaza un ID ya registrado y, en SEC., un
    correlativo usado.
-7. El procesamiento funcional se ejecuta para esa única nota.
-8. La reclamación `EN_PROCESO` repite la validación bajo `ScriptLock`.
-9. El flujo genera y verifica el DOCX y registra `PROCESADO` o `ERROR`.
-10. `Crear Acta` reserva y actualiza `ACTAS_ULTIMO_CORRELATIVO`; `Crear Acta
+8. El procesamiento funcional se ejecuta para esa única nota y entrega los
+   datos editados a `Acta.gs`, separados de la respuesta de IA.
+9. El acta usa las horas y la agenda recibidas. La próxima reunión se traslada
+   literalmente; si está vacía no se calcula ni se inventa.
+10. La reclamación `EN_PROCESO` repite la validación bajo `ScriptLock`.
+11. El flujo genera y verifica el DOCX y registra `PROCESADO` o `ERROR`.
+12. `Crear Acta` reserva y actualiza `ACTAS_ULTIMO_CORRELATIVO`; `Crear Acta
     SEC.` lo mantiene sin cambios.
-11. Tras `PROCESADO`, el servidor crea un token temporal asociado al DOCX.
-12. La interfaz usa el token para solicitar el contenido, crea la descarga local
+13. Tras `PROCESADO`, el servidor crea un token temporal asociado al DOCX.
+14. La interfaz usa el token para solicitar el contenido, crea la descarga local
     y el servidor invalida el token después de una entrega correcta.
-13. Ambos botones de creación quedan bloqueados para la nota ya procesada y el campo
+15. Ambos botones de creación quedan bloqueados para la nota ya procesada y el campo
     se actualiza con el siguiente correlativo libre de `Procesados`.
 
 La misma operación puede iniciarse desde el editor de Apps Script mediante

@@ -95,6 +95,17 @@ assert.deepStrictEqual(
   [['Agenda', '']]
 );
 
+sandbox._actaAgregarAgenda(cuerpo, 'reunión de seguimiento', {
+  horaInicio: '10:15 AM',
+  horaFin: '11:45 AM',
+  agenda: 'Revisión del proyecto',
+  proximaReunion: ''
+});
+assert.deepStrictEqual(
+  JSON.parse(JSON.stringify(filasRecibidas)),
+  [['Agenda', 'Revisión del proyecto']]
+);
+
 assert.strictEqual(
   sandbox._actaConstruirNumeroReunion(215, '02.07.2026', 'CEL002'),
   '215-2026-CEL002'

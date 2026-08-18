@@ -6,6 +6,12 @@ let reservasAutomaticas = 0;
 let correlativoRegistrado = null;
 let datosEmisionRecibidos = null;
 const exito = (datos) => ({ exito: true, datos, error: null });
+const datosReunionEditados = {
+  horaInicio: '10:15 AM',
+  horaFin: '11:45 AM',
+  agenda: 'Revisión del proyecto',
+  proximaReunion: ''
+};
 const sandbox = {
   Utilities: {
     formatDate: () => '03/08/2026',
@@ -112,19 +118,35 @@ assert.deepStrictEqual(JSON.parse(JSON.stringify(datosEmisionRecibidos)), {
 });
 
 const dirigido = sandbox.ejecutarGeneracionActaSeleccionada({
-  idDocumentoFuente: 'nota-anterior', correlativo: 78
+  idDocumentoFuente: 'nota-anterior', correlativo: 78,
+  datosReunion: datosReunionEditados
 });
 assert.strictEqual(dirigido.exito, true);
 assert.strictEqual(dirigido.datos.correlativo, 78);
 assert.strictEqual(dirigido.datos.idArchivoDocx, 'acta-docx');
 assert.strictEqual(reservasAutomaticas, 0);
+assert.deepStrictEqual(
+  JSON.parse(JSON.stringify(datosEmisionRecibidos.datosReunion)),
+  datosReunionEditados
+);
 
 const automatico = sandbox.ejecutarGeneracionActaSeleccionadaAutomatica({
-  idDocumentoFuente: 'nota-automatica'
+  idDocumentoFuente: 'nota-automatica',
+  datosReunion: datosReunionEditados
 });
 assert.strictEqual(automatico.exito, true);
 assert.strictEqual(automatico.datos.correlativo, 999);
 assert.strictEqual(automatico.datos.idArchivoDocx, 'acta-docx');
 assert.strictEqual(reservasAutomaticas, 1);
+assert.deepStrictEqual(
+  JSON.parse(JSON.stringify(datosEmisionRecibidos.datosReunion)),
+  datosReunionEditados
+);
+assert.strictEqual(
+  sandbox.ejecutarGeneracionActaSeleccionadaAutomatica({
+    idDocumentoFuente: 'nota-sin-datos'
+  }).error.codigo,
+  'MAIN_PARAMETRO_INVALIDO'
+);
 
 console.log('MainGeneracionManual.test.js: secuencias manual y automática.');

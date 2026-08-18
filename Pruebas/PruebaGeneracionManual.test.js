@@ -32,5 +32,14 @@ const resultado = sandbox.probarGeneracionActaManual();
 assert.strictEqual(resultado.exito, true);
 assert.strictEqual(parametrosRecibidos.idDocumentoFuente, 'nota-prueba');
 assert.strictEqual(parametrosRecibidos.correlativo, 211);
+assert.deepStrictEqual(
+  JSON.parse(JSON.stringify(parametrosRecibidos.datosReunion)),
+  {
+    horaInicio: '09:00 AM',
+    horaFin: '09:20 AM',
+    agenda: 'Reunión',
+    proximaReunion: ''
+  }
+);
 
 console.log('PruebaGeneracionManual.test.js: propiedades e invocación correctas.');

@@ -13,6 +13,12 @@ let bloqueoDisponible = true;
 let bloqueoLiberado = false;
 const auditoria = [];
 const generaciones = [];
+const datosReunionEditados = {
+  horaInicio: '10:15 AM',
+  horaFin: '11:45 AM',
+  agenda: 'Revisión del proyecto',
+  proximaReunion: '25/08/2026 03:00 PM'
+};
 const cacheDescargas = new Map();
 const archivosNotas = [];
 for (let indice = 1; indice <= 12; indice += 1) {
@@ -147,6 +153,7 @@ const sandbox = {
   ejecutarGeneracionActaSeleccionadaAutomatica: (parametros) => {
     generaciones.push({
       idDocumentoFuente: parametros.idDocumentoFuente,
+      datosReunion: parametros.datosReunion,
       correlativo: 35,
       automatico: true
     });
@@ -215,7 +222,11 @@ const propuesta = sandbox.obtenerPropuestaSecuenciaNota('nota-12');
 assert.strictEqual(propuesta.exito, true);
 assert.strictEqual(propuesta.datos.correlativoPropuesto, 35);
 
-const generacion = sandbox.generarActaNotaSeleccionada('nota-12', 35);
+const generacion = sandbox.generarActaNotaSeleccionada(
+  'nota-12',
+  35,
+  datosReunionEditados
+);
 assert.strictEqual(generacion.exito, true);
 assert.strictEqual(
   generacion.datos.tokenDescarga,
@@ -235,19 +246,39 @@ assert.strictEqual(
 assert.strictEqual(generaciones.length, 1);
 assert.strictEqual(generaciones[0].idDocumentoFuente, 'nota-12');
 assert.strictEqual(generaciones[0].correlativo, 35);
+assert.deepStrictEqual(
+  JSON.parse(JSON.stringify(generaciones[0].datosReunion)),
+  datosReunionEditados
+);
 assert.strictEqual(valores.get('ACTAS_ULTIMO_CORRELATIVO'), '34');
 assert.strictEqual(
-  sandbox.generarActaNotaSeleccionada('nota-12', 0).error.codigo,
+  sandbox.generarActaNotaSeleccionada(
+    'nota-12', 0, datosReunionEditados
+  ).error.codigo,
   'MANTENIMIENTO_GENERACION_INVALIDA'
 );
 
 const generacionAutomatica =
-  sandbox.generarActaNotaSeleccionadaAutomatica('nota-12');
+  sandbox.generarActaNotaSeleccionadaAutomatica(
+    'nota-12',
+    datosReunionEditados
+  );
 assert.strictEqual(generacionAutomatica.exito, true);
 assert.strictEqual(generacionAutomatica.datos.correlativo, 35);
 assert.strictEqual(typeof generacionAutomatica.datos.tokenDescarga, 'string');
 assert.strictEqual(generaciones.length, 2);
 assert.strictEqual(generaciones[1].automatico, true);
+assert.deepStrictEqual(
+  JSON.parse(JSON.stringify(generaciones[1].datosReunion)),
+  datosReunionEditados
+);
+assert.strictEqual(
+  sandbox.generarActaNotaSeleccionadaAutomatica('nota-12', {
+    horaInicio: '25:00 PM', horaFin: '09:20 AM',
+    agenda: 'Reunión', proximaReunion: ''
+  }).error.codigo,
+  'MANTENIMIENTO_GENERACION_INVALIDA'
+);
 
 const paginaNotasHtml = fs.readFileSync(
   'AppsScript/Web/NotasGemini.html', 'utf8'
@@ -275,6 +306,11 @@ assert.match(
 assert.match(paginaMantenimientoHtml, /Ver últimas reuniones Daily/);
 assert.match(paginaNotasHtml, />Reunión seleccionada<\/strong>/);
 assert.match(paginaNotasHtml, /Reunión: Día /);
+assert.match(paginaNotasHtml, /id="horaInicio"[^>]+value="09:00 AM"/);
+assert.match(paginaNotasHtml, /id="horaFin"[^>]+value="09:20 AM"/);
+assert.match(paginaNotasHtml, /id="agenda"[^>]*>Reunión<\/textarea>/);
+assert.match(paginaNotasHtml, /id="proximaReunion"[^>]+value=""/);
+assert.match(paginaNotasHtml, /datosReunion/);
 assert.doesNotMatch(paginaNotasHtml, /ID seleccionado/);
 assert.doesNotMatch(paginaNotasHtml, /idSeleccionado/);
 

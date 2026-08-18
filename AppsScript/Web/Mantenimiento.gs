@@ -11,6 +11,8 @@ const MANTENIMIENTO_DESCARGA_SEGUNDOS = 600;
 const MANTENIMIENTO_DESCARGA_MAX_BYTES = 10 * 1024 * 1024;
 const MANTENIMIENTO_MIME_DOCX =
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+const MANTENIMIENTO_LONGITUD_AGENDA = 500;
+const MANTENIMIENTO_LONGITUD_PROXIMA_REUNION = 200;
 
 /**
  * Serves the maintenance web page only to authorized Google accounts.
@@ -138,26 +140,34 @@ function obtenerPropuestaSecuenciaNota(idDocumentoFuente) {
   }
 }
 
-function generarActaNotaSeleccionada(idDocumentoFuente, correlativo) {
+function generarActaNotaSeleccionada(
+  idDocumentoFuente,
+  correlativo,
+  datosReunion
+) {
   if (!_mantenimientoEsUsuarioAutorizado()) {
     return _mantenimientoResultadoError(
       'MANTENIMIENTO_NO_AUTORIZADO',
       'La cuenta activa no está autorizada.'
     );
   }
+  const datosReunionNormalizados =
+    _mantenimientoNormalizarDatosReunion(datosReunion);
   if (typeof idDocumentoFuente !== 'string' ||
     idDocumentoFuente.trim().length === 0 ||
     !Number.isSafeInteger(correlativo) || correlativo <= 0 ||
-    correlativo > MANTENIMIENTO_LIMITE_CORRELATIVO) {
+    correlativo > MANTENIMIENTO_LIMITE_CORRELATIVO ||
+    datosReunionNormalizados === null) {
     return _mantenimientoResultadoError(
       'MANTENIMIENTO_GENERACION_INVALIDA',
-      'Selecciona una nota e ingresa un número entero mayor que cero.'
+      'Revisa la nota, la secuencia y los datos editables de la reunión.'
     );
   }
   try {
     const resultado = ejecutarGeneracionActaSeleccionada({
       idDocumentoFuente: idDocumentoFuente.trim(),
-      correlativo: correlativo
+      correlativo: correlativo,
+      datosReunion: datosReunionNormalizados
     });
     if (!resultado.exito || !resultado.datos ||
       typeof resultado.datos.idArchivoDocx !== 'string' ||
@@ -173,23 +183,30 @@ function generarActaNotaSeleccionada(idDocumentoFuente, correlativo) {
   }
 }
 
-function generarActaNotaSeleccionadaAutomatica(idDocumentoFuente) {
+function generarActaNotaSeleccionadaAutomatica(
+  idDocumentoFuente,
+  datosReunion
+) {
   if (!_mantenimientoEsUsuarioAutorizado()) {
     return _mantenimientoResultadoError(
       'MANTENIMIENTO_NO_AUTORIZADO',
       'La cuenta activa no está autorizada.'
     );
   }
+  const datosReunionNormalizados =
+    _mantenimientoNormalizarDatosReunion(datosReunion);
   if (typeof idDocumentoFuente !== 'string' ||
-    idDocumentoFuente.trim().length === 0) {
+    idDocumentoFuente.trim().length === 0 ||
+    datosReunionNormalizados === null) {
     return _mantenimientoResultadoError(
       'MANTENIMIENTO_GENERACION_INVALIDA',
-      'Selecciona una nota válida.'
+      'Revisa la nota y los datos editables de la reunión.'
     );
   }
   try {
     const resultado = ejecutarGeneracionActaSeleccionadaAutomatica({
-      idDocumentoFuente: idDocumentoFuente.trim()
+      idDocumentoFuente: idDocumentoFuente.trim(),
+      datosReunion: datosReunionNormalizados
     });
     if (!resultado.exito || !resultado.datos ||
       typeof resultado.datos.idArchivoDocx !== 'string' ||
@@ -203,6 +220,35 @@ function generarActaNotaSeleccionadaAutomatica(idDocumentoFuente) {
       'No fue posible generar automáticamente el acta seleccionada.'
     );
   }
+}
+
+function _mantenimientoNormalizarDatosReunion(datosReunion) {
+  if (!datosReunion || typeof datosReunion !== 'object' ||
+    Array.isArray(datosReunion)) return null;
+  const claves = Object.keys(datosReunion);
+  const esperadas = ['horaInicio','horaFin','agenda','proximaReunion'];
+  if (claves.length !== esperadas.length || !claves.every(function (clave) {
+    return esperadas.indexOf(clave) !== -1;
+  })) return null;
+  if (!esperadas.every(function (clave) {
+    return typeof datosReunion[clave] === 'string';
+  })) return null;
+  const horaInicio = datosReunion.horaInicio.trim().toUpperCase();
+  const horaFin = datosReunion.horaFin.trim().toUpperCase();
+  const formatoHora = /^(0[1-9]|1[0-2]):[0-5]\d (AM|PM)$/;
+  const agenda = datosReunion.agenda.trim();
+  const proximaReunion = datosReunion.proximaReunion.trim();
+  if (!formatoHora.test(horaInicio) || !formatoHora.test(horaFin) ||
+    agenda.length > MANTENIMIENTO_LONGITUD_AGENDA ||
+    proximaReunion.length > MANTENIMIENTO_LONGITUD_PROXIMA_REUNION) {
+    return null;
+  }
+  return {
+    horaInicio: horaInicio,
+    horaFin: horaFin,
+    agenda: agenda,
+    proximaReunion: proximaReunion
+  };
 }
 
 function _mantenimientoPrepararResultadoGeneracion(resultado) {

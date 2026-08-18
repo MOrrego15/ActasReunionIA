@@ -102,7 +102,8 @@ const ACTA_CODIGOS_ERROR = Object.freeze({
  * @param {RespuestaActaValidada} respuestaActaValidada Datos ya validados.
  * @param {{correlativo: number, carpetaDestinoId: string,
  *     carpetaRecursosId: string, codigoFormato: string, celula: string,
- *     agendaFija: (string|undefined)}} datosEmisionActa
+ *     agendaFija: (string|undefined), datosReunion: (Object|undefined)}}
+ *     datosEmisionActa
  *     Datos técnicos de emisión.
  * @param {{nombre: string, cargo: string, unidad: string}[]} participantesActa
  *     Participantes resueltos desde el catálogo institucional.
@@ -264,14 +265,30 @@ function _actaValidarRespuesta(acta) {
 }
 
 function _actaValidarEmision(datos) {
-  return _actaClavesExactas(datos,
-    ['correlativo','carpetaDestinoId','carpetaRecursosId','codigoFormato',
-      'celula','agendaFija']) &&
+  const clavesBase = ['correlativo','carpetaDestinoId','carpetaRecursosId',
+    'codigoFormato','celula','agendaFija'];
+  const clavesConDatosReunion = clavesBase.concat(['datosReunion']);
+  return (_actaClavesExactas(datos, clavesBase) ||
+    _actaClavesExactas(datos, clavesConDatosReunion)) &&
     Number.isSafeInteger(datos.correlativo) && datos.correlativo > 0 &&
     datos.correlativo <= 999999 && esCadenaNoVacia(datos.carpetaDestinoId) &&
     esCadenaNoVacia(datos.carpetaRecursosId) &&
     esCadenaNoVacia(datos.codigoFormato) && esCadenaNoVacia(datos.celula) &&
-    (datos.agendaFija === undefined || typeof datos.agendaFija === 'string');
+    (datos.agendaFija === undefined || typeof datos.agendaFija === 'string') &&
+    (datos.datosReunion === undefined ||
+      _actaValidarDatosReunionEditable(datos.datosReunion));
+}
+
+function _actaValidarDatosReunionEditable(datosReunion) {
+  const campos = ['horaInicio','horaFin','agenda','proximaReunion'];
+  const formatoHora = /^(0[1-9]|1[0-2]):[0-5]\d (AM|PM)$/;
+  return _actaClavesExactas(datosReunion, campos) &&
+    campos.every(function (campo) {
+      return typeof datosReunion[campo] === 'string';
+    }) && formatoHora.test(datosReunion.horaInicio) &&
+    formatoHora.test(datosReunion.horaFin) &&
+    datosReunion.agenda.length <= 500 &&
+    datosReunion.proximaReunion.length <= 200;
 }
 
 function _actaValidarParticipantes(participantes) {
@@ -322,18 +339,28 @@ function _actaEscribirDocumento(
     cuerpo,
     correlativo,
     acta.fechaReunion,
-    datosEmisionActa.celula
+    datosEmisionActa.celula,
+    datosEmisionActa.datosReunion
   );
 
   _actaAgregarAsistentes(cuerpo, participantesActa);
 
-  _actaAgregarAgenda(cuerpo, datosEmisionActa.agendaFija);
+  _actaAgregarAgenda(
+    cuerpo,
+    datosEmisionActa.agendaFija,
+    datosEmisionActa.datosReunion
+  );
 
   _actaAgregarSiglasAcronimos(cuerpo);
 
   _actaAgregarTemasTratados(cuerpo, acta.acuerdos);
 
-  _actaAgregarCierre(cuerpo, acta.tareas, acta.fechaReunion);
+  _actaAgregarCierre(
+    cuerpo,
+    acta.tareas,
+    acta.fechaReunion,
+    datosEmisionActa.datosReunion
+  );
 }
 
 function _actaReescribirConCabeceraCompatible(
@@ -358,13 +385,23 @@ function _actaReescribirConCabeceraCompatible(
     cuerpo,
     correlativo,
     acta.fechaReunion,
-    datosEmisionActa.celula
+    datosEmisionActa.celula,
+    datosEmisionActa.datosReunion
   );
   _actaAgregarAsistentes(cuerpo, participantesActa);
-  _actaAgregarAgenda(cuerpo, datosEmisionActa.agendaFija);
+  _actaAgregarAgenda(
+    cuerpo,
+    datosEmisionActa.agendaFija,
+    datosEmisionActa.datosReunion
+  );
   _actaAgregarSiglasAcronimos(cuerpo);
   _actaAgregarTemasTratados(cuerpo, acta.acuerdos);
-  _actaAgregarCierre(cuerpo, acta.tareas, acta.fechaReunion);
+  _actaAgregarCierre(
+    cuerpo,
+    acta.tareas,
+    acta.fechaReunion,
+    datosEmisionActa.datosReunion
+  );
   documento.saveAndClose();
 }
 
@@ -720,16 +757,20 @@ function _actaAgregarDatosReunion(
   cuerpo,
   correlativo,
   fechaReunion,
-  celula
+  celula,
+  datosReunion
 ) {
   const fechaFormateada = _actaFormatearFechaCabecera(fechaReunion);
+  const hora = datosReunion === undefined
+    ? ACTA_REUNION.HORA
+    : datosReunion.horaInicio + ' a ' + datosReunion.horaFin;
   const tabla = cuerpo.appendTable([
     [
       'Reunión',
       _actaConstruirNumeroReunion(correlativo, fechaFormateada, celula)
     ],
     ['Fecha', fechaFormateada],
-    ['Hora', ACTA_REUNION.HORA]
+    ['Hora', hora]
   ]);
 
   for (let indice = 0; indice < tabla.getNumRows(); indice += 1) {
@@ -763,10 +804,10 @@ function _actaConstruirNumeroReunion(correlativo, fechaFormateada, celula) {
   return String(correlativo) + '-' + anio + '-' + celula.trim();
 }
 
-function _actaAgregarAgenda(cuerpo, agendaFija) {
-  const textoAgenda = esCadenaNoVacia(agendaFija)
-    ? 'Dayli – ' + agendaFija.trim()
-    : '';
+function _actaAgregarAgenda(cuerpo, agendaFija, datosReunion) {
+  const textoAgenda = datosReunion !== undefined
+    ? datosReunion.agenda
+    : (esCadenaNoVacia(agendaFija) ? 'Dayli – ' + agendaFija.trim() : '');
   const tabla = cuerpo.appendTable([['Agenda', textoAgenda]]);
   tabla.setBorderWidth(0.75);
   const celdaEtiqueta = tabla.getRow(0).getCell(0);
@@ -897,11 +938,14 @@ function _actaAgregarTemasTratados(cuerpo, acuerdos) {
   }
 }
 
-function _actaAgregarCierre(cuerpo, tareas, fechaReunion) {
+function _actaAgregarCierre(cuerpo, tareas, fechaReunion, datosReunion) {
+  const proximaReunion = datosReunion === undefined
+    ? _actaCalcularProximaReunion(fechaReunion)
+    : datosReunion.proximaReunion;
   const tabla = cuerpo.appendTable([
     ['Riesgos o problemas', ''],
     ['Acuerdos', ''],
-    ['Próxima reunión', _actaCalcularProximaReunion(fechaReunion)]
+    ['Próxima reunión', proximaReunion]
   ]);
   tabla.setBorderWidth(0.75);
 

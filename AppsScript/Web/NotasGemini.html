@@ -28,8 +28,13 @@
       #detalleReunion { margin: 8px 0 12px; font-weight: 700; }
       .campo { margin: 14px 0; }
       .campo label { display: block; margin-bottom: 6px; font-weight: 700; }
-      .campo input { width: 180px; padding: 10px; border: 1px solid #9cacbf;
-        border-radius: 6px; font-size: 16px; }
+      .campos-reunion { display: grid; grid-template-columns: 1fr 1fr;
+        gap: 0 18px; }
+      .campo input, .campo textarea { box-sizing: border-box; width: 100%;
+        padding: 10px; border: 1px solid #9cacbf; border-radius: 6px;
+        font: inherit; }
+      .campo textarea { min-height: 76px; resize: vertical; }
+      .campo-correlativo input { width: 180px; }
       .crear-acta { display: flex; align-items: center; gap: 12px;
         margin: 12px 0; }
       .aviso-secuencia { color: #536178; font-weight: 700; }
@@ -39,6 +44,7 @@
       @media (max-width: 680px) {
         th.nombre, td.nombre { max-width: 210px; overflow-wrap: anywhere; }
         .acciones { flex-wrap: wrap; }
+        .campos-reunion { grid-template-columns: 1fr; }
       }
     </style>
   </head>
@@ -63,11 +69,32 @@
         <div class="seleccion" id="seleccion" hidden>
           <strong>Reunión seleccionada</strong>
           <p id="detalleReunion"></p>
+          <div class="campos-reunion">
+            <div class="campo">
+              <label for="horaInicio">Hora de inicio</label>
+              <input id="horaInicio" type="text" value="09:00 AM"
+                maxlength="8" autocomplete="off">
+            </div>
+            <div class="campo">
+              <label for="horaFin">Hora de fin</label>
+              <input id="horaFin" type="text" value="09:20 AM"
+                maxlength="8" autocomplete="off">
+            </div>
+          </div>
+          <div class="campo">
+            <label for="agenda">Agenda</label>
+            <textarea id="agenda" maxlength="500">Reunión</textarea>
+          </div>
+          <div class="campo">
+            <label for="proximaReunion">Próxima reunión</label>
+            <input id="proximaReunion" type="text" value=""
+              maxlength="200" autocomplete="off">
+          </div>
           <div class="crear-acta">
             <button id="generar" type="button">Crear Acta</button>
             <span class="aviso-secuencia">Respetando la secuencia</span>
           </div>
-          <div class="campo">
+          <div class="campo campo-correlativo">
             <label for="correlativo">Número de secuencia</label>
             <input id="correlativo" type="number" min="1" max="999999"
               step="1" inputmode="numeric">
@@ -85,6 +112,10 @@
       const actualizar = document.getElementById('actualizar');
       const seleccion = document.getElementById('seleccion');
       const detalleReunion = document.getElementById('detalleReunion');
+      const horaInicio = document.getElementById('horaInicio');
+      const horaFin = document.getElementById('horaFin');
+      const agenda = document.getElementById('agenda');
+      const proximaReunion = document.getElementById('proximaReunion');
       const correlativo = document.getElementById('correlativo');
       const generar = document.getElementById('generar');
       const generarSecuencia = document.getElementById('generarSecuencia');
@@ -114,6 +145,10 @@
         idDocumentoSeleccionado = id;
         detalleReunion.textContent = formatearDetalleReunion(fechaCreacion);
         seleccion.hidden = false;
+        horaInicio.value = '09:00 AM';
+        horaFin.value = '09:20 AM';
+        agenda.value = 'Reunión';
+        proximaReunion.value = '';
         correlativo.value = '';
         descargar.hidden = true;
         descargar.dataset.token = '';
@@ -199,7 +234,34 @@
       }
 
       actualizar.addEventListener('click', cargarNotas);
+
+      function obtenerDatosReunion() {
+        const inicio = horaInicio.value.trim().toUpperCase();
+        const fin = horaFin.value.trim().toUpperCase();
+        const formatoHora = /^(0[1-9]|1[0-2]):[0-5]\d (AM|PM)$/;
+        if (!formatoHora.test(inicio)) {
+          mensaje.className = 'error';
+          mensaje.textContent = 'Ingresa una hora de inicio válida, por ejemplo 09:00 AM.';
+          horaInicio.focus();
+          return null;
+        }
+        if (!formatoHora.test(fin)) {
+          mensaje.className = 'error';
+          mensaje.textContent = 'Ingresa una hora de fin válida, por ejemplo 09:20 AM.';
+          horaFin.focus();
+          return null;
+        }
+        return {
+          horaInicio: inicio,
+          horaFin: fin,
+          agenda: agenda.value.trim(),
+          proximaReunion: proximaReunion.value.trim()
+        };
+      }
+
       function generarActa(usarSecuenciaManual) {
+        const datosReunion = obtenerDatosReunion();
+        if (datosReunion === null) return;
         let valor;
         if (usarSecuenciaManual) {
           const valorTexto = correlativo.value.trim();
@@ -246,11 +308,13 @@
         if (usarSecuenciaManual) {
           ejecucion.generarActaNotaSeleccionada(
             idDocumentoSeleccionado,
-            valor
+            valor,
+            datosReunion
           );
         } else {
           ejecucion.generarActaNotaSeleccionadaAutomatica(
-            idDocumentoSeleccionado
+            idDocumentoSeleccionado,
+            datosReunion
           );
         }
       }

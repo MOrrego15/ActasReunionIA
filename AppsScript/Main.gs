@@ -224,15 +224,17 @@ function ejecutarGeneracionActas(parametros) {
  * Generates exactly one selected source using a manual sequence number.
  * The persistent automatic sequence property is not read or updated.
  *
- * @param {{idDocumentoFuente: string, correlativo: number}} parametros Input.
+ * @param {{idDocumentoFuente: string, correlativo: number,
+ *     datosReunion: Object}} parametros Input.
  * @returns {{exito: boolean, datos: (Object|null), error: (Object|null)}}
  */
 function ejecutarGeneracionActaSeleccionada(parametros) {
   if (!esObjetoPlano(parametros) ||
-    Object.keys(parametros).length !== 2 ||
+    Object.keys(parametros).length !== 3 ||
     !esCadenaNoVacia(parametros.idDocumentoFuente) ||
     !Number.isSafeInteger(parametros.correlativo) ||
-    parametros.correlativo <= 0 || parametros.correlativo > 999999) {
+    parametros.correlativo <= 0 || parametros.correlativo > 999999 ||
+    !_mainValidarDatosReunion(parametros.datosReunion)) {
     return {
       exito: false, datos: null,
       error: {
@@ -243,20 +245,22 @@ function ejecutarGeneracionActaSeleccionada(parametros) {
   }
   return _mainEjecutarGeneracionSeleccionada(
     parametros.idDocumentoFuente,
-    parametros.correlativo
+    parametros.correlativo,
+    parametros.datosReunion
   );
 }
 
 /**
  * Generates one selected source using the next automatic sequence number.
  *
- * @param {{idDocumentoFuente: string}} parametros Input.
+ * @param {{idDocumentoFuente: string, datosReunion: Object}} parametros Input.
  * @returns {{exito: boolean, datos: (Object|null), error: (Object|null)}}
  */
 function ejecutarGeneracionActaSeleccionadaAutomatica(parametros) {
   if (!esObjetoPlano(parametros) ||
-    Object.keys(parametros).length !== 1 ||
-    !esCadenaNoVacia(parametros.idDocumentoFuente)) {
+    Object.keys(parametros).length !== 2 ||
+    !esCadenaNoVacia(parametros.idDocumentoFuente) ||
+    !_mainValidarDatosReunion(parametros.datosReunion)) {
     return {
       exito: false, datos: null,
       error: {
@@ -265,12 +269,32 @@ function ejecutarGeneracionActaSeleccionadaAutomatica(parametros) {
       }
     };
   }
-  return _mainEjecutarGeneracionSeleccionada(parametros.idDocumentoFuente);
+  return _mainEjecutarGeneracionSeleccionada(
+    parametros.idDocumentoFuente,
+    undefined,
+    parametros.datosReunion
+  );
+}
+
+function _mainValidarDatosReunion(datosReunion) {
+  if (!esObjetoPlano(datosReunion)) return false;
+  const claves = Object.keys(datosReunion);
+  const esperadas = ['horaInicio','horaFin','agenda','proximaReunion'];
+  const formatoHora = /^(0[1-9]|1[0-2]):[0-5]\d (AM|PM)$/;
+  return claves.length === esperadas.length && claves.every(function (clave) {
+    return esperadas.indexOf(clave) !== -1;
+  }) && esperadas.every(function (clave) {
+    return typeof datosReunion[clave] === 'string';
+  }) && formatoHora.test(datosReunion.horaInicio) &&
+    formatoHora.test(datosReunion.horaFin) &&
+    datosReunion.agenda.length <= 500 &&
+    datosReunion.proximaReunion.length <= 200;
 }
 
 function _mainEjecutarGeneracionSeleccionada(
   idDocumentoFuente,
-  correlativoManual
+  correlativoManual,
+  datosReunion
 ) {
   let contexto;
   let configuracion;
@@ -347,7 +371,8 @@ function _mainEjecutarGeneracionSeleccionada(
   }
 
   const resultado = _mainProcesarDocumento(
-    documento, 1, configuracion, contexto, correlativoManual, true
+    documento, 1, configuracion, contexto, correlativoManual, true,
+    datosReunion
   );
   return resultado.estado === 'PROCESADO'
     ? {
@@ -374,7 +399,8 @@ function _mainProcesarDocumento(
   configuracion,
   contexto,
   correlativoManual,
-  incluirIdArchivoDocx
+  incluirIdArchivoDocx,
+  datosReunion
 ) {
   let correlativo = correlativoManual === undefined ? null : correlativoManual;
   let idDocumentoGoogle;
@@ -561,7 +587,8 @@ function _mainProcesarDocumento(
         carpetaRecursosId: configuracion.recursos.carpetaOtrosId,
         codigoFormato: configuracion.actas.codigoFormato,
         celula: configuracion.actas.celula,
-        agendaFija: configuracion.actas.agendaFija
+        agendaFija: configuracion.actas.agendaFija,
+        datosReunion: datosReunion
       },
       personas.datos.participantes,
       contexto

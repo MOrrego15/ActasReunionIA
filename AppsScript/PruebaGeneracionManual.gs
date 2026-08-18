@@ -35,7 +35,13 @@ function probarGeneracionActaManual() {
   }
   const resultado = ejecutarGeneracionActaSeleccionada({
     idDocumentoFuente: idDocumentoFuente.trim(),
-    correlativo: correlativo
+    correlativo: correlativo,
+    datosReunion: {
+      horaInicio: '09:00 AM',
+      horaFin: '09:20 AM',
+      agenda: 'Reunión',
+      proximaReunion: ''
+    }
   });
   console.log({
     exito: resultado.exito,

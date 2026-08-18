@@ -36,13 +36,13 @@ La valoración es inicial y deberá revisarse con datos de uso, volumen y polít
 | Contenido o vínculos ubicados en pestañas secundarias de Google Docs | Media | Alto | Recorrer con `getTabs()` todas las pestañas principales y anidadas para leer texto y elementos vinculados. |
 | Un vínculo interno a otra pestaña repite el ID del documento fuente | Alta | Alto | Descartar autorreferencias y deduplicar todos los candidatos por ID antes de seleccionar la transcripción. |
 | Encabezados del resumen con dos puntos se interpretan como hablantes | Alta | Alto | Limitar la extracción al bloque posterior al título de transcripción y a su primera marca de tiempo. |
-| La agenda fija no corresponde a un tipo futuro de reunión distinto | Baja | Medio | Mantener la decisión documentada y parametrizar el texto únicamente cuando se autoricen otros tipos de acta. |
+| Los datos editables de la reunión se pierden o son reemplazados por valores Daily | Media | Alto | Validar y transportar un objeto separado desde la web hasta `Acta.gs`; dar prioridad a sus cuatro valores en la generación dirigida y cubrir el contrato con pruebas. |
 | El catálogo fijo de siglas queda desactualizado | Media | Medio | Mantener una única constante versionada y modificarla solo mediante una lista institucional autorizada. |
 | Google Docs API rechaza o demora la combinación avanzada de la cabecera | Media | Alto | Reintentar estados transitorios y reconstruir automáticamente el documento con la cabecera institucional compatible antes de continuar con la exportación. |
 | Una cuenta no autorizada intenta modificar el correlativo desde la web | Media | Alto | Denegar por defecto, validar la cuenta activa contra una propiedad segura y no publicar la aplicación para acceso anónimo. |
 | Temas tratados y acuerdos requieren significados distintos en el futuro | Media | Medio | Mantener documentada su equivalencia actual y separar los contratos solo mediante autorización explícita. |
 | OpenAI inventa un responsable no explícito | Media | Alto | Instruir que no invente responsables de tareas, aceptar cadena vacía y mostrar solo la descripción sin prefijo ni dos puntos. |
-| La próxima reunión cae en feriado | Media | Medio | Aplicar el siguiente día de lunes a viernes; incorporar feriados únicamente cuando se autorice una fuente de calendario oficial. |
+| La próxima reunión vacía se completa automáticamente | Media | Alto | Tratar la cadena vacía como valor válido en el flujo web y trasladarla literalmente al acta sin cálculos de calendario. |
 | La exportación DOCX supera la cuota o pierde autorización | Baja | Alto | Declarar los alcances efectivos en el manifiesto, distinguir errores HTTP y no marcar el documento como procesado antes de verificar el archivo. |
 | Se elimina por error un documento distinto del temporal generado | Baja | Crítico | Aceptar exclusivamente el identificador devuelto por `generarDocumentoActa`, eliminar después de verificar el DOCX y no usar nombres ni búsquedas para seleccionar el objetivo. |
 

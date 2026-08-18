@@ -252,3 +252,18 @@ fusionarla con `main` sin autorización explícita.
 - **Consecuencia:** La configuración se rechaza antes de procesar documentos si
   falta el código o la célula. Una agenda ausente o vacía no genera error y
   produce una celda Agenda vacía.
+
+## DA-032: Datos editables para reuniones no Daily
+
+- **Estado:** Aceptada.
+- **Decisión:** Después de seleccionar una fuente, la aplicación web mostrará
+  `Hora de inicio`, `Hora de fin`, `Agenda` y `Próxima reunión`. Sus valores
+  iniciales serán `09:00 AM`, `09:20 AM`, `Reunión` y cadena vacía. Ambos modos
+  de generación enviarán el objeto completo al backend.
+- **Motivo:** Esta línea genera actas de reuniones que no son Daily y necesita
+  que el usuario confirme los metadatos antes de emitir el documento.
+- **Consecuencia:** `Main.gs` transporta los datos separadamente de la respuesta
+  de IA y `Acta.gs` les da prioridad en la generación dirigida. No se agrega el
+  prefijo `Dayli –`, no se aplican horas fijas y una próxima reunión vacía no se
+  calcula. El procesamiento automático sin este objeto conserva su conducta
+  anterior para evitar regresiones fuera del alcance.

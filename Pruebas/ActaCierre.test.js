@@ -184,4 +184,21 @@ assert.strictEqual(
 );
 assert.strictEqual(tabla.filas[2].celdas[0].estado.fondo, '#d9d9d9');
 
+sandbox._actaAgregarCierre(
+  cuerpo,
+  [],
+  '31/07/2026',
+  {
+    horaInicio: '10:15 AM',
+    horaFin: '11:45 AM',
+    agenda: 'Revisión del proyecto',
+    proximaReunion: ''
+  }
+);
+assert.strictEqual(
+  tabla.filas[2].celdas[1].estado.texto.contenido,
+  '',
+  'La próxima reunión editable vacía no debe calcularse.'
+);
+
 console.log('ActaCierre.test.js: acuerdos y próxima reunión correctos.');

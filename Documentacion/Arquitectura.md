@@ -172,7 +172,13 @@ DatosEmisionActa = {
   carpetaRecursosId: string,
   codigoFormato: string,
   celula: string,
-  agendaFija: string | undefined
+  agendaFija: string | undefined,
+  datosReunion: {
+    horaInicio: string,
+    horaFin: string,
+    agenda: string,
+    proximaReunion: string
+  } | undefined
 }
 ```
 
@@ -417,11 +423,11 @@ y 999999. El formato inicial es funcional: título centrado y en negrita,
 encabezados en negrita y tablas para datos generales, participantes, agenda,
 acuerdos y tareas. `ACTA_CODIGO_FORMATO` completa el campo `Código` y
 `ACTA_CELULA` completa el identificador `<correlativo>-<año>-<célula>`; ambas
-propiedades son obligatorias. La Agenda usa una fila institucional con etiqueta
-ploma y, cuando `ACTA_AGENDA_FIJA` tiene contenido, muestra
-`Dayli – <ACTA_AGENDA_FIJA>`. Si la propiedad opcional está ausente o vacía,
-la celda de contenido queda vacía. La lista variable de agenda producida por la
-IA no se representa en esta sección.
+propiedades son obligatorias. En el procesamiento automático existente, la
+Agenda conserva `ACTA_AGENDA_FIJA` y su presentación histórica. En la
+generación seleccionada desde la web, `datosReunion` tiene prioridad: muestra
+las horas editadas, usa la agenda ingresada sin prefijo Daily y traslada
+literalmente la próxima reunión. Una próxima reunión vacía permanece vacía.
 
 La cabecera usa una tabla única de cinco filas por cuatro columnas, equivalente
 al rango `B2:E6` del modelo institucional en Excel. Después de cerrar el
@@ -465,9 +471,11 @@ evitar líneas o espacios vacíos entre temas.
 La sección sustituye la presentación independiente de `Resumen Ejecutivo`.
 
 El cierre documental combina las Fases 7 y 8 en una tabla institucional:
-`Riesgos o problemas` permanece vacío; `Acuerdos` usa las tareas validadas en
-un encabezado plomo y viñetas; y `Próxima reunión` muestra el siguiente día de lunes a viernes a
-partir de `fechaReunion`, omitiendo sábados y domingos, con mes en español.
+`Riesgos o problemas` permanece vacío y `Acuerdos` usa las tareas validadas en
+un encabezado plomo y viñetas. En el flujo web, `Próxima reunión` muestra
+exactamente el valor editable recibido y no calcula fechas. El procesamiento
+automático anterior conserva su comportamiento histórico cuando
+`datosReunion` no está presente.
 Una tarea con responsable se presenta
 como `Responsable: descripción`; cuando el responsable está vacío se presenta
 solo la descripción, sin prefijo ni dos puntos. La sección de observaciones no
@@ -602,6 +610,10 @@ los diez primeros.
 
 La interfaz muestra nombre y fecha/hora en la zona `America/Lima`. Al seleccionar
 una fila presenta `Reunión: Día <fecha> Hora: <hora>` usando la fecha de creación.
+En ese momento habilita cuatro campos editables: `Hora de inicio` con
+`09:00 AM`, `Hora de fin` con `09:20 AM`, `Agenda` con `Reunión` y
+`Próxima reunión` vacía. El navegador envía siempre esos cuatro valores al
+backend al confirmar cualquiera de los dos modos de generación.
 El identificador estable de Drive permanece únicamente en memoria del cliente
 para invocar el servidor y no se renderiza en la página. La
 autorización reutiliza `MANTENIMIENTO_CORREOS_AUTORIZADOS`; además, como la
@@ -619,6 +631,11 @@ exclusivamente el ID seleccionado y reserva el siguiente correlativo mediante
 el mecanismo automático protegido por `LockService`. `Crear Acta SEC.` usa
 exactamente el entero visible en `Número de secuencia`, sin leer, reservar ni
 actualizar `ACTAS_ULTIMO_CORRELATIVO`.
+
+Ambas operaciones reciben el objeto exacto `datosReunion`. El servidor valida
+horas en formato de doce horas, tipos, claves y longitudes; después lo entrega
+separadamente de la respuesta de IA a `Acta.gs`. Estos valores prevalecen sobre
+horarios, agenda o próxima reunión obtenidos o calculados por el flujo anterior.
 
 Antes del procesamiento, `HojaSeguimiento.gsheet` se consulta mediante el ID
 configurado del repositorio. Tanto el ID fuente como el correlativo deben estar
