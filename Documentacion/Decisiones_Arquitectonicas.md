@@ -267,3 +267,16 @@ fusionarla con `main` sin autorización explícita.
   prefijo `Dayli –`, no se aplican horas fijas y una próxima reunión vacía no se
   calcula. El procesamiento automático sin este objeto conserva su conducta
   anterior para evitar regresiones fuera del alcance.
+
+## DA-033: Migración de modelos Gemini retirados
+
+- **Estado:** Aceptada.
+- **Decisión:** Usar `gemini-3.6-flash` como modelo predeterminado. Resolver
+  automáticamente `gemini-2.0-flash` y `gemini-2.0-flash-001` al reemplazo
+  `gemini-3.6-flash`, y las variantes 2.0 Lite a
+  `gemini-3.1-flash-lite`. Los demás valores explícitos se respetan.
+- **Motivo:** Google apagó Gemini 2.0 Flash el 1 de junio de 2026 y recomienda
+  Gemini 3.6 Flash como reemplazo. El valor anterior impedía generar actas.
+- **Consecuencia:** Una configuración ausente o todavía asociada al modelo 2.0
+  vuelve a operar sin almacenar ni exponer secretos. Los errores dirigidos
+  muestran etapa y código técnico seguro para evitar diagnósticos genéricos.

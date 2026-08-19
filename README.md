@@ -86,7 +86,7 @@ La vista publicada de esta línea independiente está disponible en:
 `https://script.google.com/macros/s/AKfycbw2-H74M7V7lRri9EC1yehucw-Z-3Z7wxr4IpcKJjJk-lxHxz-3Q08SE4306SEqhiQ/exec?vista=notas`
 
 Su encabezado visible es **Notas de Reuniones por MEET**. La implementación
-versionada `4` y el Script ID pertenecen exclusivamente a
+versionada `5` y el Script ID pertenecen exclusivamente a
 `ActasReunion2IA_G`.
 
 Al seleccionar una reunión, la interfaz muestra únicamente su día y hora de
@@ -156,7 +156,8 @@ encuentran:
 - `ACTA_CELULA` (obligatoria; sufijo del identificador de reunión)
 - `ACTA_AGENDA_FIJA` (opcional; contenido posterior a `Dayli –`)
 - `GEMINI_API_KEY`
-- `GEMINI_MODELO` (predeterminado: `gemini-2.0-flash`)
+- `GEMINI_MODELO` (predeterminado: `gemini-3.6-flash`; los identificadores
+  retirados de Gemini 2.0 se migran internamente a su reemplazo vigente)
 - `OPENAI_API_KEY` (opcional / respaldo)
 - `PROMPT_VERSION`
 - `MANTENIMIENTO_CORREOS_AUTORIZADOS`

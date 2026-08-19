@@ -637,6 +637,13 @@ horas en formato de doce horas, tipos, claves y longitudes; después lo entrega
 separadamente de la respuesta de IA a `Acta.gs`. Estos valores prevalecen sobre
 horarios, agenda o próxima reunión obtenidos o calculados por el flujo anterior.
 
+La configuración usa `gemini-3.6-flash` cuando `GEMINI_MODELO` no está
+definido. Como protección frente al retiro confirmado de Gemini 2.0, los
+identificadores `gemini-2.0-flash` y `gemini-2.0-flash-001` se resuelven a
+`gemini-3.6-flash`; las variantes 2.0 Lite se resuelven a
+`gemini-3.1-flash-lite`. La respuesta web de una generación fallida expone
+únicamente etapa y código técnico, nunca contenido ni credenciales.
+
 Antes del procesamiento, `HojaSeguimiento.gsheet` se consulta mediante el ID
 configurado del repositorio. Tanto el ID fuente como el correlativo deben estar
 ausentes de la hoja `Procesados`. La misma comprobación se repite bajo

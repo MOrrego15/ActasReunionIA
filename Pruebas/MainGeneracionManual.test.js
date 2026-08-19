@@ -148,5 +148,13 @@ assert.strictEqual(
   }).error.codigo,
   'MAIN_PARAMETRO_INVALIDO'
 );
+assert.strictEqual(
+  sandbox._mainConstruirMensajeErrorGeneracion({
+    etapaFinal: 'OPENAI',
+    codigoError: 'GEMINI_IA_SOLICITUD_RECHAZADA'
+  }),
+  'No fue posible generar el acta seleccionada. Etapa: OPENAI. ' +
+    'Código: GEMINI_IA_SOLICITUD_RECHAZADA.'
+);
 
 console.log('MainGeneracionManual.test.js: secuencias manual y automática.');

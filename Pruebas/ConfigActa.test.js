@@ -25,6 +25,7 @@ function propiedadesBase() {
 }
 
 const configuracion = sandbox._configConstruir(propiedadesBase());
+assert.strictEqual(configuracion.geminiIA.modelo, 'gemini-3.6-flash');
 assert.deepStrictEqual(
   JSON.parse(JSON.stringify(configuracion.actas)),
   {
@@ -47,6 +48,20 @@ celulaVacia.ACTA_CELULA = '';
 assert.throws(
   () => sandbox._configConstruir(celulaVacia),
   /ACTA_CELULA/
+);
+
+const modeloRetirado = propiedadesBase();
+modeloRetirado.GEMINI_MODELO = 'gemini-2.0-flash';
+assert.strictEqual(
+  sandbox._configConstruir(modeloRetirado).geminiIA.modelo,
+  'gemini-3.6-flash'
+);
+
+const modeloVigente = propiedadesBase();
+modeloVigente.GEMINI_MODELO = 'gemini-2.5-flash';
+assert.strictEqual(
+  sandbox._configConstruir(modeloVigente).geminiIA.modelo,
+  'gemini-2.5-flash'
 );
 
 const codigoVacio = propiedadesBase();

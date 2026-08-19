@@ -16,6 +16,14 @@
  * - Utils, cuando existan validaciones técnicas realmente compartidas.
  */
 
+const CONFIG_MODELO_GEMINI_PREDETERMINADO = 'gemini-3.6-flash';
+const CONFIG_REEMPLAZOS_MODELOS_GEMINI = Object.freeze({
+  'gemini-2.0-flash': 'gemini-3.6-flash',
+  'gemini-2.0-flash-001': 'gemini-3.6-flash',
+  'gemini-2.0-flash-lite': 'gemini-3.1-flash-lite',
+  'gemini-2.0-flash-lite-001': 'gemini-3.1-flash-lite'
+});
+
 /**
  * Obtiene la configuración validada para consumo interno de los módulos.
  *
@@ -96,11 +104,14 @@ function _configConstruir(propiedadesScript) {
     'GEMINI_API_KEY',
     propiedadesInvalidas
   );
-  const modeloGemini = _configLeerOpcionalNoVacia(
+  const modeloGeminiConfigurado = _configLeerOpcionalNoVacia(
     propiedadesScript,
     'GEMINI_MODELO',
     propiedadesInvalidas
-  ) || 'gemini-2.0-flash';
+  );
+  const modeloGemini = _configResolverModeloGemini(
+    modeloGeminiConfigurado
+  );
   const claveApiOpenAI = _configLeerOpcionalNoVacia(
     propiedadesScript,
     'OPENAI_API_KEY',
@@ -155,6 +166,14 @@ function _configConstruir(propiedadesScript) {
       version: versionPrompt
     })
   });
+}
+
+function _configResolverModeloGemini(modeloConfigurado) {
+  if (!esCadenaNoVacia(modeloConfigurado)) {
+    return CONFIG_MODELO_GEMINI_PREDETERMINADO;
+  }
+  const modelo = modeloConfigurado.trim();
+  return CONFIG_REEMPLAZOS_MODELOS_GEMINI[modelo] || modelo;
 }
 
 /**

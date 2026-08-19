@@ -4976,3 +4976,64 @@ el objeto está ausente.
   `https://script.google.com/macros/s/AKfycbw2-H74M7V7lRri9EC1yehucw-Z-3Z7wxr4IpcKJjJk-lxHxz-3Q08SE4306SEqhiQ/exec?vista=notas`.
 - El commit y Git push se realizan como cierre de la publicación autorizada.
 
+# Cambio 0082
+Fecha: 2026-08-19
+Autor: Codex
+
+## Incidencia
+
+La versión 4 mostraba `No fue posible generar el acta seleccionada` después de
+aceptar correctamente los nuevos campos editables.
+
+## Diagnóstico
+
+La inspección confirmó que los valores de la captura (`11:00 AM`, `11:20 AM`,
+agenda y próxima reunión) cumplen el contrato. La falla sucede posteriormente
+en el procesamiento. `Config.gs` todavía utilizaba `gemini-2.0-flash` cuando
+`GEMINI_MODELO` estaba vacío. La documentación oficial de Google indica que
+Gemini 2.0 Flash fue apagado el 1 de junio de 2026 y recomienda
+`gemini-3.6-flash` como reemplazo.
+
+`clasp logs` no estuvo disponible porque el proyecto no tiene un Google Cloud
+Project asociado. La sesión institucional de `clasp` también requirió una
+nueva autenticación, todavía pendiente al momento del diagnóstico local.
+
+## Solución
+
+- Cambiar el modelo predeterminado a `gemini-3.6-flash`.
+- Migrar automáticamente identificadores retirados Gemini 2.0 Flash a
+  `gemini-3.6-flash` y variantes Lite a `gemini-3.1-flash-lite`.
+- Respetar cualquier otro modelo explícito configurado.
+- Incluir etapa y código técnico seguro en los errores de generación dirigida,
+  sin exponer reuniones, IDs, correos, claves ni prompts.
+
+## Archivos modificados
+
+- `AppsScript/Config.gs`
+- `AppsScript/Main.gs`
+- `Pruebas/ConfigActa.test.js`
+- `Pruebas/MainGeneracionManual.test.js`
+- `README.md`
+- `Documentacion/Arquitectura.md`
+- `Documentacion/Decisiones_Arquitectonicas.md`
+- `Documentacion/Riesgos_Tecnicos.md`
+- `docs/CODEX_BITACORA.md`
+
+## Fuente técnica
+
+- Google Gemini API, tabla oficial de modelos retirados:
+  `https://ai.google.dev/gemini-api/docs/deprecations`.
+
+## Estado
+
+- Suite completa: 16 archivos de prueba correctos.
+- `git diff --check`: sin errores.
+- Cuenta institucional de `clasp` reautenticada correctamente.
+- `clasp push`: 21 archivos publicados a las 12:08:02, hora de Lima.
+- Implementación actualizada: `AKfycbw2-…SEqhiQ`.
+- Versión publicada: `5`.
+- Descripción: `ActasReunion2IA_G - corrección modelo Gemini retirado`.
+- URL conservada:
+  `https://script.google.com/macros/s/AKfycbw2-H74M7V7lRri9EC1yehucw-Z-3Z7wxr4IpcKJjJk-lxHxz-3Q08SE4306SEqhiQ/exec?vista=notas`.
+- Pendiente únicamente el respaldo final mediante commit y Git push.
+

@@ -388,9 +388,20 @@ function _mainEjecutarGeneracionSeleccionada(
         exito: false, datos: null,
         error: {
           codigo: resultado.codigoError || MAIN_CODIGOS_ERROR.ERROR,
-          mensaje: 'No fue posible generar el acta seleccionada.'
+          mensaje: _mainConstruirMensajeErrorGeneracion(resultado)
         }
       };
+}
+
+function _mainConstruirMensajeErrorGeneracion(resultado) {
+  const etapa = resultado && esCadenaNoVacia(resultado.etapaFinal)
+    ? resultado.etapaFinal
+    : 'DESCONOCIDA';
+  const codigo = resultado && esCadenaNoVacia(resultado.codigoError)
+    ? resultado.codigoError
+    : MAIN_CODIGOS_ERROR.ERROR;
+  return 'No fue posible generar el acta seleccionada. Etapa: ' + etapa +
+    '. Código: ' + codigo + '.';
 }
 
 function _mainProcesarDocumento(
